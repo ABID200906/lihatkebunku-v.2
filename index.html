@@ -787,10 +787,12 @@
     }
 
     function startFirebaseListeners() {
+      // PERUBAHAN: metrics diganti menjadi sensor
       onValue(ref(db, `machines/${activeMachineCode}/sensor`), (snapshot) => {
         if (snapshot.val()) updateMetricsUI(snapshot.val());
       });
 
+      // PERUBAHAN: controls diganti menjadi control
       onValue(ref(db, `machines/${activeMachineCode}/control`), (snapshot) => {
         if (snapshot.val()) {
           currentControls = snapshot.val();
@@ -806,6 +808,7 @@
       applyControlUI(device, newState);
       currentControls[device] = newState;
 
+      // PERUBAHAN: controls diganti menjadi control
       set(ref(db, `machines/${activeMachineCode}/control/${device}`), newState).catch((err) => {
         console.error("Gagal Firebase sync:", err);
         applyControlUI(device, !newState);
