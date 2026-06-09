@@ -573,11 +573,11 @@
       if (type === 'warning') {
         title = "⚠️ Peringatan: Tingkat pH Air Drop";
         message = "Sensor mendeteksi pH sirkulasi turun drastis ke angka 5.8 (Asam). Sistem menyarankan untuk menaburkan sedikit kapur dolomit organik.";
-        if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/metrics`), { phLevel: 5.8 });
+        if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/sensor`), { phLevel: 5.8 });
       } else {
         title = "✅ Status: pH Air Kembali Optimal";
         message = "Sensor mendeteksi pH air telah stabil kembali ke zona ideal 7.2. Filter biologis pengurai amonia berfungsi tanpa hambatan.";
-        if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/metrics`), { phLevel: 7.2 });
+        if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/sensor`), { phLevel: 7.2 });
       }
       notifications.unshift({ id: Date.now(), title, message, type, read: false });
       renderNotifications();
@@ -707,8 +707,8 @@
         const snapshot = await get(machineRef);
         
         if (!snapshot.exists()) {
-           await set(ref(db, `machines/${codeInput}/metrics`), { waterTemp: 27.4, phLevel: 7.1, waterLevel: 84, humidity: 62 });
-           await set(ref(db, `machines/${codeInput}/controls`), { waterPump: true, uvLight: false, autoFeeder: true });
+           await set(ref(db, `machines/${codeInput}/sensor`), { waterTemp: 27.4, phLevel: 7.1, waterLevel: 84, humidity: 62 });
+           await set(ref(db, `machines/${codeInput}/control`), { waterPump: true, uvLight: false, autoFeeder: true });
         }
 
         activeMachineCode = codeInput;
@@ -787,11 +787,11 @@
     }
 
     function startFirebaseListeners() {
-      onValue(ref(db, `machines/${activeMachineCode}/metrics`), (snapshot) => {
+      onValue(ref(db, `machines/${activeMachineCode}/sensor`), (snapshot) => {
         if (snapshot.val()) updateMetricsUI(snapshot.val());
       });
 
-      onValue(ref(db, `machines/${activeMachineCode}/controls`), (snapshot) => {
+      onValue(ref(db, `machines/${activeMachineCode}/control`), (snapshot) => {
         if (snapshot.val()) {
           currentControls = snapshot.val();
           applyControlUI('waterPump', currentControls.waterPump);
@@ -806,7 +806,7 @@
       applyControlUI(device, newState);
       currentControls[device] = newState;
 
-      set(ref(db, `machines/${activeMachineCode}/controls/${device}`), newState).catch((err) => {
+      set(ref(db, `machines/${activeMachineCode}/control/${device}`), newState).catch((err) => {
         console.error("Gagal Firebase sync:", err);
         applyControlUI(device, !newState);
         currentControls[device] = !newState;
