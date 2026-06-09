@@ -446,9 +446,11 @@
   <!-- ========================================== -->
   <!-- 3. LOGIC & FIREBASE INTEGRATION -->
   <!-- ========================================== -->
-  <script type="module">
+<script type="module">
+    // 1. Tambahkan import untuk Firebase Auth
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     // Initialize Firebase
     const firebaseConfig = {
@@ -464,6 +466,7 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const auth = getAuth(app); // Inisialisasi Auth
 
     let activeMachineCode = "";
     let currentControls = { waterPump: false, uvLight: false, autoFeeder: false };
@@ -477,7 +480,6 @@
       document.getElementById('view-kontrol').classList.add('hidden');
       document.getElementById(`view-${tabName}`).classList.remove('hidden');
       
-      // Update Desktop Nav Styling
       const desktopNavBeranda = document.getElementById('nav-beranda');
       const desktopNavKontrol = document.getElementById('nav-kontrol');
       
@@ -489,7 +491,6 @@
         ? "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/15"
         : "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50";
 
-      // Update Mobile Nav Styling
       const mobNavBeranda = document.getElementById('mob-nav-beranda');
       const mobNavKontrol = document.getElementById('mob-nav-kontrol');
 
@@ -504,6 +505,7 @@
 
     window.logout = () => {
       activeMachineCode = "";
+      auth.signOut(); // Logout dari Firebase
       document.getElementById('app-view').classList.add('hidden');
       document.getElementById('login-view').classList.remove('hidden');
     };
@@ -519,14 +521,28 @@
         return;
       }
 
-      btnText.innerText = "Mengecek Firebase...";
+      // Validasi ketat sesuai Rules Firebase Anda
+      if(codeInput !== "lihatkebunku_01") {
+        errorEl.innerText = "Akses ditolak! Sesuai rules, hanya mesin 'lihatkebunku_01' yang diizinkan.";
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      btnText.innerText = "Mengecek Autentikasi...";
 
       try {
+        // 2. LAKUKAN LOGIN AUTHENTICATION UNTUK MEMENUHI SYARAT "auth != null"
+        // Menggunakan kredensial bawaan dari versi React sebelumnya
+        await signInWithEmailAndPassword(auth, "lihatjeje@gmail.com", "aqupon123");
+
+        btnText.innerText = "Menghubungkan ke Mesin...";
+
+        // 3. Setelah Auth berhasil, baru akses Database
         const machineRef = ref(db, `machines/${codeInput}`);
         const snapshot = await get(machineRef);
         
-        // Buat data seed awal jika menggunakan demo (sesuai app asli)
-        if (!snapshot.exists() && codeInput === "LKB-779-AQUAPONIC") {
+        // Buat data seed awal jika belum ada
+        if (!snapshot.exists()) {
            await set(ref(db, `machines/${codeInput}/metrics`), { waterTemp: 27.4, phLevel: 7.1, waterLevel: 84, humidity: 62 });
            await set(ref(db, `machines/${codeInput}/controls`), { waterPump: true, uvLight: false, autoFeeder: true });
         }
@@ -539,7 +555,12 @@
 
         startFirebaseListeners();
       } catch (error) {
-        errorEl.innerText = "Gagal mengambil data dari Firebase: " + error.message;
+        console.error(error);
+        if (error.code === 'auth/invalid-credential') {
+            errorEl.innerText = "Gagal Login: Email atau Password salah. Pastikan user lihatjeje@gmail.com sudah terdaftar di Firebase Authentication.";
+        } else {
+            errorEl.innerText = "Error Firebase: " + error.message;
+        }
         errorEl.classList.remove('hidden');
       } finally {
         btnText.innerText = "Hubungkan Mesin";
@@ -547,30 +568,29 @@
     };
 
     document.getElementById('btn-login').addEventListener('click', () => {
-      const code = document.getElementById('input-machine-code').value.trim().toUpperCase();
+      // Perhatikan: Menghapus toUpperCase() karena rules Anda mensyaratkan huruf kecil "lihatkebunku_01"
+      const code = document.getElementById('input-machine-code').value.trim();
       handleLogin(code);
     });
 
     document.getElementById('btn-demo').addEventListener('click', () => {
-      document.getElementById('input-machine-code').value = "LKB-779-AQUAPONIC";
-      handleLogin("LKB-779-AQUAPONIC");
+      // Mengubah kode demo agar sesuai dengan rules Anda
+      document.getElementById('input-machine-code').value = "lihatkebunku_01";
+      handleLogin("lihatkebunku_01");
     });
 
     // --- Monitoring UI Updaters ---
     function updateMetricsUI(data) {
-      // Set values
       document.getElementById('val-temp').innerText = data.waterTemp || 0;
       document.getElementById('val-ph').innerText = data.phLevel || 0;
       document.getElementById('val-level').innerText = data.waterLevel || 0;
       document.getElementById('val-hum').innerText = data.humidity || 0;
 
-      // Logic Safe Boundaries sama persis seperti BerandaView.tsx
       const isTempSafe = data.waterTemp >= 24 && data.waterTemp <= 30;
       const isPhSafe = data.phLevel >= 6.5 && data.phLevel <= 7.5;
       const isLevelSafe = data.waterLevel >= 70;
       const isHumiditySafe = data.humidity >= 50 && data.humidity <= 85;
 
-      // Update Badges & Colors
       const badgeTemp = document.getElementById('badge-temp');
       badgeTemp.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isTempSafe ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`;
       badgeTemp.innerText = isTempSafe ? 'Ideal' : 'Kurang Baik';
@@ -587,7 +607,6 @@
       badgeHum.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isHumiditySafe ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`;
       badgeHum.innerText = isHumiditySafe ? 'Ideal' : 'Kering';
 
-      // Update Progress Bars
       document.getElementById('bar-temp').style.width = `${Math.min(100, Math.max(10, ((data.waterTemp||0) / 40) * 100))}%`;
       document.getElementById('bar-temp').className = `h-full rounded-full transition-all duration-500 ${isTempSafe ? 'bg-orange-500' : 'bg-red-500'}`;
 
@@ -605,13 +624,11 @@
       const metricsRef = ref(db, `machines/${activeMachineCode}/metrics`);
       const controlsRef = ref(db, `machines/${activeMachineCode}/controls`);
 
-      // Monitor Metrik
       onValue(metricsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) updateMetricsUI(data);
       });
 
-      // Monitor Status Kontrol
       onValue(controlsRef, (snapshot) => {
         const data = snapshot.val();
         if (data) {
@@ -627,21 +644,18 @@
     window.toggleControl = (device) => {
       const newState = !currentControls[device];
       
-      // Optimistic UI Update
       applyControlUI(device, newState);
       currentControls[device] = newState;
 
-      // Sync ke Firebase
       const deviceRef = ref(db, `machines/${activeMachineCode}/controls/${device}`);
       set(deviceRef, newState).catch((err) => {
         console.error("Gagal Firebase sync:", err);
-        // Rollback on fail
         applyControlUI(device, !newState);
         currentControls[device] = !newState;
       });
     };
 
-    // --- Helper Kontrol UI Styling (Identik React `KontrolView.tsx`) ---
+    // --- Helper Kontrol UI Styling ---
     function applyControlUI(device, isActive) {
       let btnId, dotId, iconId, cardId, descId, powerId, themeColor, onIconClass, descOn, descOff, powerText;
 
@@ -658,7 +672,6 @@
         descOff = `<i data-lucide="info" class="h-3 w-3 text-slate-500 shrink-0"></i><span>Lampu padam. Tanaman mengandalkan cahaya ambien ruangan saja saat ini.</span>`;
         powerText = isActive ? '8.5 Watt' : '0.0 Watt';
       } else {
-        // Feeder
         btnId = 'btn-feeder'; dotId = 'dot-feeder'; iconId = 'icon-feeder'; cardId = 'card-feeder'; descId = 'desc-feeder';
         themeColor = 'orange'; onIconClass = "bg-orange-600 text-white animate-pulse";
         descOn = `<i data-lucide="check" class="h-3 w-3 text-orange-600 shrink-0"></i><span>Pakan otomatis menyala secara terjadwal. Ikan nila mendapat asupan gizi konsisten.</span>`;
@@ -673,35 +686,21 @@
       const powerEl = document.getElementById(powerId);
 
       if (isActive) {
-        // Toggle Switch Styling Active
         btnEl.className = "w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-emerald-600";
         dotEl.className = "bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-6";
         dotEl.style.width = "18px"; dotEl.style.height = "18px";
-        
-        // Icon Styling Active
         iconEl.className = `p-3 rounded-2xl transition-all duration-300 ${onIconClass}`;
-        
-        // Card Border Active
         cardEl.className = "bg-white p-6 rounded-3xl border transition-all duration-300 shadow-md flex flex-col justify-between border-emerald-500/30 ring-1 ring-emerald-500/10";
         if(device === 'autoFeeder') cardEl.classList.add('lg:col-span-2');
-
-        // Description Box Active
         descEl.className = `mt-4 p-2.5 rounded-xl border text-[10px] flex items-center gap-2 bg-${themeColor}-50 border-${themeColor}-100/60 text-${themeColor}-800`;
         descEl.innerHTML = descOn;
       } else {
-        // Toggle Switch Styling Inactive
         btnEl.className = "w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-slate-200";
         dotEl.className = "bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-0";
         dotEl.style.width = "18px"; dotEl.style.height = "18px";
-        
-        // Icon Styling Inactive
         iconEl.className = "p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400";
-        
-        // Card Border Inactive
         cardEl.className = "bg-white p-6 rounded-3xl border transition-all duration-300 shadow-sm flex flex-col justify-between border-emerald-100/70";
         if(device === 'autoFeeder') cardEl.classList.add('lg:col-span-2');
-
-        // Description Box Inactive (Red for waterPump, Slate for others)
         if(device === 'waterPump') {
            descEl.className = "mt-4 p-2.5 rounded-xl border text-[10px] flex items-center gap-2 bg-red-50 border-red-100/60";
         } else {
@@ -711,8 +710,6 @@
       }
 
       if(powerEl) powerEl.innerText = powerText;
-      
-      // Re-render lucide icons inside description box newly injected HTML
       lucide.createIcons();
     }
   </script>
