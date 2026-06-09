@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LihatKebunku - IoT Dashboard</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {}
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-50 selection:bg-emerald-200 select-none text-slate-800">
+
+  <div id="login-view" class="flex min-h-screen flex-col items-center justify-center bg-emerald-50/50 p-4 font-sans">
+    <div class="w-full max-w-md bg-white p-8 rounded-3xl border border-emerald-100/80 shadow-xl">
+      <div class="flex flex-col items-center justify-center text-center pb-6">
+        <div class="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-bold text-2xl mb-2">LK</div>
+        <h1 class="text-xl font-bold text-emerald-900">LihatKebunku</h1>
+        <p class="mt-4 text-sm text-emerald-700/80 max-w-[280px]">
+          Masuk dan hubungkan sistem IoT kebun & kolam aquaponics Anda
+        </p>
+      </div>
+
+      <div class="space-y-5">
+        <div id="login-error" class="hidden bg-red-50 text-red-600 text-xs p-3 rounded-2xl border border-red-100"></div>
+
+        <div>
+          <label class="block text-xs font-bold text-emerald-900 uppercase tracking-wider mb-2">Kode Mesin (IoT ID)</label>
+          <input id="input-machine-code" type="text" placeholder="Contoh: LKB-779-AQUAPONIC" class="w-full bg-emerald-50/50 border border-emerald-100 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-emerald-950 font-medium">
+        </div>
+
+        <button id="btn-login" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm py-3 px-4 rounded-2xl transition-all shadow-md">
+          Hubungkan Mesin
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app-view" class="hidden flex min-h-screen">
+    
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-emerald-100 min-h-screen p-6 justify-between">
+      <div>
+        <div class="text-xl font-black text-emerald-900 mb-8 flex items-center gap-2">
+          <i data-lucide="leaf" class="text-emerald-500"></i> LihatKebunku
+        </div>
+        <nav class="space-y-2">
+          <button onclick="switchTab('beranda')" id="nav-beranda" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold bg-emerald-600 text-white shadow-md">
+            <i data-lucide="home" class="w-4 h-4"></i> Beranda
+          </button>
+          <button onclick="switchTab('kontrol')" id="nav-kontrol" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-emerald-900 hover:bg-emerald-50">
+            <i data-lucide="sliders" class="w-4 h-4"></i> Kontrol IoT
+          </button>
+        </nav>
+      </div>
+      <div>
+        <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100 mb-4">
+          <span class="text-[9px] uppercase tracking-wider text-emerald-600 font-bold">Mesin Aktif</span>
+          <span id="display-machine-id" class="text-xs font-black text-emerald-900 block font-mono mt-1">LKB-XXX</span>
+        </div>
+        <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-red-600 hover:bg-red-50">
+          <i data-lucide="log-out" class="w-4 h-4"></i> Putuskan Mesin
+        </button>
+      </div>
+    </aside>
+
+    <main class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full pb-24 md:pb-8">
+      
+      <div id="view-beranda" class="space-y-6 block">
+        <div class="bg-gradient-to-br from-emerald-900 to-emerald-800 text-white p-6 rounded-3xl shadow-lg relative overflow-hidden">
+          <div class="relative z-10">
+            <span class="bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/30">Sistem Aktif & Terhubung Firebase</span>
+            <h1 class="text-2xl font-black mt-2">Halo, Pekebun Lestari!</h1>
+            <p class="text-emerald-100 text-sm mt-1 max-w-xl">Data dimonitor secara real-time dari Firebase Database.</p>
+          </div>
+        </div>
+
+        <h2 class="text-base font-bold text-emerald-950 px-1">Metrik Real-time IoT</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          
+          <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm">
+            <div class="flex items-center justify-between">
+              <div class="p-2.5 rounded-xl bg-orange-50 text-orange-600"><i data-lucide="thermometer"></i></div>
+            </div>
+            <div class="mt-4">
+              <span class="text-sm text-emerald-800 font-medium">Suhu Air</span>
+              <div class="flex items-baseline gap-1 mt-0.5">
+                <span id="val-temp" class="text-3xl font-black text-emerald-950">--</span>
+                <span class="text-emerald-500 font-medium">°C</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm">
+            <div class="flex items-center justify-between">
+              <div class="p-2.5 rounded-xl bg-purple-50 text-purple-600"><i data-lucide="filter"></i></div>
+            </div>
+            <div class="mt-4">
+              <span class="text-sm text-emerald-800 font-medium">Kadar pH</span>
+              <div class="flex items-baseline gap-1 mt-0.5">
+                <span id="val-ph" class="text-3xl font-black text-emerald-950">--</span>
+                <span class="text-emerald-500 font-medium">pH</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm">
+            <div class="flex items-center justify-between">
+              <div class="p-2.5 rounded-xl bg-blue-50 text-blue-600"><i data-lucide="waves"></i></div>
+            </div>
+            <div class="mt-4">
+              <span class="text-sm text-emerald-800 font-medium">Ketinggian Air</span>
+              <div class="flex items-baseline gap-1 mt-0.5">
+                <span id="val-level" class="text-3xl font-black text-emerald-950">--</span>
+                <span class="text-emerald-500 font-medium">%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white p-5 rounded-2xl border border-emerald-100 shadow-sm">
+            <div class="flex items-center justify-between">
+              <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600"><i data-lucide="droplet"></i></div>
+            </div>
+            <div class="mt-4">
+              <span class="text-sm text-emerald-800 font-medium">Kelembaban</span>
+              <div class="flex items-baseline gap-1 mt-0.5">
+                <span id="val-hum" class="text-3xl font-black text-emerald-950">--</span>
+                <span class="text-emerald-500 font-medium">%</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="view-kontrol" class="space-y-6 hidden">
+        <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm">
+          <h1 class="text-xl font-black text-emerald-950 flex items-center gap-2">
+            <i data-lucide="settings" class="text-emerald-600"></i> Panel Kontrol IoT
+          </h1>
+          <p class="text-xs text-emerald-700 mt-1">Perubahan diteruskan langsung ke Firebase.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-2xl bg-slate-100 text-slate-500" id="icon-pump"><i data-lucide="waves"></i></div>
+              <div>
+                <h3 class="text-sm font-bold">Pompa Air Kolam</h3>
+                <p class="text-[10px] text-slate-500">Sirkulasi & Aerasi Oksigen</p>
+              </div>
+            </div>
+            <button id="btn-pump" onclick="toggleControl('waterPump')" class="w-12 h-6 flex items-center rounded-full p-1 bg-slate-200 transition-colors duration-300">
+              <div id="dot-pump" class="bg-white w-4.5 h-4.5 rounded-full shadow-md transform translate-x-0 transition-transform duration-300"></div>
+            </button>
+          </div>
+
+          <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="p-3 rounded-2xl bg-slate-100 text-slate-500" id="icon-uv"><i data-lucide="lightbulb"></i></div>
+              <div>
+                <h3 class="text-sm font-bold">Lampu UV LED</h3>
+                <p class="text-[10px] text-slate-500">Fotosintesis & Filter Alga</p>
+              </div>
+            </div>
+            <button id="btn-uv" onclick="toggleControl('uvLight')" class="w-12 h-6 flex items-center rounded-full p-1 bg-slate-200 transition-colors duration-300">
+              <div id="dot-uv" class="bg-white w-4.5 h-4.5 rounded-full shadow-md transform translate-x-0 transition-transform duration-300"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    // Inisialisasi Firebase sesuai dengan konfigurasi bawaan aplikasi
+    const firebaseConfig = {
+      apiKey: "AIzaSyCLMe-B0pw964It2fxuR6_mPLdHuBJ9rEQ",
+      authDomain: "lihatkebunku-33c78.firebaseapp.com",
+      databaseURL: "https://lihatkebunku-33c78-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lihatkebunku-33c78",
+      storageBucket: "lihatkebunku-33c78.firebasestorage.app",
+      messagingSenderId: "524367908891",
+      appId: "1:524367908891:web:c672cdbd5e373a44b268be",
+      measurementId: "G-5S8ZF1D75D"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // State Global
+    let activeMachineCode = "";
+    let currentControls = { waterPump: false, uvLight: false };
+
+    // --- Inisialisasi Ikon ---
+    lucide.createIcons();
+
+    // --- Navigasi Sederhana ---
+    window.switchTab = (tabName) => {
+      document.getElementById('view-beranda').classList.add('hidden');
+      document.getElementById('view-kontrol').classList.add('hidden');
+      
+      document.getElementById(`view-${tabName}`).classList.remove('hidden');
+      
+      // Update styling menu
+      document.getElementById('nav-beranda').className = tabName === 'beranda' 
+        ? "w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold bg-emerald-600 text-white shadow-md"
+        : "w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-emerald-900 hover:bg-emerald-50";
+        
+      document.getElementById('nav-kontrol').className = tabName === 'kontrol' 
+        ? "w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold bg-emerald-600 text-white shadow-md"
+        : "w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-emerald-900 hover:bg-emerald-50";
+    };
+
+    window.logout = () => {
+      activeMachineCode = "";
+      document.getElementById('app-view').classList.add('hidden');
+      document.getElementById('login-view').classList.remove('hidden');
+    };
+
+    // --- Alur 1: Logic Login ---
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      const codeInput = document.getElementById('input-machine-code').value.trim().toUpperCase();
+      const errorEl = document.getElementById('login-error');
+      
+      if(!codeInput) {
+        errorEl.innerText = "Kode Mesin tidak boleh kosong.";
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      // Validasi ke Firebase apakah node mesin ini ada (menggantikan mock login)
+      try {
+        const machineRef = ref(db, `machines/${codeInput}`);
+        const snapshot = await get(machineRef);
+        
+        if (snapshot.exists() || codeInput === "LKB-779-AQUAPONIC") {
+          // Jika data belum ada untuk demo, kita inisiasi nilai dasar
+          if (!snapshot.exists()) {
+             await set(ref(db, `machines/${codeInput}/metrics`), { waterTemp: 27.0, phLevel: 7.0, waterLevel: 80, humidity: 60 });
+             await set(ref(db, `machines/${codeInput}/controls`), { waterPump: false, uvLight: false });
+          }
+
+          // Sukses Login
+          activeMachineCode = codeInput;
+          document.getElementById('display-machine-id').innerText = activeMachineCode;
+          document.getElementById('login-view').classList.add('hidden');
+          document.getElementById('app-view').classList.remove('hidden');
+          errorEl.classList.add('hidden');
+
+          // Mulai Listeners
+          startFirebaseListeners();
+        } else {
+          errorEl.innerText = "Mesin tidak ditemukan di database.";
+          errorEl.classList.remove('hidden');
+        }
+      } catch (error) {
+        errorEl.innerText = "Error mengambil data: " + error.message;
+        errorEl.classList.remove('hidden');
+      }
+    });
+
+    // --- Alur 2: Sinkronisasi Monitoring & Kontrol (Real-time Firebase) ---
+    function startFirebaseListeners() {
+      const metricsRef = ref(db, `machines/${activeMachineCode}/metrics`);
+      const controlsRef = ref(db, `machines/${activeMachineCode}/controls`);
+
+      // Listener Monitoring Beranda
+      onValue(metricsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          document.getElementById('val-temp').innerText = data.waterTemp || 0;
+          document.getElementById('val-ph').innerText = data.phLevel || 0;
+          document.getElementById('val-level').innerText = data.waterLevel || 0;
+          document.getElementById('val-hum').innerText = data.humidity || 0;
+        }
+      });
+
+      // Listener Status Kontrol UI
+      onValue(controlsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+          currentControls = data;
+          updateControlUI('waterPump', data.waterPump);
+          updateControlUI('uvLight', data.uvLight);
+        }
+      });
+    }
+
+    // --- Alur 3: Kirim Data Kontrol ke Firebase ---
+    window.toggleControl = (device) => {
+      // Balik status saat ini
+      const newState = !currentControls[device];
+      
+      // Update segera di UI agar responsif
+      updateControlUI(device, newState);
+      currentControls[device] = newState;
+
+      // Tulis perubahan ke Firebase
+      const deviceRef = ref(db, `machines/${activeMachineCode}/controls/${device}`);
+      set(deviceRef, newState).catch((error) => {
+        console.error("Gagal mengirim perintah:", error);
+        // Revert jika gagal
+        updateControlUI(device, !newState);
+        currentControls[device] = !newState;
+      });
+    };
+
+    // Fungsi helper untuk merubah Tampilan Tombol Switch (IOS style + Tailwind)
+    function updateControlUI(device, isActive) {
+      const btnId = device === 'waterPump' ? 'btn-pump' : 'btn-uv';
+      const dotId = device === 'waterPump' ? 'dot-pump' : 'dot-uv';
+      const iconId = device === 'waterPump' ? 'icon-pump' : 'icon-uv';
+
+      const btnEl = document.getElementById(btnId);
+      const dotEl = document.getElementById(dotId);
+      const iconEl = document.getElementById(iconId);
+
+      if (isActive) {
+        btnEl.classList.replace('bg-slate-200', 'bg-emerald-600');
+        dotEl.classList.replace('translate-x-0', 'translate-x-6');
+        
+        if(device === 'waterPump') iconEl.className = "p-3 rounded-2xl bg-emerald-600 text-white animate-bounce";
+        if(device === 'uvLight') iconEl.className = "p-3 rounded-2xl bg-amber-500 text-white shadow-lg shadow-amber-200";
+      } else {
+        btnEl.classList.replace('bg-emerald-600', 'bg-slate-200');
+        dotEl.classList.replace('translate-x-6', 'translate-x-0');
+        iconEl.className = "p-3 rounded-2xl bg-slate-100 text-slate-500";
+      }
+    }
+  </script>
+</body>
+</html>
