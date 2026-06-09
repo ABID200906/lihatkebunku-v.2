@@ -24,13 +24,13 @@
     }
   </script>
 </head>
-<body class="bg-slate-50 selection:bg-emerald-200 select-none text-slate-800 font-sans antialiased min-h-screen">
+<body class="bg-slate-50 selection:bg-emerald-200 select-none text-slate-800 font-sans antialiased min-h-screen flex flex-col md:flex-row">
 
   <!-- ========================================== -->
   <!-- 1. HALAMAN LOGIN -->
   <!-- ========================================== -->
-  <div id="login-view" class="flex min-h-screen flex-col items-center justify-center bg-emerald-50/50 p-4">
-    <div class="w-full max-w-md bg-white p-8 rounded-3xl border border-emerald-100/80 shadow-xl shadow-emerald-900/5 hover:shadow-2xl hover:shadow-emerald-900/10 transition-all duration-300">
+  <div id="login-view" class="flex min-h-screen w-full flex-col items-center justify-center bg-emerald-50/50 p-4 fixed inset-0 z-50">
+    <div class="w-full max-w-md bg-white p-8 rounded-3xl border border-emerald-100/80 shadow-xl shadow-emerald-900/5 hover:shadow-2xl transition-all duration-300">
       
       <!-- Logo Section -->
       <div class="flex flex-col items-center justify-center text-center pb-6">
@@ -48,7 +48,7 @@
 
         <div>
           <label class="block text-xs font-bold text-emerald-900 uppercase tracking-wider mb-2">Kode Mesin (IoT ID)</label>
-          <input id="input-machine-code" type="text" placeholder="Contoh: LKB-779-AQUAPONIC" class="w-full bg-emerald-50/50 border border-emerald-100 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-emerald-950 font-medium placeholder:text-emerald-300 transition-all">
+          <input id="input-machine-code" type="text" placeholder="Contoh: lihatkebunku_01" class="w-full bg-emerald-50/50 border border-emerald-100 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-emerald-950 font-medium placeholder:text-emerald-300 transition-all">
         </div>
 
         <div>
@@ -76,10 +76,10 @@
   <!-- ========================================== -->
   <!-- 2. APLIKASI UTAMA (DASHBOARD) -->
   <!-- ========================================== -->
-  <div id="app-view" class="hidden flex min-h-screen bg-slate-50">
+  <div id="app-view" class="hidden flex min-h-screen w-full">
     
     <!-- Sidebar Desktop -->
-    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-emerald-100 min-h-screen p-6 shrink-0 justify-between">
+    <aside class="hidden md:flex flex-col w-64 bg-white border-r border-emerald-100 min-h-screen p-6 shrink-0 justify-between sticky top-0 h-screen">
       <div class="space-y-8">
         <!-- Logo -->
         <div class="flex items-center gap-3">
@@ -91,18 +91,26 @@
 
         <!-- Navigation Items -->
         <nav class="space-y-2">
-          <button onclick="switchTab('beranda')" id="nav-beranda" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/15">
-            <div class="flex items-center gap-3">
-              <i data-lucide="home" class="h-4.5 w-4.5"></i>
-              <span>Beranda</span>
-            </div>
+          <button onclick="switchTab('beranda')" id="nav-beranda" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/15 nav-btn">
+            <div class="flex items-center gap-3"><i data-lucide="home" class="h-4.5 w-4.5"></i><span>Beranda</span></div>
+          </button>
+          
+          <button onclick="switchTab('kontrol')" id="nav-kontrol" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn">
+            <div class="flex items-center gap-3"><i data-lucide="sliders" class="h-4.5 w-4.5"></i><span>Kontrol IoT</span></div>
           </button>
 
-          <button onclick="switchTab('kontrol')" id="nav-kontrol" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50">
-            <div class="flex items-center gap-3">
-              <i data-lucide="sliders" class="h-4.5 w-4.5"></i>
-              <span>Kontrol IoT</span>
-            </div>
+          <button onclick="switchTab('ai')" id="nav-ai" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn relative">
+            <div class="flex items-center gap-3"><i data-lucide="sparkles" class="h-4.5 w-4.5"></i><span>AI Assistant</span></div>
+            <span class="bg-emerald-500 text-white text-[9px] px-1.5 py-0.5 rounded-full uppercase scale-90">LIVE</span>
+          </button>
+
+          <button onclick="switchTab('notifikasi')" id="nav-notifikasi" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn">
+            <div class="flex items-center gap-3"><i data-lucide="bell" class="h-4.5 w-4.5"></i><span>Notifikasi</span></div>
+            <span id="desk-notif-badge" class="hidden bg-red-500 text-white font-mono text-[9px] px-2 py-0.5 rounded-full">0</span>
+          </button>
+
+          <button onclick="switchTab('profile')" id="nav-profile" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn">
+            <div class="flex items-center gap-3"><i data-lucide="user" class="h-4.5 w-4.5"></i><span>Profile</span></div>
           </button>
         </nav>
       </div>
@@ -113,28 +121,29 @@
           <span class="text-[9px] uppercase tracking-wider text-emerald-600 font-bold flex items-center gap-1">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Mesin Aktif
           </span>
-          <span id="display-machine-id" class="text-xs font-black text-emerald-900 block font-mono mt-1 truncate">
-            LKB-XXX
-          </span>
+          <span id="display-machine-id" class="text-xs font-black text-emerald-900 block font-mono mt-1 truncate">LKB-XXX</span>
         </div>
-
         <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-red-600 hover:bg-red-50 transition-all cursor-pointer">
-          <i data-lucide="log-out" class="h-4 w-4"></i>
-          <span>Putuskan Mesin</span>
+          <i data-lucide="log-out" class="h-4 w-4"></i><span>Putuskan Mesin</span>
         </button>
       </div>
     </aside>
 
-    <!-- Konten Utama -->
-    <div class="flex-grow flex flex-col min-h-screen">
+    <!-- Konten Utama Container -->
+    <div class="flex-grow flex flex-col min-h-screen relative overflow-x-hidden">
       
       <!-- Mobile Sticky Header -->
       <header class="md:hidden flex items-center justify-between bg-white border-b border-emerald-100 px-4 py-3 sticky top-0 z-40">
         <div class="flex items-center gap-2">
-          <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white">
-            <i data-lucide="leaf" class="w-5 h-5"></i>
-          </div>
+          <div class="w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white"><i data-lucide="leaf" class="w-5 h-5"></i></div>
           <span class="text-lg font-black text-emerald-900">LihatKebunku</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="switchTab('notifikasi')" class="relative p-2 rounded-xl bg-red-50 text-red-600">
+            <i data-lucide="bell" class="h-4 w-4"></i>
+            <span id="mob-top-notif-badge" class="hidden absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+          </button>
+          <button onclick="switchTab('profile')" class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">A</button>
         </div>
       </header>
 
@@ -143,32 +152,23 @@
         <!-- ========================================== -->
         <!-- VIEW: BERANDA (MONITORING) -->
         <!-- ========================================== -->
-        <div id="view-beranda" class="space-y-6 block">
-          
-          <!-- Banner Desktop -->
+        <div id="view-beranda" class="space-y-6 block view-section">
           <div class="hidden md:block bg-gradient-to-br from-emerald-900 to-emerald-800 text-white p-6 md:p-8 rounded-3xl shadow-lg relative overflow-hidden">
             <div class="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 rounded-full bg-emerald-700/20 blur-2xl"></div>
             <div class="absolute -left-12 -bottom-12 w-48 h-48 rounded-full bg-emerald-900/40 blur-2xl"></div>
-            
             <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <span class="bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/30">
-                  Sistem Aktif & Terhubung Firebase
-                </span>
+                <span class="bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/30">Sistem Aktif & Terhubung Firebase</span>
                 <h1 class="text-2xl md:text-3xl font-black mt-2 tracking-tight">Halo, Pekebun Lestari!</h1>
-                <p class="text-emerald-100 text-sm mt-1 max-w-xl">
-                  Kebun aquaponics pintar Anda berjalan optimal. Data disinkronisasi secara real-time.
-                </p>
+                <p class="text-emerald-100 text-sm mt-1 max-w-xl">Kebun aquaponics pintar Anda berjalan optimal. Data disinkronisasi secara real-time.</p>
               </div>
               <div class="flex gap-3 shrink-0">
-                <button onclick="switchTab('kontrol')" class="bg-white text-emerald-900 hover:bg-emerald-50 active:scale-95 transition-all text-xs font-bold px-4 py-2.5 rounded-full cursor-pointer">
-                  Ubah Pompa & Gizi
-                </button>
+                <button onclick="switchTab('kontrol')" class="bg-white text-emerald-900 hover:bg-emerald-50 active:scale-95 transition-all text-xs font-bold px-4 py-2.5 rounded-full cursor-pointer">Ubah Pompa & Gizi</button>
+                <button onclick="switchTab('ai')" class="bg-emerald-500 text-white hover:bg-emerald-600 active:scale-95 transition-all text-xs font-bold px-4 py-2.5 rounded-full cursor-pointer">Tanya AI</button>
               </div>
             </div>
           </div>
 
-          <!-- Banner Mobile -->
           <div class="md:hidden flex items-center justify-between bg-white border border-emerald-100 p-4 rounded-2xl shadow-sm">
             <div>
               <span class="text-[10px] text-emerald-600 font-extrabold uppercase tracking-widest block">LihatKebunku IoT</span>
@@ -176,7 +176,6 @@
             </div>
           </div>
 
-          <!-- Indikator Stabil -->
           <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex items-start gap-3">
             <i data-lucide="check-circle" class="text-emerald-600 h-5 w-5 shrink-0 mt-0.5"></i>
             <div>
@@ -185,23 +184,17 @@
             </div>
           </div>
 
-          <!-- Grid Metrik Utama -->
           <div>
             <h2 class="text-base font-bold text-emerald-950 mb-4 px-1 flex items-center justify-between">
               <span>Metrik Real-time IoT</span>
-              <span class="text-xs text-emerald-500 font-medium flex items-center gap-1.5 animate-pulse">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Live Update
-              </span>
+              <span class="text-xs text-emerald-500 font-medium flex items-center gap-1.5 animate-pulse"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Live Update</span>
             </h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              
-              <!-- Card: Suhu -->
+              <!-- Suhu -->
               <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
-                  <div class="p-2.5 rounded-xl bg-orange-50 text-orange-600">
-                    <i data-lucide="thermometer" class="h-5 w-5"></i>
-                  </div>
+                  <div class="p-2.5 rounded-xl bg-orange-50 text-orange-600"><i data-lucide="thermometer" class="h-5 w-5"></i></div>
                   <span id="badge-temp" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ideal</span>
                 </div>
                 <div class="mt-4">
@@ -211,25 +204,15 @@
                     <span class="text-emerald-500 font-medium text-lg">°C</span>
                   </div>
                 </div>
-                <!-- Progress bar custom -->
                 <div class="mt-4 space-y-1">
-                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div id="bar-temp" class="h-full rounded-full bg-orange-500 transition-all duration-500" style="width: 50%"></div>
-                  </div>
-                  <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium">
-                    <span>Min: 20°C</span>
-                    <span>Ideal: 24-30°C</span>
-                    <span>Max: 40°C</span>
-                  </div>
+                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div id="bar-temp" class="h-full rounded-full bg-orange-500 transition-all duration-500" style="width: 50%"></div></div>
+                  <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Min: 20°C</span><span>Ideal: 24-30°C</span><span>Max: 40°C</span></div>
                 </div>
               </div>
-
-              <!-- Card: pH -->
+              <!-- pH -->
               <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
-                  <div class="p-2.5 rounded-xl bg-purple-50 text-purple-600">
-                    <i data-lucide="filter" class="h-5 w-5"></i>
-                  </div>
+                  <div class="p-2.5 rounded-xl bg-purple-50 text-purple-600"><i data-lucide="filter" class="h-5 w-5"></i></div>
                   <span id="badge-ph" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ideal</span>
                 </div>
                 <div class="mt-4">
@@ -239,26 +222,15 @@
                     <span class="text-emerald-500 font-medium text-lg">pH</span>
                   </div>
                 </div>
-                <!-- pH meter custom -->
                 <div class="mt-4 space-y-1">
-                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden relative">
-                    <div class="absolute left-[45%] right-[25%] top-0 bottom-0 bg-emerald-200/50"></div>
-                    <div id="bar-ph" class="h-full rounded-full bg-purple-500 transition-all duration-500" style="width: 50%"></div>
-                  </div>
-                  <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium">
-                    <span>Asam (0)</span>
-                    <span>Netral (7)</span>
-                    <span>Basa (14)</span>
-                  </div>
+                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden relative"><div class="absolute left-[45%] right-[25%] top-0 bottom-0 bg-emerald-200/50"></div><div id="bar-ph" class="h-full rounded-full bg-purple-500 transition-all duration-500" style="width: 50%"></div></div>
+                  <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Asam (0)</span><span>Netral (7)</span><span>Basa (14)</span></div>
                 </div>
               </div>
-
-              <!-- Card: Water Level -->
+              <!-- Level -->
               <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
-                  <div class="p-2.5 rounded-xl bg-blue-50 text-blue-600">
-                    <i data-lucide="waves" class="h-5 w-5"></i>
-                  </div>
+                  <div class="p-2.5 rounded-xl bg-blue-50 text-blue-600"><i data-lucide="waves" class="h-5 w-5"></i></div>
                   <span id="badge-level" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Cukup</span>
                 </div>
                 <div class="mt-4">
@@ -268,25 +240,15 @@
                     <span class="text-emerald-500 font-medium text-lg">%</span>
                   </div>
                 </div>
-                <!-- Progress bar -->
                 <div class="mt-4 space-y-1">
-                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div id="bar-level" class="h-full rounded-full bg-blue-500 transition-all duration-500" style="width: 80%"></div>
-                  </div>
-                  <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium">
-                    <span>Kritis</span>
-                    <span>Target: &gt;70%</span>
-                    <span>Penuh</span>
-                  </div>
+                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div id="bar-level" class="h-full rounded-full bg-blue-500 transition-all duration-500" style="width: 80%"></div></div>
+                  <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Kritis</span><span>Target: >70%</span><span>Penuh</span></div>
                 </div>
               </div>
-
-              <!-- Card: Humidity -->
+              <!-- Hum -->
               <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
-                  <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
-                    <i data-lucide="droplet" class="h-5 w-5"></i>
-                  </div>
+                  <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600"><i data-lucide="droplet" class="h-5 w-5"></i></div>
                   <span id="badge-hum" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ideal</span>
                 </div>
                 <div class="mt-4">
@@ -297,17 +259,10 @@
                   </div>
                 </div>
                 <div class="mt-4 space-y-1">
-                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                    <div id="bar-hum" class="h-full bg-emerald-600 rounded-full transition-all duration-500" style="width: 60%"></div>
-                  </div>
-                  <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium">
-                    <span>Rendah</span>
-                    <span>Ideal: 50-85%</span>
-                    <span>Tinggi</span>
-                  </div>
+                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div id="bar-hum" class="h-full bg-emerald-600 rounded-full transition-all duration-500" style="width: 60%"></div></div>
+                  <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Rendah</span><span>Ideal: 50-85%</span><span>Tinggi</span></div>
                 </div>
               </div>
-
             </div>
           </div>
         </div>
@@ -315,128 +270,189 @@
         <!-- ========================================== -->
         <!-- VIEW: KONTROL IOT -->
         <!-- ========================================== -->
-        <div id="view-kontrol" class="space-y-6 hidden">
+        <div id="view-kontrol" class="space-y-6 hidden view-section">
           <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm">
-            <h1 class="text-xl font-black text-emerald-950 flex items-center gap-2">
-              <i data-lucide="settings" class="text-emerald-600 h-5 w-5"></i> Panel Kontrol IoT
-            </h1>
-            <p class="text-xs text-emerald-700/80 mt-1">
-              Kendalikan seluruh aktuator mekanik dan listrik pada mesin secara real-time. Status perubahan langsung dikirimkan ke mikrokontroler melalui Firebase.
-            </p>
+            <h1 class="text-xl font-black text-emerald-950 flex items-center gap-2"><i data-lucide="settings" class="text-emerald-600 h-5 w-5"></i> Panel Kontrol IoT</h1>
+            <p class="text-xs text-emerald-700/80 mt-1">Kendalikan seluruh aktuator mekanik dan listrik pada mesin secara real-time. Status perubahan langsung dikirimkan ke mikrokontroler melalui Firebase.</p>
           </div>
-
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            
-            <!-- Pompa Air Card -->
+            <!-- Pompa -->
             <div id="card-pump" class="bg-white p-6 rounded-3xl border border-emerald-100/70 transition-all duration-300 shadow-sm flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2.5">
-                    <div id="icon-pump" class="p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400">
-                      <i data-lucide="waves" class="h-5 w-5"></i>
-                    </div>
-                    <div>
-                      <h3 class="text-sm font-bold text-emerald-950">Pompa Air Kolam</h3>
-                      <p class="text-[10px] text-slate-500">Sirkulasi & Aerasi Oksigen</p>
-                    </div>
+                    <div id="icon-pump" class="p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400"><i data-lucide="waves" class="h-5 w-5"></i></div>
+                    <div><h3 class="text-sm font-bold text-emerald-950">Pompa Air Kolam</h3><p class="text-[10px] text-slate-500">Sirkulasi & Aerasi Oksigen</p></div>
                   </div>
-
-                  <!-- IOS Switch -->
                   <button onclick="toggleControl('waterPump')" id="btn-pump" class="w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-slate-200">
                     <div id="dot-pump" class="bg-white w-4.5 h-4.5 rounded-full shadow-md transform transition-transform duration-300 translate-x-0" style="width: 18px; height: 18px;"></div>
                   </button>
                 </div>
-                
-                <!-- Status Deskripsi -->
                 <div id="desc-pump" class="mt-4 bg-slate-50 p-2.5 rounded-xl border border-slate-100/60 text-[10px] text-slate-500 flex items-center gap-2">
-                  <i data-lucide="info" class="h-3 w-3 shrink-0"></i>
-                  <span>Aliran air mati! Tanaman kangkung tidak menerima gizi dan ikan kekurangan oksigen.</span>
+                  <i data-lucide="info" class="h-3 w-3 shrink-0"></i><span>Aliran air mati! Tanaman kangkung tidak menerima gizi dan ikan kekurangan oksigen.</span>
                 </div>
               </div>
-              
-              <div class="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center text-[11px] text-slate-500">
-                <span>Daya Listrik:</span>
-                <span id="power-pump" class="font-mono font-bold text-emerald-800">0.0 Watt</span>
-              </div>
+              <div class="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center text-[11px] text-slate-500"><span>Daya Listrik:</span><span id="power-pump" class="font-mono font-bold text-emerald-800">0.0 Watt</span></div>
             </div>
-
-            <!-- Lampu UV Card -->
+            <!-- Lampu UV -->
             <div id="card-uv" class="bg-white p-6 rounded-3xl border border-emerald-100/70 transition-all duration-300 shadow-sm flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2.5">
-                    <div id="icon-uv" class="p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400">
-                      <i data-lucide="lightbulb" class="h-5 w-5"></i>
-                    </div>
-                    <div>
-                      <h3 class="text-sm font-bold text-emerald-950">Lampu UV LED</h3>
-                      <p class="text-[10px] text-slate-500">Fotosintesis & Filter Alga</p>
-                    </div>
+                    <div id="icon-uv" class="p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400"><i data-lucide="lightbulb" class="h-5 w-5"></i></div>
+                    <div><h3 class="text-sm font-bold text-emerald-950">Lampu UV LED</h3><p class="text-[10px] text-slate-500">Fotosintesis & Filter Alga</p></div>
                   </div>
-
-                  <!-- IOS Switch -->
                   <button onclick="toggleControl('uvLight')" id="btn-uv" class="w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-slate-200">
                     <div id="dot-uv" class="bg-white w-4.5 h-4.5 rounded-full shadow-md transform transition-transform duration-300 translate-x-0" style="width: 18px; height: 18px;"></div>
                   </button>
                 </div>
-
-                <!-- Status Deskripsi -->
                 <div id="desc-uv" class="mt-4 bg-slate-50 p-2.5 rounded-xl border border-slate-100/60 text-[10px] text-slate-500 flex items-center gap-2">
-                  <i data-lucide="info" class="h-3 w-3 shrink-0"></i>
-                  <span>Lampu padam. Tanaman mengandalkan cahaya ambien ruangan saja saat ini.</span>
+                  <i data-lucide="info" class="h-3 w-3 shrink-0"></i><span>Lampu padam. Tanaman mengandalkan cahaya ambien ruangan saja saat ini.</span>
                 </div>
               </div>
-              
-              <div class="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center text-[11px] text-slate-500">
-                <span>Daya Listrik:</span>
-                <span id="power-uv" class="font-mono font-bold text-emerald-800">0.0 Watt</span>
-              </div>
+              <div class="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center text-[11px] text-slate-500"><span>Daya Listrik:</span><span id="power-uv" class="font-mono font-bold text-emerald-800">0.0 Watt</span></div>
             </div>
-
-            <!-- Auto Feeder Card (Added for completeness matching React code) -->
+            <!-- Auto Feeder -->
             <div id="card-feeder" class="bg-white p-6 rounded-3xl border border-emerald-100/70 transition-all duration-300 shadow-sm flex flex-col justify-between lg:col-span-2">
               <div>
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-2.5">
-                    <div id="icon-feeder" class="p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400">
-                      <i data-lucide="coffee" class="h-5 w-5"></i>
-                    </div>
-                    <div>
-                      <h3 class="text-sm font-bold text-emerald-950">Auto Fish Feeder</h3>
-                      <p class="text-[10px] text-slate-500">Pemberi Pakan Ikan Otomatis</p>
-                    </div>
+                    <div id="icon-feeder" class="p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400"><i data-lucide="coffee" class="h-5 w-5"></i></div>
+                    <div><h3 class="text-sm font-bold text-emerald-950">Auto Fish Feeder</h3><p class="text-[10px] text-slate-500">Pemberi Pakan Ikan Otomatis</p></div>
                   </div>
-
                   <button onclick="toggleControl('autoFeeder')" id="btn-feeder" class="w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-slate-200">
                     <div id="dot-feeder" class="bg-white w-4.5 h-4.5 rounded-full shadow-md transform transition-transform duration-300 translate-x-0" style="width: 18px; height: 18px;"></div>
                   </button>
                 </div>
-                
                 <div id="desc-feeder" class="mt-4 bg-slate-50 p-2.5 rounded-xl border border-slate-100/60 text-[10px] text-slate-500 flex items-center gap-2">
-                  <i data-lucide="info" class="h-3 w-3 shrink-0"></i>
-                  <span>Pakan otomatis mati. Anda perlu memberi pakan ikan secara manual.</span>
+                  <i data-lucide="info" class="h-3 w-3 shrink-0"></i><span>Pakan otomatis mati. Anda perlu memberi pakan ikan secara manual.</span>
                 </div>
               </div>
-              <div class="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center text-[11px] text-slate-500">
-                <span>Status Koneksi:</span>
-                <span class="font-mono font-bold text-emerald-800">Siap</span>
+              <div class="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center text-[11px] text-slate-500"><span>Status Koneksi:</span><span class="font-mono font-bold text-emerald-800">Siap</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW: AI ASSISTANT -->
+        <!-- ========================================== -->
+        <div id="view-ai" class="hidden view-section flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)]">
+          <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm mb-4 shrink-0">
+            <h1 class="text-xl font-black text-emerald-950 flex items-center gap-2"><i data-lucide="sparkles" class="text-emerald-600 h-5 w-5"></i> LihatKebunku AI Companion</h1>
+            <p class="text-xs text-emerald-700/80 mt-1">Tanyakan permasalahan daun menguning, pH air, kebersihan filter, serta nutrisi pakan ikan Anda.</p>
+          </div>
+          
+          <div id="chat-container" class="flex-grow bg-white border border-emerald-100 rounded-3xl p-4 overflow-y-auto space-y-4 mb-4 shadow-inner flex flex-col">
+            <!-- Pesan akan dimuat di sini oleh JS -->
+          </div>
+
+          <form id="ai-form" class="bg-white p-2 rounded-3xl border border-emerald-100 shadow-sm flex items-center shrink-0">
+            <input type="text" id="ai-input" class="flex-grow px-4 py-3 outline-none text-sm font-medium text-emerald-900 placeholder:text-slate-400 bg-transparent" placeholder="Tanya AI tentang kondisi kebunmu...">
+            <button type="submit" class="p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl transition-all cursor-pointer shadow-md shadow-emerald-600/20">
+              <i data-lucide="send" class="h-5 w-5"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW: NOTIFIKASI -->
+        <!-- ========================================== -->
+        <div id="view-notifikasi" class="space-y-6 hidden view-section">
+          <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <h1 class="text-xl font-black text-emerald-950 flex items-center gap-2"><i data-lucide="bell" class="text-emerald-600 h-5 w-5"></i> Pusat Notifikasi</h1>
+              <p class="text-xs text-emerald-700/80 mt-1">Peringatan sensor dan log aktivitas mesin Anda.</p>
+            </div>
+            <div class="flex gap-2 w-full md:w-auto">
+              <button onclick="markAllNotifRead()" class="flex-1 md:flex-none text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-4 py-2.5 rounded-xl border border-emerald-200 transition-all cursor-pointer">Tandai Semua Dibaca</button>
+              <button onclick="clearNotif()" class="flex-1 md:flex-none text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 px-4 py-2.5 rounded-xl border border-red-200 transition-all cursor-pointer">Hapus Semua</button>
+            </div>
+          </div>
+
+          <!-- Developer Tools untuk Testing Simulasi Notifikasi -->
+          <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 border-dashed">
+            <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 block">Alat Simulasi Notifikasi</span>
+            <div class="flex flex-wrap gap-2">
+              <button onclick="addSimulatedNotif('warning')" class="text-xs font-bold bg-white text-amber-600 border border-amber-200 hover:bg-amber-50 px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"><i data-lucide="alert-triangle" class="h-3 w-3 inline mr-1"></i>Simulasi Error pH Drop</button>
+              <button onclick="addSimulatedNotif('success')" class="text-xs font-bold bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-50 px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"><i data-lucide="check-circle" class="h-3 w-3 inline mr-1"></i>Simulasi Pemulihan Sistem</button>
+            </div>
+          </div>
+
+          <div id="notif-list" class="space-y-3">
+             <!-- List Notifikasi dimuat oleh JS -->
+          </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VIEW: PROFILE -->
+        <!-- ========================================== -->
+        <div id="view-profile" class="space-y-6 hidden view-section">
+          <div class="bg-white p-6 md:p-8 rounded-3xl border border-emerald-100 shadow-sm">
+            <div class="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+              <div class="w-24 h-24 bg-emerald-600 text-white flex items-center justify-center rounded-3xl text-4xl font-bold shadow-lg shadow-emerald-600/20">
+                A
+              </div>
+              <div>
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Administrator</span>
+                <h2 class="text-2xl font-black text-emerald-950 mt-3" id="profile-email">lihatkebun@gmail.com</h2>
+                <p class="text-sm text-emerald-700/80 mt-1 flex items-center justify-center md:justify-start gap-1">
+                  <i data-lucide="shield-check" class="h-4 w-4 text-emerald-500"></i> Akun Terverifikasi
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm space-y-4">
+              <h3 class="text-sm font-bold text-emerald-900 border-b border-emerald-50 pb-3">Informasi Perangkat</h3>
+              <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                <span class="text-xs text-slate-500">ID Mesin IoT</span>
+                <span class="text-xs font-bold font-mono text-emerald-800" id="profile-machine-id">LKB-XXX</span>
+              </div>
+              <div class="flex justify-between items-center py-2 border-b border-slate-50">
+                <span class="text-xs text-slate-500">Status Koneksi</span>
+                <span class="text-[10px] font-bold text-white bg-emerald-500 px-2 py-0.5 rounded-full">Online / Sinkron</span>
+              </div>
+              <div class="flex justify-between items-center py-2">
+                <span class="text-xs text-slate-500">Lokasi Server Firebase</span>
+                <span class="text-xs font-semibold text-slate-700">asia-southeast1</span>
               </div>
             </div>
 
+            <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm space-y-4 flex flex-col justify-center items-center text-center">
+              <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-2">
+                <i data-lucide="power" class="h-6 w-6"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold text-slate-800">Sesi Aplikasi</h3>
+                <p class="text-xs text-slate-500 mt-1 mb-4">Putuskan koneksi mesin dari perangkat ini.</p>
+              </div>
+              <button onclick="logout()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs py-3 rounded-xl border border-red-200 transition-all cursor-pointer">
+                Keluar / Logout
+              </button>
+            </div>
           </div>
         </div>
 
       </main>
 
       <!-- Mobile Sticky Bottom Nav -->
-      <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-emerald-100 shadow-xl px-2 py-1 flex items-center justify-around z-40">
-        <button onclick="switchTab('beranda')" id="mob-nav-beranda" class="flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all cursor-pointer text-emerald-600 font-bold">
-          <i data-lucide="home" class="h-5 w-5"></i>
-          <span class="text-[10px] mt-0.5 font-medium leading-none">Beranda</span>
+      <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-emerald-100 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] px-2 flex items-center justify-between z-40 pb-safe">
+        <button onclick="switchTab('beranda')" id="mob-nav-beranda" class="flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-emerald-600 font-bold mob-nav-btn">
+          <i data-lucide="home" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">Beranda</span>
         </button>
-        <button onclick="switchTab('kontrol')" id="mob-nav-kontrol" class="flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all cursor-pointer text-slate-400">
-          <i data-lucide="sliders" class="h-5 w-5"></i>
-          <span class="text-[10px] mt-0.5 font-medium leading-none">Kontrol</span>
+        <button onclick="switchTab('kontrol')" id="mob-nav-kontrol" class="flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn">
+          <i data-lucide="sliders" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">Kontrol</span>
+        </button>
+        <button onclick="switchTab('ai')" id="mob-nav-ai" class="flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn">
+          <i data-lucide="sparkles" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">AI</span>
+        </button>
+        <button onclick="switchTab('notifikasi')" id="mob-nav-notifikasi" class="relative flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn">
+          <i data-lucide="bell" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">Notif</span>
+          <span id="mob-bot-notif-badge" class="hidden absolute top-2 right-4 w-2 h-2 bg-red-500 rounded-full"></span>
+        </button>
+        <button onclick="switchTab('profile')" id="mob-nav-profile" class="flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn">
+          <i data-lucide="user" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">Profile</span>
         </button>
       </nav>
 
@@ -446,10 +462,9 @@
   <!-- ========================================== -->
   <!-- 3. LOGIC & FIREBASE INTEGRATION -->
   <!-- ========================================== -->
-<script type="module">
-    // 1. Tambahkan import untuk Firebase Auth
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, get, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
     // Initialize Firebase
@@ -466,84 +481,226 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const auth = getAuth(app); // Inisialisasi Auth
+    const auth = getAuth(app);
 
     let activeMachineCode = "";
     let currentControls = { waterPump: false, uvLight: false, autoFeeder: false };
 
-    // Render Lucide Icons
+    // Render Icons
     lucide.createIcons();
 
-    // --- Tab Navigation Logic ---
-    window.switchTab = (tabName) => {
-      document.getElementById('view-beranda').classList.add('hidden');
-      document.getElementById('view-kontrol').classList.add('hidden');
-      document.getElementById(`view-${tabName}`).classList.remove('hidden');
-      
-      const desktopNavBeranda = document.getElementById('nav-beranda');
-      const desktopNavKontrol = document.getElementById('nav-kontrol');
-      
-      desktopNavBeranda.className = tabName === 'beranda' 
-        ? "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/15"
-        : "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50";
-        
-      desktopNavKontrol.className = tabName === 'kontrol' 
-        ? "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/15"
-        : "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50";
+    // =====================================
+    // STATE: NOTIFIKASI
+    // =====================================
+    let notifications = [
+      { id: Date.now(), title: "Sirkulasi Aliran Air Lancar", message: "Sistem mendeteksi operasional normal.", type: "success", read: false },
+      { id: Date.now()-1000, title: "Suhu Air Stabil", message: "Aerasi kolam berfungsi dengan baik.", type: "info", read: true }
+    ];
 
-      const mobNavBeranda = document.getElementById('mob-nav-beranda');
-      const mobNavKontrol = document.getElementById('mob-nav-kontrol');
+    function renderNotifications() {
+      const listEl = document.getElementById('notif-list');
+      listEl.innerHTML = '';
+      
+      let unreadCount = 0;
 
-      mobNavBeranda.className = tabName === 'beranda'
-        ? "flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all cursor-pointer text-emerald-600 font-bold"
-        : "flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all cursor-pointer text-slate-400";
+      if(notifications.length === 0) {
+        listEl.innerHTML = `<div class="text-center p-6 text-slate-400 text-xs font-medium border-2 border-dashed border-slate-200 rounded-2xl">Tidak ada notifikasi baru.</div>`;
+      }
+
+      notifications.forEach(n => {
+        if(!n.read) unreadCount++;
         
-      mobNavKontrol.className = tabName === 'kontrol'
-        ? "flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all cursor-pointer text-emerald-600 font-bold"
-        : "flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all cursor-pointer text-slate-400";
+        let iconClass, bgClass, borderClass, textClass;
+        if(n.type === 'warning') {
+            iconClass = "text-amber-600 bg-amber-100"; bgClass = n.read ? "bg-white" : "bg-amber-50/50"; borderClass = "border-amber-100"; textClass="text-amber-900";
+        } else if(n.type === 'success') {
+            iconClass = "text-emerald-600 bg-emerald-100"; bgClass = n.read ? "bg-white" : "bg-emerald-50/50"; borderClass = "border-emerald-100"; textClass="text-emerald-900";
+        } else {
+            iconClass = "text-blue-600 bg-blue-100"; bgClass = n.read ? "bg-white" : "bg-blue-50/50"; borderClass = "border-blue-100"; textClass="text-blue-900";
+        }
+
+        const notifHtml = `
+          <div onclick="markSingleNotifRead(${n.id})" class="cursor-pointer ${bgClass} p-4 rounded-2xl border ${borderClass} flex gap-4 items-start transition-all hover:shadow-sm relative overflow-hidden group">
+            ${!n.read ? `<div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>` : ''}
+            <div class="p-2 rounded-xl shrink-0 ${iconClass}">
+              <i data-lucide="${n.type === 'warning' ? 'alert-triangle' : n.type === 'success' ? 'check-circle' : 'info'}" class="h-5 w-5"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold ${textClass}">${n.title}</h3>
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">${n.message}</p>
+            </div>
+          </div>
+        `;
+        listEl.innerHTML += notifHtml;
+      });
+
+      // Update Badges di Navigasi Desktop & Mobile
+      const deskBadge = document.getElementById('desk-notif-badge');
+      const mobTopBadge = document.getElementById('mob-top-notif-badge');
+      const mobBotBadge = document.getElementById('mob-bot-notif-badge');
+
+      if(unreadCount > 0) {
+        deskBadge.innerText = unreadCount;
+        deskBadge.classList.remove('hidden');
+        mobTopBadge.classList.remove('hidden');
+        mobBotBadge.classList.remove('hidden');
+      } else {
+        deskBadge.classList.add('hidden');
+        mobTopBadge.classList.add('hidden');
+        mobBotBadge.classList.add('hidden');
+      }
+
+      lucide.createIcons();
+    }
+
+    window.markAllNotifRead = () => {
+      notifications = notifications.map(n => ({...n, read: true}));
+      renderNotifications();
+    };
+    
+    window.markSingleNotifRead = (id) => {
+      notifications = notifications.map(n => n.id === id ? {...n, read: true} : n);
+      renderNotifications();
+    };
+
+    window.clearNotif = () => {
+      notifications = [];
+      renderNotifications();
+    };
+
+    window.addSimulatedNotif = (type) => {
+      let title, message;
+      if (type === 'warning') {
+        title = "⚠️ Peringatan: Tingkat pH Air Drop";
+        message = "Sensor mendeteksi pH sirkulasi turun drastis ke angka 5.8 (Asam). Sistem menyarankan untuk menaburkan sedikit kapur dolomit organik.";
+        if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/metrics`), { phLevel: 5.8 });
+      } else {
+        title = "✅ Status: pH Air Kembali Optimal";
+        message = "Sensor mendeteksi pH air telah stabil kembali ke zona ideal 7.2. Filter biologis pengurai amonia berfungsi tanpa hambatan.";
+        if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/metrics`), { phLevel: 7.2 });
+      }
+      notifications.unshift({ id: Date.now(), title, message, type, read: false });
+      renderNotifications();
+    };
+
+    // =====================================
+    // STATE: AI CHAT
+    // =====================================
+    let chatHistory = [
+      { role: 'model', text: 'Halo! Selamat bertemu di **LihatKebunku AI Smart Companion**! 🌿🐟\n\nSaya telah memuat data sensor IoT terkini. Tanyakan permasalahan daun menguning, pH air, atau gizi tanaman Anda!' }
+    ];
+
+    function renderChat() {
+      const container = document.getElementById('chat-container');
+      container.innerHTML = '';
+
+      chatHistory.forEach(msg => {
+        const isUser = msg.role === 'user';
+        const alignClass = isUser ? 'self-end' : 'self-start';
+        const bgClass = isUser ? 'bg-emerald-600 text-white rounded-br-sm' : 'bg-slate-100 text-slate-800 rounded-bl-sm';
+        const iconHtml = !isUser ? `<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200 mt-1"><i data-lucide="sparkles" class="h-4 w-4"></i></div>` : '';
+        const formattedText = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
+
+        const msgHtml = `
+          <div class="flex gap-3 max-w-[85%] ${alignClass}">
+            ${iconHtml}
+            <div class="p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm ${bgClass}">
+              ${formattedText}
+            </div>
+          </div>
+        `;
+        container.innerHTML += msgHtml;
+      });
+
+      container.scrollTop = container.scrollHeight;
+      lucide.createIcons();
+    }
+
+    document.getElementById('ai-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('ai-input');
+      const text = input.value.trim();
+      if(!text) return;
+
+      chatHistory.push({ role: 'user', text });
+      input.value = '';
+      renderChat();
+
+      const container = document.getElementById('chat-container');
+      container.innerHTML += `<div id="ai-typing" class="self-start text-xs text-slate-400 font-medium italic p-2">AI sedang mengetik...</div>`;
+      container.scrollTop = container.scrollHeight;
+
+      setTimeout(() => {
+        document.getElementById('ai-typing')?.remove();
+        let reply = "Maaf, saya hanya AI simulasi untuk versi Front-End ini. Namun dari data yang saya baca, kebun Anda terlihat stabil!";
+        
+        if(text.toLowerCase().includes('ph') || text.toLowerCase().includes('asam')) {
+           reply = "**Analisis AI:** pH air Anda adalah isu utama. Disarankan untuk mematikan pakan ikan selama 24 jam dan menambah sedikit *cangkang telur* atau *kapur pertanian* ke sistem filter.";
+        } else if(text.toLowerCase().includes('suhu') || text.toLowerCase().includes('panas')) {
+           reply = "**Analisis AI:** Pompa sirkulasi air Anda sedang aktif. Ini bagus karena meningkatkan aerasi saat suhu naik.";
+        }
+
+        chatHistory.push({ role: 'model', text: reply });
+        renderChat();
+      }, 1500);
+    });
+
+    // =====================================
+    // NAVIGATION LOGIC
+    // =====================================
+    const tabs = ['beranda', 'kontrol', 'ai', 'notifikasi', 'profile'];
+    
+    window.switchTab = (targetTab) => {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`view-${targetTab}`).classList.remove('hidden');
+      
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if(btn.id === `nav-${targetTab}`) {
+           btn.className = "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/15 nav-btn relative";
+        } else {
+           btn.className = "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn relative";
+        }
+      });
+
+      document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+        if(btn.id === `mob-nav-${targetTab}`) {
+           btn.className = "relative flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-emerald-600 font-bold mob-nav-btn";
+        } else {
+           btn.className = "relative flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn";
+        }
+      });
+
+      if(targetTab === 'notifikasi') {
+        document.getElementById('mob-top-notif-badge').classList.add('hidden');
+      }
+
+      if(targetTab === 'notifikasi') renderNotifications();
+      if(targetTab === 'ai') renderChat();
     };
 
     window.logout = () => {
       activeMachineCode = "";
-      auth.signOut(); // Logout dari Firebase
+      auth.signOut();
       document.getElementById('app-view').classList.add('hidden');
       document.getElementById('login-view').classList.remove('hidden');
     };
 
-    // --- Login Logic ---
-const handleLogin = async (codeInput) => {
+    // =====================================
+    // LOGIN & FIREBASE DATABASE LOGIC
+    // =====================================
+    const handleLogin = async (codeInput) => {
       const errorEl = document.getElementById('login-error');
       const btnText = document.getElementById('login-btn-text');
-      
-      // Ambil nilai dari kolom password (pastikan Anda menambahkan id="input-machine-password" pada tag input password di HTML)
       const passwordInput = document.getElementById('input-machine-password').value;
       
-      if(!codeInput) {
-        errorEl.innerText = "Kode Mesin tidak boleh kosong.";
-        errorEl.classList.remove('hidden');
-        return;
-      }
-
-      // 1. Validasi Kode Mesin sesuai Rules
-      if(codeInput !== "lihatkebunku_01") {
-        errorEl.innerText = "Akses ditolak! Mesin tidak ditemukan.";
-        errorEl.classList.remove('hidden');
-        return;
-      }
-
-      // 2. Validasi Sandi Mesin yang diketik di layar
-      if(passwordInput !== "admin123") {
-        errorEl.innerText = "Sandi Mesin salah! (Petunjuk: admin123)";
-        errorEl.classList.remove('hidden');
-        return;
-      }
+      if(!codeInput) { errorEl.innerText = "Kode Mesin tidak boleh kosong."; errorEl.classList.remove('hidden'); return; }
+      if(codeInput !== "lihatkebunku_01") { errorEl.innerText = "Akses ditolak! Mesin tidak ditemukan."; errorEl.classList.remove('hidden'); return; }
+      if(passwordInput !== "admin123") { errorEl.innerText = "Sandi Mesin salah! (Petunjuk: admin123)"; errorEl.classList.remove('hidden'); return; }
 
       btnText.innerText = "Mengecek Autentikasi...";
 
       try {
-        // 3. Login Firebase Auth di belakang layar menggunakan kredensial baru
         await signInWithEmailAndPassword(auth, "lihatkebun@gmail.com", "aquaponik");
-
         btnText.innerText = "Menghubungkan ke Mesin...";
 
         const machineRef = ref(db, `machines/${codeInput}`);
@@ -555,12 +712,19 @@ const handleLogin = async (codeInput) => {
         }
 
         activeMachineCode = codeInput;
+        
         document.getElementById('display-machine-id').innerText = activeMachineCode;
+        document.getElementById('profile-machine-id').innerText = activeMachineCode;
+
         document.getElementById('login-view').classList.add('hidden');
         document.getElementById('app-view').classList.remove('hidden');
         errorEl.classList.add('hidden');
 
+        renderNotifications();
+        renderChat();
+        switchTab('beranda');
         startFirebaseListeners();
+
       } catch (error) {
         console.error(error);
         if (error.code === 'auth/invalid-credential') {
@@ -575,18 +739,19 @@ const handleLogin = async (codeInput) => {
     };
 
     document.getElementById('btn-login').addEventListener('click', () => {
-      // Perhatikan: Menghapus toUpperCase() karena rules Anda mensyaratkan huruf kecil "lihatkebunku_01"
       const code = document.getElementById('input-machine-code').value.trim();
       handleLogin(code);
     });
 
     document.getElementById('btn-demo').addEventListener('click', () => {
-      // Mengubah kode demo agar sesuai dengan rules Anda
       document.getElementById('input-machine-code').value = "lihatkebunku_01";
+      document.getElementById('input-machine-password').value = "admin123";
       handleLogin("lihatkebunku_01");
     });
 
-    // --- Monitoring UI Updaters ---
+    // =====================================
+    // UI UPDATERS & FIREBASE LISTENERS
+    // =====================================
     function updateMetricsUI(data) {
       document.getElementById('val-temp').innerText = data.waterTemp || 0;
       document.getElementById('val-ph').innerText = data.phLevel || 0;
@@ -598,71 +763,56 @@ const handleLogin = async (codeInput) => {
       const isLevelSafe = data.waterLevel >= 70;
       const isHumiditySafe = data.humidity >= 50 && data.humidity <= 85;
 
-      const badgeTemp = document.getElementById('badge-temp');
-      badgeTemp.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isTempSafe ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`;
-      badgeTemp.innerText = isTempSafe ? 'Ideal' : 'Kurang Baik';
+      const setBadge = (id, safe) => {
+        const el = document.getElementById(id);
+        el.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${safe ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`;
+        el.innerText = safe ? 'Ideal' : 'Kurang Baik';
+      };
       
-      const badgePh = document.getElementById('badge-ph');
-      badgePh.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isPhSafe ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`;
-      badgePh.innerText = isPhSafe ? 'Ideal' : 'Kurang Baik';
+      setBadge('badge-temp', isTempSafe);
+      setBadge('badge-ph', isPhSafe);
+      setBadge('badge-hum', isHumiditySafe);
 
       const badgeLevel = document.getElementById('badge-level');
       badgeLevel.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isLevelSafe ? 'bg-emerald-50 text-emerald-700' : 'bg-yellow-50 text-yellow-700'}`;
       badgeLevel.innerText = isLevelSafe ? 'Cukup' : 'Rendah!';
 
-      const badgeHum = document.getElementById('badge-hum');
-      badgeHum.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isHumiditySafe ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`;
-      badgeHum.innerText = isHumiditySafe ? 'Ideal' : 'Kering';
-
       document.getElementById('bar-temp').style.width = `${Math.min(100, Math.max(10, ((data.waterTemp||0) / 40) * 100))}%`;
       document.getElementById('bar-temp').className = `h-full rounded-full transition-all duration-500 ${isTempSafe ? 'bg-orange-500' : 'bg-red-500'}`;
-
       document.getElementById('bar-ph').style.width = `${((data.phLevel||0) / 14) * 100}%`;
       document.getElementById('bar-ph').className = `h-full rounded-full transition-all duration-500 ${isPhSafe ? 'bg-purple-500' : 'bg-red-500'}`;
-
       document.getElementById('bar-level').style.width = `${data.waterLevel || 0}%`;
       document.getElementById('bar-level').className = `h-full rounded-full transition-all duration-500 ${isLevelSafe ? 'bg-blue-500' : 'bg-yellow-500 animate-pulse'}`;
-
       document.getElementById('bar-hum').style.width = `${data.humidity || 0}%`;
     }
 
-    // --- Realtime Firebase Listeners ---
     function startFirebaseListeners() {
-      const metricsRef = ref(db, `machines/${activeMachineCode}/metrics`);
-      const controlsRef = ref(db, `machines/${activeMachineCode}/controls`);
-
-      onValue(metricsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) updateMetricsUI(data);
+      onValue(ref(db, `machines/${activeMachineCode}/metrics`), (snapshot) => {
+        if (snapshot.val()) updateMetricsUI(snapshot.val());
       });
 
-      onValue(controlsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-          currentControls = data;
-          applyControlUI('waterPump', data.waterPump);
-          applyControlUI('uvLight', data.uvLight);
-          applyControlUI('autoFeeder', data.autoFeeder);
+      onValue(ref(db, `machines/${activeMachineCode}/controls`), (snapshot) => {
+        if (snapshot.val()) {
+          currentControls = snapshot.val();
+          applyControlUI('waterPump', currentControls.waterPump);
+          applyControlUI('uvLight', currentControls.uvLight);
+          applyControlUI('autoFeeder', currentControls.autoFeeder);
         }
       });
     }
 
-    // --- Kontrol Action ---
     window.toggleControl = (device) => {
       const newState = !currentControls[device];
-      
       applyControlUI(device, newState);
       currentControls[device] = newState;
 
-      const deviceRef = ref(db, `machines/${activeMachineCode}/controls/${device}`);
-      set(deviceRef, newState).catch((err) => {
+      set(ref(db, `machines/${activeMachineCode}/controls/${device}`), newState).catch((err) => {
         console.error("Gagal Firebase sync:", err);
         applyControlUI(device, !newState);
         currentControls[device] = !newState;
       });
     };
 
-    // --- Helper Kontrol UI Styling ---
     function applyControlUI(device, isActive) {
       let btnId, dotId, iconId, cardId, descId, powerId, themeColor, onIconClass, descOn, descOff, powerText;
 
