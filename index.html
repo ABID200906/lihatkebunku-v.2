@@ -53,7 +53,7 @@
 
         <div>
           <label class="block text-xs font-bold text-emerald-900 uppercase tracking-wider mb-2">Sandi Mesin</label>
-          <input type="password" placeholder="••••••••" class="w-full bg-emerald-50/50 border border-emerald-100 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-emerald-950 font-medium placeholder:text-emerald-300 transition-all">
+          <input id="input-machine-password" type="password" placeholder="admin123" class="w-full bg-emerald-50/50 border border-emerald-100 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-emerald-950 font-medium placeholder:text-emerald-300 transition-all">
         </div>
 
         <button id="btn-login" class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm py-3 px-4 rounded-2xl flex items-center justify-center transition-all duration-200 cursor-pointer shadow-md shadow-emerald-600/15">
@@ -511,9 +511,12 @@
     };
 
     // --- Login Logic ---
-    const handleLogin = async (codeInput) => {
+const handleLogin = async (codeInput) => {
       const errorEl = document.getElementById('login-error');
       const btnText = document.getElementById('login-btn-text');
+      
+      // Ambil nilai dari kolom password (pastikan Anda menambahkan id="input-machine-password" pada tag input password di HTML)
+      const passwordInput = document.getElementById('input-machine-password').value;
       
       if(!codeInput) {
         errorEl.innerText = "Kode Mesin tidak boleh kosong.";
@@ -521,9 +524,16 @@
         return;
       }
 
-      // Validasi ketat sesuai Rules Firebase Anda
+      // 1. Validasi Kode Mesin sesuai Rules
       if(codeInput !== "lihatkebunku_01") {
-        errorEl.innerText = "Akses ditolak! Sesuai rules, hanya mesin 'lihatkebunku_01' yang diizinkan.";
+        errorEl.innerText = "Akses ditolak! Mesin tidak ditemukan.";
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      // 2. Validasi Sandi Mesin yang diketik di layar
+      if(passwordInput !== "admin123") {
+        errorEl.innerText = "Sandi Mesin salah! (Petunjuk: admin123)";
         errorEl.classList.remove('hidden');
         return;
       }
@@ -531,17 +541,14 @@
       btnText.innerText = "Mengecek Autentikasi...";
 
       try {
-        // 2. LAKUKAN LOGIN AUTHENTICATION UNTUK MEMENUHI SYARAT "auth != null"
-        // Menggunakan kredensial bawaan dari versi React sebelumnya
-        await signInWithEmailAndPassword(auth, "lihatjeje@gmail.com", "aqupon123");
+        // 3. Login Firebase Auth di belakang layar menggunakan kredensial baru
+        await signInWithEmailAndPassword(auth, "lihatkebun@gmail.com", "aquaponik");
 
         btnText.innerText = "Menghubungkan ke Mesin...";
 
-        // 3. Setelah Auth berhasil, baru akses Database
         const machineRef = ref(db, `machines/${codeInput}`);
         const snapshot = await get(machineRef);
         
-        // Buat data seed awal jika belum ada
         if (!snapshot.exists()) {
            await set(ref(db, `machines/${codeInput}/metrics`), { waterTemp: 27.4, phLevel: 7.1, waterLevel: 84, humidity: 62 });
            await set(ref(db, `machines/${codeInput}/controls`), { waterPump: true, uvLight: false, autoFeeder: true });
@@ -557,7 +564,7 @@
       } catch (error) {
         console.error(error);
         if (error.code === 'auth/invalid-credential') {
-            errorEl.innerText = "Gagal Login: Email atau Password salah. Pastikan user lihatjeje@gmail.com sudah terdaftar di Firebase Authentication.";
+            errorEl.innerText = "Gagal terhubung ke server Firebase. Cek pendaftaran email di Authentication.";
         } else {
             errorEl.innerText = "Error Firebase: " + error.message;
         }
