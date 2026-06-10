@@ -753,10 +753,10 @@
     function updateMetricsUI(data) {
       // 1. Tangani Data yang Mungkin Kosong (Fallback)
       // LOGIKA YANG DIPERBARUI: Lebih kebal dan mencari berbagai kemungkinan penamaan variabel dari ESP32
-      const temp = data.suhu ?? data.temperature ?? data.waterTemp ?? '--';
+      const temp = data.suhuAir ?? data.temperature ?? data.waterTemp ?? '--';
       const ph = data.ph ?? data.phLevel ?? '--';
-      const lvl = data.level ?? data.ketinggian ?? data.waterLevel ?? '--';
-      const hum = data.kelembaban ?? data.humidity ?? '--';
+      const lvl = data.tds ?? data.ketinggian ?? data.waterLevel ?? '--';
+      const hum = data.kelembapan ?? data.humidity ?? '--';
 
       document.getElementById('val-temp').innerText = temp;
       document.getElementById('val-ph').innerText = ph;
