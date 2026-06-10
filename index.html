@@ -694,6 +694,12 @@
       const passwordInput = document.getElementById('input-machine-password').value;
       
       if(!codeInput) { errorEl.innerText = "Kode Mesin tidak boleh kosong."; errorEl.classList.remove('hidden'); return; }
+      
+      // PERUBAHAN: Kode mesin sekarang bisa apa saja asalkan terdaftar di Firebase 
+      // (Untuk demo kita tetap validasi lihatkebunku_01 jika ingin ketat, 
+      // tapi secara umum lebih baik biarkan Firebase yang memvalidasi).
+      // Disini kita akan coba izinkan apa saja, lalu Firebase akan merespon error jika data tidak ada
+      // Untuk keamanan saat demo, kita biarkan validasi statis ini dulu.
       if(codeInput !== "lihatkebunku_01") { errorEl.innerText = "Akses ditolak! Mesin tidak ditemukan."; errorEl.classList.remove('hidden'); return; }
       if(passwordInput !== "admin123") { errorEl.innerText = "Sandi Mesin salah! (Petunjuk: admin123)"; errorEl.classList.remove('hidden'); return; }
 
@@ -704,10 +710,9 @@
         btnText.innerText = "Menghubungkan ke Mesin...";
 
         // CATATAN PENTING UNTUK LOMBA: 
-        // Kode yang menggunakan fungsi `set()` sudah dihapus. 
-        // Dashboard ini murni HANYA MENDENGARKAN (Read Only) saat login,
-        // sehingga dijamin tidak akan merusak / menimpa data yang 
-        // dikirim dari hardware ESP32/IoT Anda ke Firebase.
+        // Saya MENGHAPUS FUNGSI MEMBUAT DATA (set) DI SINI.
+        // Halaman ini HANYA AKAN MENDENGAR DATA YANG MASUK agar 
+        // tidak menimpa / merusak database asli yang sedang berjalan.
 
         activeMachineCode = codeInput;
         
@@ -722,7 +727,7 @@
         renderChat();
         switchTab('beranda');
         
-        // Memulai fungsi pendengar Firebase
+        // Memulai fungsi pendengar Firebase SEKARANG
         startFirebaseListeners();
 
       } catch (error) {
@@ -753,21 +758,28 @@
     // UI UPDATERS & FIREBASE LISTENERS
     // =====================================
     function updateMetricsUI(data) {
-      // Menggunakan fallback '--' jika data belum ada atau ESP32 sedang offline
-      document.getElementById('val-temp').innerText = data.waterTemp !== undefined ? data.waterTemp : '--';
-      document.getElementById('val-ph').innerText = data.phLevel !== undefined ? data.phLevel : '--';
-      document.getElementById('val-level').innerText = data.waterLevel !== undefined ? data.waterLevel : '--';
-      document.getElementById('val-hum').innerText = data.humidity !== undefined ? data.humidity : '--';
+      // 1. Tangani Data yang Mungkin Kosong (Fallback)
+      // Jika data dari Firebase tidak ada atau undefined, kita tampilkan '--'
+      const temp = data.suhu !== undefined ? data.suhu : (data.waterTemp !== undefined ? data.waterTemp : '--');
+      const ph = data.ph !== undefined ? data.ph : (data.phLevel !== undefined ? data.phLevel : '--');
+      const lvl = data.level !== undefined ? data.level : (data.waterLevel !== undefined ? data.waterLevel : '--');
+      const hum = data.kelembaban !== undefined ? data.kelembaban : (data.humidity !== undefined ? data.humidity : '--');
 
-      const temp = data.waterTemp || 0;
-      const ph = data.phLevel || 0;
-      const lvl = data.waterLevel || 0;
-      const hum = data.humidity || 0;
+      document.getElementById('val-temp').innerText = temp;
+      document.getElementById('val-ph').innerText = ph;
+      document.getElementById('val-level').innerText = lvl;
+      document.getElementById('val-hum').innerText = hum;
 
-      const isTempSafe = temp >= 24 && temp <= 30;
-      const isPhSafe = ph >= 6.5 && ph <= 7.5;
-      const isLevelSafe = lvl >= 70;
-      const isHumiditySafe = hum >= 50 && hum <= 85;
+      // 2. Logic Status Aman/Bahaya (Pastikan variabel adalah angka)
+      const numTemp = parseFloat(temp) || 0;
+      const numPh = parseFloat(ph) || 0;
+      const numLvl = parseFloat(lvl) || 0;
+      const numHum = parseFloat(hum) || 0;
+
+      const isTempSafe = numTemp >= 24 && numTemp <= 30;
+      const isPhSafe = numPh >= 6.5 && numPh <= 7.5;
+      const isLevelSafe = numLvl >= 70;
+      const isHumiditySafe = numHum >= 50 && numHum <= 85;
 
       const setBadge = (id, safe) => {
         const el = document.getElementById(id);
@@ -783,35 +795,46 @@
       badgeLevel.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isLevelSafe ? 'bg-emerald-50 text-emerald-700' : 'bg-yellow-50 text-yellow-700'}`;
       badgeLevel.innerText = isLevelSafe ? 'Cukup' : 'Rendah!';
 
-      document.getElementById('bar-temp').style.width = `${Math.min(100, Math.max(10, (temp / 40) * 100))}%`;
+      // 3. Update Visual Progress Bar
+      document.getElementById('bar-temp').style.width = `${Math.min(100, Math.max(10, (numTemp / 40) * 100))}%`;
       document.getElementById('bar-temp').className = `h-full rounded-full transition-all duration-500 ${isTempSafe ? 'bg-orange-500' : 'bg-red-500'}`;
       
-      document.getElementById('bar-ph').style.width = `${(ph / 14) * 100}%`;
+      document.getElementById('bar-ph').style.width = `${(numPh / 14) * 100}%`;
       document.getElementById('bar-ph').className = `h-full rounded-full transition-all duration-500 ${isPhSafe ? 'bg-purple-500' : 'bg-red-500'}`;
       
-      document.getElementById('bar-level').style.width = `${lvl}%`;
+      document.getElementById('bar-level').style.width = `${numLvl}%`;
       document.getElementById('bar-level').className = `h-full rounded-full transition-all duration-500 ${isLevelSafe ? 'bg-blue-500' : 'bg-yellow-500 animate-pulse'}`;
       
-      document.getElementById('bar-hum').style.width = `${hum}%`;
+      document.getElementById('bar-hum').style.width = `${numHum}%`;
     }
 
     function startFirebaseListeners() {
+      console.log("Memulai listener untuk path: ", `machines/${activeMachineCode}/data`);
+      
       // 1. DATA SENSOR KEBUN (Dari Path: data)
       onValue(ref(db, `machines/${activeMachineCode}/data`), (snapshot) => {
         if (snapshot.exists()) {
+          console.log("Data Sensor Diterima:", snapshot.val());
           updateMetricsUI(snapshot.val());
+        } else {
+          console.log("Data Sensor KOSONG di Firebase pada path:", `machines/${activeMachineCode}/data`);
         }
       });
 
+      console.log("Memulai listener untuk path: ", `machines/${activeMachineCode}/control`);
+      
       // 2. DATA KONTROL AKTUATOR (Dari Path: control)
       onValue(ref(db, `machines/${activeMachineCode}/control`), (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
+          console.log("Data Kontrol Diterima:", data);
           currentControls = data;
           
           if(data.waterPump !== undefined) applyControlUI('waterPump', data.waterPump);
           if(data.uvLight !== undefined) applyControlUI('uvLight', data.uvLight);
           if(data.autoFeeder !== undefined) applyControlUI('autoFeeder', data.autoFeeder);
+        } else {
+           console.log("Data Kontrol KOSONG di Firebase pada path:", `machines/${activeMachineCode}/control`);
         }
       });
     }
