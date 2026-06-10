@@ -180,7 +180,7 @@
             <i data-lucide="check-circle" class="text-emerald-600 h-5 w-5 shrink-0 mt-0.5"></i>
             <div>
               <h3 class="text-sm font-bold text-emerald-900">Semua Indikator Terhubung</h3>
-              <p class="text-xs text-emerald-700 mt-0.5">Sistem sensor membaca data dari database "data" mikrokontroler Anda.</p>
+              <p class="text-xs text-emerald-700 mt-0.5">Sistem membaca dari database <strong>"data"</strong> mikrokontroler Anda.</p>
             </div>
           </div>
 
@@ -195,7 +195,7 @@
               <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
                   <div class="p-2.5 rounded-xl bg-orange-50 text-orange-600"><i data-lucide="thermometer" class="h-5 w-5"></i></div>
-                  <span id="badge-temp" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ideal</span>
+                  <span id="badge-temp" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">--</span>
                 </div>
                 <div class="mt-4">
                   <span class="text-sm text-emerald-800 font-medium block">Suhu Air</span>
@@ -213,7 +213,7 @@
               <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
                   <div class="p-2.5 rounded-xl bg-purple-50 text-purple-600"><i data-lucide="filter" class="h-5 w-5"></i></div>
-                  <span id="badge-ph" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ideal</span>
+                  <span id="badge-ph" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">--</span>
                 </div>
                 <div class="mt-4">
                   <span class="text-sm text-emerald-800 font-medium block">Kadar pH Air</span>
@@ -231,7 +231,7 @@
               <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
                   <div class="p-2.5 rounded-xl bg-blue-50 text-blue-600"><i data-lucide="waves" class="h-5 w-5"></i></div>
-                  <span id="badge-level" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Cukup</span>
+                  <span id="badge-level" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">--</span>
                 </div>
                 <div class="mt-4">
                   <span class="text-sm text-emerald-800 font-medium block">Ketinggian Air</span>
@@ -249,7 +249,7 @@
               <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
                 <div class="flex items-center justify-between">
                   <div class="p-2.5 rounded-xl bg-emerald-50 text-emerald-600"><i data-lucide="droplet" class="h-5 w-5"></i></div>
-                  <span id="badge-hum" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">Ideal</span>
+                  <span id="badge-hum" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">--</span>
                 </div>
                 <div class="mt-4">
                   <span class="text-sm text-emerald-800 font-medium block">Kelembaban</span>
@@ -695,11 +695,6 @@
       
       if(!codeInput) { errorEl.innerText = "Kode Mesin tidak boleh kosong."; errorEl.classList.remove('hidden'); return; }
       
-      // PERUBAHAN: Kode mesin sekarang bisa apa saja asalkan terdaftar di Firebase 
-      // (Untuk demo kita tetap validasi lihatkebunku_01 jika ingin ketat, 
-      // tapi secara umum lebih baik biarkan Firebase yang memvalidasi).
-      // Disini kita akan coba izinkan apa saja, lalu Firebase akan merespon error jika data tidak ada
-      // Untuk keamanan saat demo, kita biarkan validasi statis ini dulu.
       if(codeInput !== "lihatkebunku_01") { errorEl.innerText = "Akses ditolak! Mesin tidak ditemukan."; errorEl.classList.remove('hidden'); return; }
       if(passwordInput !== "admin123") { errorEl.innerText = "Sandi Mesin salah! (Petunjuk: admin123)"; errorEl.classList.remove('hidden'); return; }
 
@@ -709,10 +704,8 @@
         await signInWithEmailAndPassword(auth, "lihatkebun@gmail.com", "aquaponik");
         btnText.innerText = "Menghubungkan ke Mesin...";
 
-        // CATATAN PENTING UNTUK LOMBA: 
-        // Saya MENGHAPUS FUNGSI MEMBUAT DATA (set) DI SINI.
-        // Halaman ini HANYA AKAN MENDENGAR DATA YANG MASUK agar 
-        // tidak menimpa / merusak database asli yang sedang berjalan.
+        // FUNGSI MEMBUAT/MENIMPA DATA TELAH DIHAPUS. 
+        // Sekarang dashboard HANYA MENDENGARKAN (Read Only) data asli Anda.
 
         activeMachineCode = codeInput;
         
@@ -759,11 +752,11 @@
     // =====================================
     function updateMetricsUI(data) {
       // 1. Tangani Data yang Mungkin Kosong (Fallback)
-      // Jika data dari Firebase tidak ada atau undefined, kita tampilkan '--'
-      const temp = data.suhu !== undefined ? data.suhu : (data.waterTemp !== undefined ? data.waterTemp : '--');
-      const ph = data.ph !== undefined ? data.ph : (data.phLevel !== undefined ? data.phLevel : '--');
-      const lvl = data.level !== undefined ? data.level : (data.waterLevel !== undefined ? data.waterLevel : '--');
-      const hum = data.kelembaban !== undefined ? data.kelembaban : (data.humidity !== undefined ? data.humidity : '--');
+      // LOGIKA YANG DIPERBARUI: Lebih kebal dan mencari berbagai kemungkinan penamaan variabel dari ESP32
+      const temp = data.suhu ?? data.temperature ?? data.waterTemp ?? '--';
+      const ph = data.ph ?? data.phLevel ?? '--';
+      const lvl = data.level ?? data.ketinggian ?? data.waterLevel ?? '--';
+      const hum = data.kelembaban ?? data.humidity ?? '--';
 
       document.getElementById('val-temp').innerText = temp;
       document.getElementById('val-ph').innerText = ph;
@@ -781,19 +774,29 @@
       const isLevelSafe = numLvl >= 70;
       const isHumiditySafe = numHum >= 50 && numHum <= 85;
 
-      const setBadge = (id, safe) => {
+      const setBadge = (id, safe, val) => {
         const el = document.getElementById(id);
+        if (val === '--') {
+           el.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-500`;
+           el.innerText = 'No Data';
+           return;
+        }
         el.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${safe ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`;
         el.innerText = safe ? 'Ideal' : 'Kurang Baik';
       };
       
-      setBadge('badge-temp', isTempSafe);
-      setBadge('badge-ph', isPhSafe);
-      setBadge('badge-hum', isHumiditySafe);
+      setBadge('badge-temp', isTempSafe, temp);
+      setBadge('badge-ph', isPhSafe, ph);
+      setBadge('badge-hum', isHumiditySafe, hum);
 
       const badgeLevel = document.getElementById('badge-level');
-      badgeLevel.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isLevelSafe ? 'bg-emerald-50 text-emerald-700' : 'bg-yellow-50 text-yellow-700'}`;
-      badgeLevel.innerText = isLevelSafe ? 'Cukup' : 'Rendah!';
+      if (lvl === '--') {
+         badgeLevel.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-500`;
+         badgeLevel.innerText = 'No Data';
+      } else {
+         badgeLevel.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${isLevelSafe ? 'bg-emerald-50 text-emerald-700' : 'bg-yellow-50 text-yellow-700'}`;
+         badgeLevel.innerText = isLevelSafe ? 'Cukup' : 'Rendah!';
+      }
 
       // 3. Update Visual Progress Bar
       document.getElementById('bar-temp').style.width = `${Math.min(100, Math.max(10, (numTemp / 40) * 100))}%`;
@@ -809,32 +812,22 @@
     }
 
     function startFirebaseListeners() {
-      console.log("Memulai listener untuk path: ", `machines/${activeMachineCode}/data`);
-      
       // 1. DATA SENSOR KEBUN (Dari Path: data)
       onValue(ref(db, `machines/${activeMachineCode}/data`), (snapshot) => {
         if (snapshot.exists()) {
-          console.log("Data Sensor Diterima:", snapshot.val());
           updateMetricsUI(snapshot.val());
-        } else {
-          console.log("Data Sensor KOSONG di Firebase pada path:", `machines/${activeMachineCode}/data`);
         }
       });
 
-      console.log("Memulai listener untuk path: ", `machines/${activeMachineCode}/control`);
-      
       // 2. DATA KONTROL AKTUATOR (Dari Path: control)
       onValue(ref(db, `machines/${activeMachineCode}/control`), (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          console.log("Data Kontrol Diterima:", data);
           currentControls = data;
           
           if(data.waterPump !== undefined) applyControlUI('waterPump', data.waterPump);
           if(data.uvLight !== undefined) applyControlUI('uvLight', data.uvLight);
           if(data.autoFeeder !== undefined) applyControlUI('autoFeeder', data.autoFeeder);
-        } else {
-           console.log("Data Kontrol KOSONG di Firebase pada path:", `machines/${activeMachineCode}/control`);
         }
       });
     }
@@ -846,7 +839,7 @@
       applyControlUI(device, newState);
       currentControls[device] = newState;
 
-      // Update HANYA kunci perangkat spesifik di dalam tabel "control"
+      // Update HANYA kunci perangkat spesifik di dalam path "control"
       set(ref(db, `machines/${activeMachineCode}/control/${device}`), newState).catch((err) => {
         console.error("Gagal Firebase sync:", err);
         // Kembalikan tombol jika gagal
