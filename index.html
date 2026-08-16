@@ -77,10 +77,10 @@
             <div class="absolute -top-20 -right-20 w-40 h-40 bg-emerald-400/20 rounded-full blur-3xl"></div>
             <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-teal-400/20 rounded-full blur-3xl"></div>
 
-            <!-- Logo Section -->
+            <!-- Logo Section (Menggunakan logo.png dengan fallback) -->
             <div class="flex flex-col items-center justify-center text-center pb-8 relative z-10">
-                <div class="w-20 h-20 mb-5 rounded-[1.5rem] bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 animate-float">
-                    <i data-lucide="leaf" class="w-10 h-10 drop-shadow-md"></i>
+                <div class="w-20 h-20 mb-5 rounded-[1.5rem] bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 animate-float overflow-hidden p-2">
+                    <img src="logo.png" alt="Logo LihatKebunku" class="w-full h-full object-contain drop-shadow-md" onerror="this.onerror=null;this.src='https://placehold.co/80x80/10b981/ffffff?text=LK'">
                 </div>
                 <h1 class="text-3xl font-black text-slate-800 tracking-tight">LihatKebunku</h1>
                 <p class="mt-3 text-sm text-slate-500 max-w-[280px] font-medium leading-relaxed">
@@ -141,15 +141,14 @@
             <div class="space-y-8">
                 <!-- Logo -->
                 <div class="flex items-center gap-3 px-2">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
-                        <i data-lucide="leaf" class="w-6 h-6"></i>
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/20 overflow-hidden p-1.5">
+                        <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/40x40/10b981/ffffff?text=LK'">
                     </div>
                     <span class="text-xl font-black text-slate-800 tracking-tight">LihatKebunku</span>
                 </div>
 
                 <!-- Navigation Items -->
                 <nav class="space-y-1.5 mt-8">
-                    <!-- Nav items will be styled dynamically via JS -->
                     <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all cursor-pointer bg-emerald-50 text-emerald-700">
                         <div class="flex items-center gap-3"><i data-lucide="layout-dashboard" class="h-5 w-5"></i><span>Ringkasan</span></div>
                     </button>
@@ -195,8 +194,8 @@
             <!-- Mobile Sticky Header -->
             <header class="md:hidden glass-panel flex items-center justify-between px-5 py-4 sticky top-0 z-40 border-b border-slate-200/50 shadow-sm shadow-slate-200/20">
                 <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-sm shadow-emerald-500/20">
-                        <i data-lucide="leaf" class="w-4 h-4"></i>
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-sm shadow-emerald-500/20 overflow-hidden p-1">
+                        <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null;this.src='https://placehold.co/32x32/10b981/ffffff?text=LK'">
                     </div>
                     <span class="text-lg font-black text-slate-800 tracking-tight">LihatKebunku</span>
                 </div>
@@ -218,7 +217,6 @@
                     
                     <!-- Hero Banner -->
                     <div class="relative overflow-hidden bg-white p-6 md:p-8 rounded-[2rem] border border-slate-100 shadow-sm shadow-slate-200/50 group">
-                        <!-- Decorative gradient blobs -->
                         <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 transition-opacity group-hover:opacity-70"></div>
                         <div class="absolute -bottom-8 -left-8 w-48 h-48 bg-teal-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 transition-opacity group-hover:opacity-70"></div>
                         
@@ -292,7 +290,6 @@
                             </div>
                             <div class="mt-6 space-y-2">
                                 <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden relative shadow-inner">
-                                    <!-- Ideal Zone Indicator -->
                                     <div class="absolute left-[46%] w-[10%] h-full bg-purple-200/50 z-0"></div>
                                     <div id="bar-ph" class="h-full rounded-full bg-slate-300 transition-all duration-1000 ease-out relative z-10" style="width: 0%"></div>
                                 </div>
@@ -417,7 +414,6 @@
                                             <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Aerasi Kolam</p>
                                         </div>
                                     </div>
-                                    <!-- Custom Modern Toggle -->
                                     <button onclick="toggleControl('waterPump')" class="relative inline-flex items-center cursor-pointer group/toggle">
                                         <div id="btn-pump" class="w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1">
                                             <div id="dot-pump" class="bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-0"></div>
@@ -729,7 +725,6 @@
                 listEl.innerHTML += notifHtml;
             });
 
-            // Update Badges
             const deskBadge = document.getElementById('desk-notif-badge');
             const mobTopBadge = document.getElementById('mob-top-notif-badge');
             const mobBotBadge = document.getElementById('mob-bot-notif-badge');
@@ -755,11 +750,11 @@
             if (type === 'warning') {
                 title = "Anomali: pH Air Terlalu Asam";
                 message = "Sensor mendeteksi pH turun drastis ke 5.8. Sistem menyarankan penambahan buffer basa/kapur ke filter.";
-                if(activeMachineCode) update(ref(db, `data`), { ph: 5.8 });
+                if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 5.8 });
             } else {
                 title = "Kondisi pH Pulih";
                 message = "Nilai pH kembali stabil di zona ideal 7.2. Filter biologis berfungsi normal kembali.";
-                if(activeMachineCode) update(ref(db, `data`), { ph: 7.2 });
+                if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 7.2 });
             }
             notifications.unshift({ id: Date.now(), title, message, type, read: false });
             renderNotifications();
@@ -829,11 +824,9 @@
             });
             const targetEl = document.getElementById(`view-${targetTab}`);
             targetEl.classList.remove('hidden');
-            // Re-trigger animation
             void targetEl.offsetWidth; 
             targetEl.classList.add('animate-fade-in-up');
             
-            // Desktop Nav Styling
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 if(btn.id === `nav-${targetTab}`) {
                     btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-bold transition-all cursor-pointer bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-100 group";
@@ -843,11 +836,8 @@
                 }
             });
 
-            // Mobile Nav Styling
             document.querySelectorAll('.mob-nav-btn').forEach(btn => {
                 const bg = btn.querySelector('.nav-bg');
-                const text = btn.querySelector('span:not(.bg-rose-500)');
-                const icon = btn.querySelector('i');
                 if(btn.id === `mob-nav-${targetTab}`) {
                     btn.classList.add('text-emerald-600'); btn.classList.remove('text-slate-400', 'hover:text-slate-600');
                     if(bg) bg.classList.replace('opacity-0', 'opacity-100');
@@ -899,7 +889,6 @@
                     document.getElementById('login-view').classList.add('hidden');
                     const appView = document.getElementById('app-view');
                     appView.classList.remove('hidden');
-                    // slight delay to trigger fade in
                     setTimeout(() => appView.classList.replace('opacity-0', 'opacity-100'), 50);
                 }, 500);
                 
@@ -961,17 +950,6 @@
             setBadge('badge-suhuUdara', isSU);
             setBadge('badge-tds', isTDS, 'Jernih', 'Keruh');
 
-            // Bar Styling (Gradient + Glow)
-            const styleBar = (id, pct, colorSafe, colorUnsafe, isSafe) => {
-                const el = document.getElementById(id);
-                el.style.width = `${pct}%`;
-                const safeClass = `bg-gradient-to-r from-${colorSafe}-400 to-${colorSafe}-500 shadow-[0_0_10px_rgba(var(--tw-colors-${colorSafe}-500),0.5)]`;
-                const unsafeClass = `bg-gradient-to-r from-rose-400 to-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]`;
-                // Simple parsing for dynamic tw classes isn't perfect in arbitrary runtime, using hardcoded for glow
-                el.className = `h-full rounded-full transition-all duration-1000 ease-out relative z-10 ${isSafe ? safeClass : unsafeClass}`;
-            };
-
-            // Custom specific glow mappings to avoid raw interpolation issues
             document.getElementById('bar-dayaPanel').className = `h-full rounded-full transition-all duration-1000 ease-out ${isDP ? 'bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.6)]' : 'bg-gradient-to-r from-rose-400 to-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.6)]'}`;
             document.getElementById('bar-dayaPanel').style.width = `${Math.min(100, (nDP / 50) * 100)}%`;
 
@@ -992,7 +970,15 @@
         }
 
         function startFirebaseListeners() {
-            onValue(ref(db, `data`), (snapshot) => { if (snapshot.exists()) updateMetricsUI(snapshot.val()); });
+            // DIPERBAIKI: Mengarahkan listener langsung ke path node mesin sesuai struktur RTDB (`machines/${activeMachineCode}/data`)
+            onValue(ref(db, `machines/${activeMachineCode}/data`), (snapshot) => {
+                if (snapshot.exists()) {
+                    updateMetricsUI(snapshot.val());
+                } else {
+                    console.warn("Path data tidak ditemukan di Firebase untuk mesin:", activeMachineCode);
+                }
+            });
+
             onValue(ref(db, `machines/${activeMachineCode}/control`), (snapshot) => {
                 if (snapshot.exists()) {
                     const data = snapshot.val(); currentControls = data;
