@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LihatKebunku - IoT Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LihatKebunku - Smart Aquaponics Dashboard</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -11,63 +11,121 @@
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- Tailwind Config Customization -->
+    <!-- Tailwind Config Customization for UI/UX Enhancements -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: {
                         sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '.5' },
+                        }
                     }
                 }
             }
         }
     </script>
+    <style>
+        /* Custom Scrollbar for better UX */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Utility for animation staggering */
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        
+        /* Glass effect utility */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+    </style>
 </head>
-<body class="bg-slate-50 selection:bg-emerald-200 select-none text-slate-800 font-sans antialiased min-h-screen flex flex-col md:flex-row">
+<body class="bg-slate-50 selection:bg-emerald-200 text-slate-800 font-sans antialiased min-h-screen flex flex-col md:flex-row relative overflow-x-hidden">
+    <!-- Global Decorative Background -->
+    <div class="fixed inset-0 z-[-1] bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-100/40 via-slate-50 to-teal-50/30"></div>
 
     <!-- ========================================== -->
     <!-- 1. HALAMAN LOGIN -->
     <!-- ========================================== -->
-    <div id="login-view" class="flex min-h-screen w-full flex-col items-center justify-center bg-emerald-50/50 p-4 fixed inset-0 z-50">
-        <div class="w-full max-w-md bg-white p-8 rounded-3xl border border-emerald-100/80 shadow-xl shadow-emerald-900/5 hover:shadow-2xl transition-all duration-300">
+    <div id="login-view" class="flex min-h-screen w-full flex-col items-center justify-center p-4 fixed inset-0 z-50 bg-slate-900/20 backdrop-blur-sm">
+        <div class="w-full max-w-md bg-white/90 backdrop-blur-xl p-8 rounded-[2rem] border border-white/60 shadow-2xl shadow-emerald-900/10 hover:shadow-emerald-900/20 transition-all duration-500 animate-fade-in-up relative overflow-hidden">
             
+            <!-- Decorative Blobs in Login -->
+            <div class="absolute -top-20 -right-20 w-40 h-40 bg-emerald-400/20 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-teal-400/20 rounded-full blur-3xl"></div>
+
             <!-- Logo Section -->
-            <div class="flex flex-col items-center justify-center text-center pb-6">
-                <div class="w-24 h-24 mb-4 transition-transform hover:scale-105">
-                    <img src="logo.png" alt="Logo LihatKebunku" class="w-full h-full object-contain" onerror="this.onerror=null; this.innerHTML='<div class=\'w-20 h-20 bg-emerald-600 rounded-[2rem] flex items-center justify-center text-white font-bold text-3xl mb-4 shadow-lg shadow-emerald-600/20 rotate-3 transition-transform hover:rotate-6\'><i data-lucide=\'leaf\' class=\'w-10 h-10\'></i></div>';">
+            <div class="flex flex-col items-center justify-center text-center pb-8 relative z-10">
+                <div class="w-20 h-20 mb-5 rounded-[1.5rem] bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 animate-float">
+                    <i data-lucide="leaf" class="w-10 h-10 drop-shadow-md"></i>
                 </div>
-                <h1 class="text-2xl font-black text-emerald-900 tracking-tight">LihatKebunku</h1>
-                <p class="mt-4 text-sm text-emerald-700/80 max-w-[280px]">
-                    Masuk dan hubungkan sistem IoT kebun & kolam aquaponics Anda
+                <h1 class="text-3xl font-black text-slate-800 tracking-tight">LihatKebunku</h1>
+                <p class="mt-3 text-sm text-slate-500 max-w-[280px] font-medium leading-relaxed">
+                    Pantau dan kendalikan ekosistem aquaponics Anda dari mana saja.
                 </p>
             </div>
 
-            <div class="space-y-5">
-                <div id="login-error" class="hidden bg-red-50 text-red-600 text-xs p-3 rounded-2xl border border-red-100"></div>
-
-                <div>
-                    <label class="block text-xs font-bold text-emerald-900 uppercase tracking-wider mb-2">Kode Mesin (IoT ID)</label>
-                    <input id="input-machine-code" type="text" placeholder="Contoh: lihatkebunku_01" class="w-full bg-emerald-50/50 border border-emerald-100 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-emerald-950 font-medium placeholder:text-emerald-300 transition-all">
+            <div class="space-y-5 relative z-10">
+                <div id="login-error" class="hidden bg-red-50/80 backdrop-blur text-red-600 text-xs font-medium p-3.5 rounded-2xl border border-red-100 flex items-start gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 shrink-0 mt-0.5"></i>
+                    <span id="login-error-text"></span>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-emerald-900 uppercase tracking-wider mb-2">Sandi Mesin</label>
-                    <input id="input-machine-password" type="password" placeholder="admin123" class="w-full bg-emerald-50/50 border border-emerald-100 rounded-2xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-emerald-950 font-medium placeholder:text-emerald-300 transition-all">
+                <div class="space-y-4">
+                    <div class="relative group">
+                        <label class="absolute -top-2 left-3 bg-white px-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider z-10 transition-colors group-focus-within:text-emerald-600">ID Mesin (IoT)</label>
+                        <div class="relative flex items-center">
+                            <i data-lucide="cpu" class="absolute left-4 text-slate-400 w-5 h-5 group-focus-within:text-emerald-500 transition-colors"></i>
+                            <input id="input-machine-code" type="text" placeholder="Masukkan ID Mesin..." class="w-full bg-slate-50/50 border-2 border-slate-100 rounded-2xl pl-12 pr-4 py-3.5 text-sm focus:outline-none focus:border-emerald-500 focus:bg-white text-slate-800 font-semibold placeholder:text-slate-300 placeholder:font-normal transition-all shadow-inner">
+                        </div>
+                    </div>
+
+                    <div class="relative group">
+                        <label class="absolute -top-2 left-3 bg-white px-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider z-10 transition-colors group-focus-within:text-emerald-600">Kata Sandi</label>
+                        <div class="relative flex items-center">
+                            <i data-lucide="lock" class="absolute left-4 text-slate-400 w-5 h-5 group-focus-within:text-emerald-500 transition-colors"></i>
+                            <input id="input-machine-password" type="password" placeholder="••••••••" class="w-full bg-slate-50/50 border-2 border-slate-100 rounded-2xl pl-12 pr-4 py-3.5 text-sm focus:outline-none focus:border-emerald-500 focus:bg-white text-slate-800 font-semibold placeholder:text-slate-300 transition-all shadow-inner">
+                        </div>
+                    </div>
                 </div>
 
-                <button id="btn-login" class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-sm py-3 px-4 rounded-2xl flex items-center justify-center transition-all duration-200 cursor-pointer shadow-md shadow-emerald-600/15">
-                    <span id="login-btn-text">Hubungkan Mesin</span>
+                <button id="btn-login" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm py-4 px-4 rounded-2xl flex items-center justify-center transition-all duration-300 cursor-pointer shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 active:scale-[0.98]">
+                    <span id="login-btn-text">Hubungkan Sistem</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
                 </button>
 
-                <div class="relative flex py-4 items-center">
-                    <div class="flex-grow border-t border-emerald-100"></div>
-                    <span class="flex-shrink mx-4 text-xs text-emerald-400 font-semibold uppercase tracking-wider">Atau</span>
-                    <div class="flex-grow border-t border-emerald-100"></div>
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-slate-200"></div>
+                    <span class="flex-shrink mx-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">Atau Coba</span>
+                    <div class="flex-grow border-t border-slate-200"></div>
                 </div>
 
-                <button id="btn-demo" class="w-full bg-white hover:bg-emerald-50 text-emerald-700 font-bold text-xs py-3 rounded-2xl border-2 border-dashed border-emerald-200 hover:border-emerald-300 flex items-center justify-center transition-all duration-150 cursor-pointer">
-                    Gunakan Kode Demo & Hubungkan
+                <button id="btn-demo" class="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs py-3.5 rounded-2xl border-2 border-slate-200 hover:border-emerald-300 flex items-center justify-center transition-all duration-200 cursor-pointer group">
+                    <i data-lucide="play-circle" class="w-4 h-4 mr-2 text-slate-400 group-hover:text-emerald-500 transition-colors"></i>
+                    Gunakan Mode Demo
                 </button>
             </div>
         </div>
@@ -76,305 +134,365 @@
     <!-- ========================================== -->
     <!-- 2. APLIKASI UTAMA (DASHBOARD) -->
     <!-- ========================================== -->
-    <div id="app-view" class="hidden flex min-h-screen w-full">
+    <div id="app-view" class="hidden flex min-h-screen w-full opacity-0 transition-opacity duration-700">
         
         <!-- Sidebar Desktop -->
-        <aside class="hidden md:flex flex-col w-64 bg-white border-r border-emerald-100 min-h-screen p-6 shrink-0 justify-between sticky top-0 h-screen">
+        <aside class="hidden md:flex flex-col w-[260px] glass-panel border-r border-white/50 min-h-screen p-6 shrink-0 justify-between sticky top-0 h-screen shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-30">
             <div class="space-y-8">
                 <!-- Logo -->
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 flex items-center justify-center">
-                        <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-10 h-10 bg-emerald-600 rounded-xl flex items-center justify-center text-white\'><i data-lucide=\'leaf\' class=\'w-6 h-6\'></i></div>';">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-500/20">
+                        <i data-lucide="leaf" class="w-6 h-6"></i>
                     </div>
-                    <span class="text-xl font-black text-emerald-900 tracking-tight">LihatKebunku</span>
+                    <span class="text-xl font-black text-slate-800 tracking-tight">LihatKebunku</span>
                 </div>
 
                 <!-- Navigation Items -->
-                <nav class="space-y-2">
-                    <button onclick="switchTab('beranda')" id="nav-beranda" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/15 nav-btn">
-                        <div class="flex items-center gap-3"><i data-lucide="home" class="h-4.5 w-4.5"></i><span>Beranda</span></div>
+                <nav class="space-y-1.5 mt-8">
+                    <!-- Nav items will be styled dynamically via JS -->
+                    <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all cursor-pointer bg-emerald-50 text-emerald-700">
+                        <div class="flex items-center gap-3"><i data-lucide="layout-dashboard" class="h-5 w-5"></i><span>Ringkasan</span></div>
                     </button>
                     
-                    <button onclick="switchTab('kontrol')" id="nav-kontrol" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn">
-                        <div class="flex items-center gap-3"><i data-lucide="sliders" class="h-4.5 w-4.5"></i><span>Kontrol IoT</span></div>
+                    <button onclick="switchTab('kontrol')" id="nav-kontrol" class="nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all cursor-pointer text-slate-600 hover:bg-white hover:shadow-sm">
+                        <div class="flex items-center gap-3"><i data-lucide="sliders-horizontal" class="h-5 w-5"></i><span>Kendali Alat</span></div>
                     </button>
 
-                    <button onclick="switchTab('ai')" id="nav-ai" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn relative">
-                        <div class="flex items-center gap-3"><i data-lucide="sparkles" class="h-4.5 w-4.5"></i><span>AI Assistant</span></div>
-                        <span class="bg-emerald-500 text-white text-[9px] px-1.5 py-0.5 rounded-full uppercase scale-90">LIVE</span>
+                    <button onclick="switchTab('ai')" id="nav-ai" class="nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all cursor-pointer text-slate-600 hover:bg-white hover:shadow-sm group">
+                        <div class="flex items-center gap-3"><i data-lucide="sparkles" class="h-5 w-5 group-hover:text-amber-500 transition-colors"></i><span>AI Assistant</span></div>
+                        <span class="bg-gradient-to-r from-amber-400 to-orange-500 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-sm shadow-orange-500/20">PRO</span>
                     </button>
 
-                    <button onclick="switchTab('notifikasi')" id="nav-notifikasi" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn">
-                        <div class="flex items-center gap-3"><i data-lucide="bell" class="h-4.5 w-4.5"></i><span>Notifikasi</span></div>
-                        <span id="desk-notif-badge" class="hidden bg-red-500 text-white font-mono text-[9px] px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="switchTab('notifikasi')" id="nav-notifikasi" class="nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all cursor-pointer text-slate-600 hover:bg-white hover:shadow-sm">
+                        <div class="flex items-center gap-3"><i data-lucide="bell" class="h-5 w-5"></i><span>Notifikasi</span></div>
+                        <span id="desk-notif-badge" class="hidden bg-rose-500 text-white font-bold text-[10px] min-w-[20px] h-[20px] flex items-center justify-center rounded-full shadow-sm shadow-rose-500/20">0</span>
                     </button>
 
-                    <button onclick="switchTab('profile')" id="nav-profile" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn">
-                        <div class="flex items-center gap-3"><i data-lucide="user" class="h-4.5 w-4.5"></i><span>Profile</span></div>
+                    <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all cursor-pointer text-slate-600 hover:bg-white hover:shadow-sm">
+                        <div class="flex items-center gap-3"><i data-lucide="user-circle" class="h-5 w-5"></i><span>Akun</span></div>
                     </button>
                 </nav>
             </div>
 
             <!-- Footer Sidebar -->
             <div class="space-y-4">
-                <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                    <span class="text-[9px] uppercase tracking-wider text-emerald-600 font-bold flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span> Mesin Aktif
-                    </span>
-                    <span id="display-machine-id" class="text-xs font-black text-emerald-900 block font-mono mt-1 truncate">LKB-XXX</span>
+                <div class="p-4 bg-white/60 rounded-2xl border border-white shadow-sm flex items-center gap-3 backdrop-blur-md">
+                    <div class="relative flex h-3 w-3">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Sistem Aktif</p>
+                        <p id="display-machine-id" class="text-xs font-bold text-slate-800 font-mono truncate">LKB-XXX</p>
+                    </div>
                 </div>
-                <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-xs font-bold text-red-600 hover:bg-red-50 transition-all cursor-pointer">
-                    <i data-lucide="log-out" class="h-4 w-4"></i><span>Putuskan Mesin</span>
-                </button>
             </div>
         </aside>
 
         <!-- Konten Utama Container -->
-        <div class="flex-grow flex flex-col min-h-screen relative overflow-x-hidden">
+        <div class="flex-grow flex flex-col min-h-screen relative overflow-x-hidden w-full">
             
             <!-- Mobile Sticky Header -->
-            <header class="md:hidden flex items-center justify-between bg-white border-b border-emerald-100 px-4 py-3 sticky top-0 z-40">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 flex items-center justify-center">
-                        <img src="logo.png" alt="Logo" class="w-full h-full object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'w-8 h-8 bg-emerald-600 rounded-lg flex items-center justify-center text-white\'><i data-lucide=\'leaf\' class=\'w-5 h-5\'></i></div>';">
+            <header class="md:hidden glass-panel flex items-center justify-between px-5 py-4 sticky top-0 z-40 border-b border-slate-200/50 shadow-sm shadow-slate-200/20">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-sm shadow-emerald-500/20">
+                        <i data-lucide="leaf" class="w-4 h-4"></i>
                     </div>
-                    <span class="text-lg font-black text-emerald-900">LihatKebunku</span>
+                    <span class="text-lg font-black text-slate-800 tracking-tight">LihatKebunku</span>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="switchTab('notifikasi')" class="relative p-2 rounded-xl bg-red-50 text-red-600">
-                        <i data-lucide="bell" class="h-4 w-4"></i>
-                        <span id="mob-top-notif-badge" class="hidden absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                <div class="flex items-center gap-4">
+                    <button onclick="switchTab('notifikasi')" class="relative text-slate-500 hover:text-slate-800 transition-colors">
+                        <i data-lucide="bell" class="h-5 w-5"></i>
+                        <span id="mob-top-notif-badge" class="hidden absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full"></span>
                     </button>
-                    <button onclick="switchTab('profile')" class="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">A</button>
+                    <button onclick="switchTab('profile')" class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm border border-emerald-200">A</button>
                 </div>
             </header>
 
-            <main class="flex-grow p-4 md:p-8 max-w-7xl mx-auto w-full pb-24 md:pb-8 transition-all">
+            <main class="flex-grow p-4 md:p-8 max-w-[1400px] mx-auto w-full pb-28 md:pb-10 transition-all">
                 
                 <!-- ========================================== -->
                 <!-- VIEW: BERANDA (MONITORING) -->
                 <!-- ========================================== -->
-                <div id="view-beranda" class="space-y-6 block view-section">
-                    <div class="hidden md:block bg-gradient-to-br from-emerald-900 to-emerald-800 text-white p-6 md:p-8 rounded-3xl shadow-lg relative overflow-hidden">
-                        <div class="absolute right-0 top-0 translate-x-12 -translate-y-12 w-64 h-64 rounded-full bg-emerald-700/20 blur-2xl"></div>
-                        <div class="absolute -left-12 -bottom-12 w-48 h-48 rounded-full bg-emerald-900/40 blur-2xl"></div>
-                        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div id="view-beranda" class="space-y-6 view-section animate-fade-in-up">
+                    
+                    <!-- Hero Banner -->
+                    <div class="relative overflow-hidden bg-white p-6 md:p-8 rounded-[2rem] border border-slate-100 shadow-sm shadow-slate-200/50 group">
+                        <!-- Decorative gradient blobs -->
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 transition-opacity group-hover:opacity-70"></div>
+                        <div class="absolute -bottom-8 -left-8 w-48 h-48 bg-teal-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 transition-opacity group-hover:opacity-70"></div>
+                        
+                        <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
                             <div>
-                                <span class="bg-emerald-500/20 text-emerald-300 text-xs font-semibold px-3 py-1 rounded-full border border-emerald-500/30">Sistem Aktif & Terhubung Firebase</span>
-                                <h1 class="text-2xl md:text-3xl font-black mt-2 tracking-tight">Halo, Pekebun Lestari!</h1>
-                                <p class="text-emerald-100 text-sm mt-1 max-w-xl">Kebun aquaponics pintar Anda berjalan optimal. Data disinkronisasi secara real-time dari alat IoT.</p>
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-100 text-emerald-600"><i data-lucide="check" class="w-3 h-3"></i></span>
+                                    <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Sinkronisasi Real-time</span>
+                                </div>
+                                <h1 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">Kondisi Kebun Optimal 🌱</h1>
+                                <p class="text-slate-500 text-sm mt-2 max-w-xl leading-relaxed">Sistem cerdas sedang memantau suhu, nutrisi, dan aerasi secara otomatis. Semua metrik berada dalam batas aman.</p>
                             </div>
-                            <div class="flex gap-3 shrink-0">
-                                <button onclick="switchTab('kontrol')" class="bg-white text-emerald-900 hover:bg-emerald-50 active:scale-95 transition-all text-xs font-bold px-4 py-2.5 rounded-full cursor-pointer">Ubah Pompa & Gizi</button>
-                                <button onclick="switchTab('ai')" class="bg-emerald-500 text-white hover:bg-emerald-600 active:scale-95 transition-all text-xs font-bold px-4 py-2.5 rounded-full cursor-pointer">Tanya AI</button>
+                            <div class="flex gap-3 shrink-0 mt-2 md:mt-0">
+                                <button onclick="switchTab('kontrol')" class="bg-white border-2 border-slate-100 text-slate-700 hover:border-slate-200 hover:bg-slate-50 active:scale-95 transition-all text-sm font-bold px-5 py-3 rounded-xl shadow-sm cursor-pointer flex items-center gap-2">
+                                    <i data-lucide="sliders-horizontal" class="w-4 h-4 text-slate-400"></i> Kendali
+                                </button>
+                                <button onclick="switchTab('ai')" class="bg-slate-800 text-white hover:bg-slate-700 active:scale-95 transition-all text-sm font-bold px-5 py-3 rounded-xl shadow-md cursor-pointer flex items-center gap-2 group/btn">
+                                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-400 group-hover/btn:rotate-12 transition-transform"></i> Tanya AI
+                                </button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="md:hidden flex items-center justify-between bg-white border border-emerald-100 p-4 rounded-2xl shadow-sm">
-                        <div>
-                            <span class="text-[10px] text-emerald-600 font-extrabold uppercase tracking-widest block">LihatKebunku IoT</span>
-                            <h1 class="text-base font-black text-emerald-950">Halo, Pekebun! 👋</h1>
+                    <div class="flex items-center justify-between px-2 mt-8 mb-4">
+                        <h2 class="text-lg font-black text-slate-800 tracking-tight">Metrik Sensor IoT</h2>
+                        <div class="flex items-center gap-2 px-3 py-1.5 bg-emerald-50 rounded-full border border-emerald-100/50">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Live Data</span>
                         </div>
                     </div>
 
-                    <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl flex items-start gap-3">
-                        <i data-lucide="check-circle" class="text-emerald-600 h-5 w-5 shrink-0 mt-0.5"></i>
-                        <div>
-                            <h3 class="text-sm font-bold text-emerald-900">Semua Indikator Terhubung</h3>
-                            <p class="text-xs text-emerald-700 mt-0.5">Sistem membaca dari database <strong>"data"</strong> mikrokontroler Anda.</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+                        
+                        <!-- 1. Suhu Air -->
+                        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl hover:shadow-orange-900/5 transition-all duration-300 group relative overflow-hidden delay-100 animate-fade-in-up flex flex-col justify-between">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-400 to-orange-300 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="w-12 h-12 rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center shadow-inner border border-orange-100 group-hover:scale-110 transition-transform duration-500">
+                                        <i data-lucide="thermometer" class="h-6 w-6"></i>
+                                    </div>
+                                    <span id="badge-suhuAir" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100 text-slate-500 transition-colors">--</span>
+                                </div>
+                                <span class="text-sm font-bold text-slate-500">Suhu Air Kolam</span>
+                                <div class="flex items-baseline gap-1 mt-1">
+                                    <span id="val-suhuAir" class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter">--</span>
+                                    <span class="text-slate-400 font-semibold text-xl mb-1">°C</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 space-y-2">
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner"><div id="bar-suhuAir" class="h-full rounded-full bg-slate-300 transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+                                <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase"><span>Min 20°</span><span>Ideal 24-30°</span><span>Max 40°</span></div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div>
-                        <h2 class="text-base font-bold text-emerald-950 mb-4 px-1 flex items-center justify-between">
-                            <span>Metrik Real-time IoT</span>
-                            <span class="text-xs text-emerald-500 font-medium flex items-center gap-1.5 animate-pulse"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Live Update</span>
-                        </h2>
-
-                        <!-- UPDATED GRID: Now holds 6 items corresponding to Firebase screenshot -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4">
-                            
-                            <!-- 1. Suhu Air (suhuAir) -->
-                            <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
-                                <div class="flex items-center justify-between">
-                                    <div class="p-2.5 rounded-xl bg-orange-50 text-orange-600"><i data-lucide="thermometer" class="h-5 w-5"></i></div>
-                                    <span id="badge-suhuAir" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">--</span>
-                                </div>
-                                <div class="mt-4">
-                                    <span class="text-sm text-emerald-800 font-medium block">Suhu Air</span>
-                                    <div class="flex items-baseline gap-1 mt-0.5">
-                                        <span id="val-suhuAir" class="text-3xl font-black text-emerald-950">--</span>
-                                        <span class="text-emerald-500 font-medium text-lg">°C</span>
+                        <!-- 2. pH Air -->
+                        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl hover:shadow-purple-900/5 transition-all duration-300 group relative overflow-hidden delay-200 animate-fade-in-up flex flex-col justify-between">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-500 to-fuchsia-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-500 flex items-center justify-center shadow-inner border border-purple-100 group-hover:scale-110 transition-transform duration-500">
+                                        <i data-lucide="flask-conical" class="h-6 w-6"></i>
                                     </div>
+                                    <span id="badge-ph" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100 text-slate-500 transition-colors">--</span>
                                 </div>
-                                <div class="mt-4 space-y-1">
-                                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div id="bar-suhuAir" class="h-full rounded-full bg-slate-200 transition-all duration-500" style="width: 0%"></div></div>
-                                    <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Min: 20°C</span><span>Ideal: 24-30°C</span><span>Max: 40°C</span></div>
+                                <span class="text-sm font-bold text-slate-500">Kadar pH Air</span>
+                                <div class="flex items-baseline gap-1 mt-1">
+                                    <span id="val-ph" class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter">--</span>
+                                    <span class="text-slate-400 font-semibold text-xl mb-1">pH</span>
                                 </div>
                             </div>
-
-                            <!-- 2. pH (ph) -->
-                            <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
-                                <div class="flex items-center justify-between">
-                                    <div class="p-2.5 rounded-xl bg-purple-50 text-purple-600"><i data-lucide="filter" class="h-5 w-5"></i></div>
-                                    <span id="badge-ph" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">--</span>
+                            <div class="mt-6 space-y-2">
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden relative shadow-inner">
+                                    <!-- Ideal Zone Indicator -->
+                                    <div class="absolute left-[46%] w-[10%] h-full bg-purple-200/50 z-0"></div>
+                                    <div id="bar-ph" class="h-full rounded-full bg-slate-300 transition-all duration-1000 ease-out relative z-10" style="width: 0%"></div>
                                 </div>
-                                <div class="mt-4">
-                                    <span class="text-sm text-emerald-800 font-medium block">Kadar pH Air</span>
-                                    <div class="flex items-baseline gap-1 mt-0.5">
-                                        <span id="val-ph" class="text-3xl font-black text-emerald-950">--</span>
-                                        <span class="text-emerald-500 font-medium text-lg">pH</span>
-                                    </div>
-                                </div>
-                                <div class="mt-4 space-y-1">
-                                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden relative"><div class="absolute left-[45%] right-[25%] top-0 bottom-0 bg-emerald-200/50"></div><div id="bar-ph" class="h-full rounded-full bg-slate-200 transition-all duration-500" style="width: 0%"></div></div>
-                                    <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Asam (0)</span><span>Netral (7)</span><span>Basa (14)</span></div>
-                                </div>
+                                <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase"><span>Asam</span><span>Netral (7)</span><span>Basa</span></div>
                             </div>
-
-                            <!-- 3. Kelembapan (kelembapan) -->
-                            <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
-                                <div class="flex items-center justify-between">
-                                    <div class="p-2.5 rounded-xl bg-blue-50 text-blue-600"><i data-lucide="droplet" class="h-5 w-5"></i></div>
-                                    <span id="badge-kelembapan" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">--</span>
-                                </div>
-                                <div class="mt-4">
-                                    <span class="text-sm text-emerald-800 font-medium block">Kelembapan</span>
-                                    <div class="flex items-baseline gap-1 mt-0.5">
-                                        <span id="val-kelembapan" class="text-3xl font-black text-emerald-950">--</span>
-                                        <span class="text-emerald-500 font-medium text-lg">%</span>
-                                    </div>
-                                </div>
-                                <div class="mt-4 space-y-1">
-                                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div id="bar-kelembapan" class="h-full bg-slate-200 rounded-full transition-all duration-500" style="width: 0%"></div></div>
-                                    <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Rendah</span><span>Ideal: 50-85%</span><span>Tinggi</span></div>
-                                </div>
-                            </div>
-
-                            <!-- 4. Suhu Udara (suhuUdara) -->
-                            <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
-                                <div class="flex items-center justify-between">
-                                    <div class="p-2.5 rounded-xl bg-red-50 text-red-600"><i data-lucide="thermometer-sun" class="h-5 w-5"></i></div>
-                                    <span id="badge-suhuUdara" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">--</span>
-                                </div>
-                                <div class="mt-4">
-                                    <span class="text-sm text-emerald-800 font-medium block">Suhu Udara</span>
-                                    <div class="flex items-baseline gap-1 mt-0.5">
-                                        <span id="val-suhuUdara" class="text-3xl font-black text-emerald-950">--</span>
-                                        <span class="text-emerald-500 font-medium text-lg">°C</span>
-                                    </div>
-                                </div>
-                                <div class="mt-4 space-y-1">
-                                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div id="bar-suhuUdara" class="h-full rounded-full bg-slate-200 transition-all duration-500" style="width: 0%"></div></div>
-                                    <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Min: 20°C</span><span>Ideal: 25-32°C</span><span>Max: 40°C</span></div>
-                                </div>
-                            </div>
-
-                            <!-- 5. Daya Panel (dayaPanel) -->
-                            <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
-                                <div class="flex items-center justify-between">
-                                    <div class="p-2.5 rounded-xl bg-amber-50 text-amber-600"><i data-lucide="sun" class="h-5 w-5"></i></div>
-                                    <span id="badge-dayaPanel" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">--</span>
-                                </div>
-                                <div class="mt-4">
-                                    <span class="text-sm text-emerald-800 font-medium block">Daya Panel Surya</span>
-                                    <div class="flex items-baseline gap-1 mt-0.5">
-                                        <span id="val-dayaPanel" class="text-3xl font-black text-emerald-950">--</span>
-                                        <span class="text-emerald-500 font-medium text-lg">W</span>
-                                    </div>
-                                </div>
-                                <div class="mt-4 space-y-1">
-                                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div id="bar-dayaPanel" class="h-full rounded-full bg-slate-200 transition-all duration-500" style="width: 0%"></div></div>
-                                    <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Rendah</span><span>Target: >10W</span><span>Optimal</span></div>
-                                </div>
-                            </div>
-
-                            <!-- 6. TDS (tds) -->
-                            <div class="bg-white p-5 rounded-2xl border border-emerald-100/70 shadow-sm hover:shadow-md transition-all">
-                                <div class="flex items-center justify-between">
-                                    <div class="p-2.5 rounded-xl bg-indigo-50 text-indigo-600"><i data-lucide="test-tubes" class="h-5 w-5"></i></div>
-                                    <span id="badge-tds" class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">--</span>
-                                </div>
-                                <div class="mt-4">
-                                    <span class="text-sm text-emerald-800 font-medium block">Kualitas Air (TDS)</span>
-                                    <div class="flex items-baseline gap-1 mt-0.5">
-                                        <span id="val-tds" class="text-3xl font-black text-emerald-950">--</span>
-                                        <span class="text-emerald-500 font-medium text-lg">ppm</span>
-                                    </div>
-                                </div>
-                                <div class="mt-4 space-y-1">
-                                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden"><div id="bar-tds" class="h-full rounded-full bg-slate-200 transition-all duration-500" style="width: 0%"></div></div>
-                                    <div class="flex items-center justify-between text-[9px] text-emerald-600 font-medium"><span>Bersih</span><span>Ideal: <500</span><span>Tinggi</span></div>
-                                </div>
-                            </div>
-
                         </div>
+
+                        <!-- 3. Kelembapan -->
+                        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-300 group relative overflow-hidden delay-300 animate-fade-in-up flex flex-col justify-between">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-cyan-300 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center shadow-inner border border-blue-100 group-hover:scale-110 transition-transform duration-500">
+                                        <i data-lucide="droplet" class="h-6 w-6"></i>
+                                    </div>
+                                    <span id="badge-kelembapan" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100 text-slate-500 transition-colors">--</span>
+                                </div>
+                                <span class="text-sm font-bold text-slate-500">Kelembapan Udara</span>
+                                <div class="flex items-baseline gap-1 mt-1">
+                                    <span id="val-kelembapan" class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter">--</span>
+                                    <span class="text-slate-400 font-semibold text-xl mb-1">%</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 space-y-2">
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner"><div id="bar-kelembapan" class="h-full bg-slate-300 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+                                <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase"><span>Kering</span><span>50-85% Ideal</span><span>Lembap</span></div>
+                            </div>
+                        </div>
+
+                        <!-- 4. Suhu Udara -->
+                        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl hover:shadow-rose-900/5 transition-all duration-300 group relative overflow-hidden animate-fade-in-up flex flex-col justify-between">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rose-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center shadow-inner border border-rose-100 group-hover:scale-110 transition-transform duration-500">
+                                        <i data-lucide="thermometer-sun" class="h-6 w-6"></i>
+                                    </div>
+                                    <span id="badge-suhuUdara" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100 text-slate-500 transition-colors">--</span>
+                                </div>
+                                <span class="text-sm font-bold text-slate-500">Suhu Lingkungan</span>
+                                <div class="flex items-baseline gap-1 mt-1">
+                                    <span id="val-suhuUdara" class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter">--</span>
+                                    <span class="text-slate-400 font-semibold text-xl mb-1">°C</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 space-y-2">
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner"><div id="bar-suhuUdara" class="h-full rounded-full bg-slate-300 transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+                                <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase"><span>Min 20°</span><span>Ideal 25-32°</span><span>Max 40°</span></div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Daya Panel Surya -->
+                        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl hover:shadow-amber-900/5 transition-all duration-300 group relative overflow-hidden delay-100 animate-fade-in-up flex flex-col justify-between">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-amber-400 to-yellow-400 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center shadow-inner border border-amber-100 group-hover:scale-110 transition-transform duration-500">
+                                        <i data-lucide="sun" class="h-6 w-6"></i>
+                                    </div>
+                                    <span id="badge-dayaPanel" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100 text-slate-500 transition-colors">--</span>
+                                </div>
+                                <span class="text-sm font-bold text-slate-500">Supply Solar Panel</span>
+                                <div class="flex items-baseline gap-1 mt-1">
+                                    <span id="val-dayaPanel" class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter">--</span>
+                                    <span class="text-slate-400 font-semibold text-xl mb-1">W</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 space-y-2">
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner"><div id="bar-dayaPanel" class="h-full rounded-full bg-slate-300 transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+                                <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase"><span>0W</span><span>Target >10W</span><span>50W</span></div>
+                            </div>
+                        </div>
+
+                        <!-- 6. Kualitas Air (TDS) -->
+                        <div class="bg-white p-6 rounded-[2rem] border border-slate-100 hover:border-slate-200 shadow-sm hover:shadow-xl hover:shadow-indigo-900/5 transition-all duration-300 group relative overflow-hidden delay-200 animate-fade-in-up flex flex-col justify-between">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div>
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center shadow-inner border border-indigo-100 group-hover:scale-110 transition-transform duration-500">
+                                        <i data-lucide="test-tubes" class="h-6 w-6"></i>
+                                    </div>
+                                    <span id="badge-tds" class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full bg-slate-100 text-slate-500 transition-colors">--</span>
+                                </div>
+                                <span class="text-sm font-bold text-slate-500">Kepadatan Nutrisi (TDS)</span>
+                                <div class="flex items-baseline gap-1 mt-1">
+                                    <span id="val-tds" class="text-4xl lg:text-5xl font-black text-slate-800 tracking-tighter">--</span>
+                                    <span class="text-slate-400 font-semibold text-xl mb-1">ppm</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 space-y-2">
+                                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden shadow-inner"><div id="bar-tds" class="h-full rounded-full bg-slate-300 transition-all duration-1000 ease-out" style="width: 0%"></div></div>
+                                <div class="flex items-center justify-between text-[10px] font-bold text-slate-400 uppercase"><span>Rendah</span><span>Ideal <500</span><span>Tinggi</span></div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
                 <!-- ========================================== -->
                 <!-- VIEW: KONTROL IOT -->
                 <!-- ========================================== -->
-                <div id="view-kontrol" class="space-y-6 hidden view-section">
-                    <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm">
-                        <h1 class="text-xl font-black text-emerald-950 flex items-center gap-2"><i data-lucide="settings" class="text-emerald-600 h-5 w-5"></i> Panel Kontrol IoT</h1>
-                        <p class="text-xs text-emerald-700/80 mt-1">Kendalikan seluruh aktuator mekanik dan listrik pada mesin secara real-time. Status perubahan langsung dikirimkan ke database "control".</p>
+                <div id="view-kontrol" class="space-y-6 hidden view-section animate-fade-in-up">
+                    <div class="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-100 shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-10 -top-10 text-slate-50 opacity-50 transform rotate-12"><i data-lucide="sliders-horizontal" class="w-48 h-48"></i></div>
+                        <div class="relative z-10">
+                            <h1 class="text-2xl font-black text-slate-800 tracking-tight">Panel Kendali Pintar</h1>
+                            <p class="text-sm text-slate-500 mt-2 max-w-2xl leading-relaxed">Kelola aktuator mekanik dan kelistrikan sistem secara manual. Perubahan akan langsung disinkronisasi ke perangkat IoT.</p>
+                        </div>
                     </div>
+                    
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <!-- Pompa -->
-                        <div id="card-pump" class="bg-white p-6 rounded-3xl border border-emerald-100/70 transition-all duration-300 shadow-sm flex flex-col justify-between">
+                        <!-- Pompa Air -->
+                        <div id="card-pump" class="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-200 transition-all duration-500 flex flex-col justify-between group">
                             <div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2.5">
-                                        <div id="icon-pump" class="p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400"><i data-lucide="waves" class="h-5 w-5"></i></div>
-                                        <div><h3 class="text-sm font-bold text-emerald-950">Pompa Air Kolam</h3><p class="text-[10px] text-slate-500">Sirkulasi & Aerasi Oksigen</p></div>
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div id="icon-pump" class="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center transition-all duration-500 border border-slate-100">
+                                            <i data-lucide="waves" class="h-6 w-6"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-base font-bold text-slate-800">Pompa Sirkulasi Air</h3>
+                                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Aerasi Kolam</p>
+                                        </div>
                                     </div>
-                                    <button onclick="toggleControl('waterPump')" id="btn-pump" class="w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-slate-200">
-                                        <div id="dot-pump" class="bg-white w-4.5 h-4.5 rounded-full shadow-md transform transition-transform duration-300 translate-x-0" style="width: 18px; height: 18px;"></div>
+                                    <!-- Custom Modern Toggle -->
+                                    <button onclick="toggleControl('waterPump')" class="relative inline-flex items-center cursor-pointer group/toggle">
+                                        <div id="btn-pump" class="w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1">
+                                            <div id="dot-pump" class="bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-0"></div>
+                                        </div>
                                     </button>
                                 </div>
-                                <div id="desc-pump" class="mt-4 bg-slate-50 p-2.5 rounded-xl border border-slate-100/60 text-[10px] text-slate-500 flex items-center gap-2">
-                                    <i data-lucide="info" class="h-3 w-3 shrink-0"></i><span>Aliran air mati! Tanaman kangkung tidak menerima gizi dan ikan kekurangan oksigen.</span>
+                                <div id="desc-pump" class="mt-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs text-slate-500 flex gap-3 font-medium leading-relaxed transition-colors duration-300">
+                                    <i data-lucide="power-off" class="h-4 w-4 shrink-0 text-slate-400"></i>
+                                    <span>Sistem sedang offline. Aktifkan untuk memulai sirkulasi oksigen dan nutrisi.</span>
                                 </div>
                             </div>
-                            <div class="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center text-[11px] text-slate-500"><span>Daya Listrik:</span><span id="power-pump" class="font-mono font-bold text-emerald-800">0.0 Watt</span></div>
+                            <div class="pt-6 border-t border-slate-100/80 mt-6 flex justify-between items-center text-xs">
+                                <span class="font-bold text-slate-400 uppercase tracking-wider">Konsumsi Daya</span>
+                                <span id="power-pump" class="font-mono font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg">0.0 Watt</span>
+                            </div>
                         </div>
+
                         <!-- Lampu UV -->
-                        <div id="card-uv" class="bg-white p-6 rounded-3xl border border-emerald-100/70 transition-all duration-300 shadow-sm flex flex-col justify-between">
+                        <div id="card-uv" class="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-200 transition-all duration-500 flex flex-col justify-between group">
                             <div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2.5">
-                                        <div id="icon-uv" class="p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400"><i data-lucide="lightbulb" class="h-5 w-5"></i></div>
-                                        <div><h3 class="text-sm font-bold text-emerald-950">Lampu UV LED</h3><p class="text-[10px] text-slate-500">Fotosintesis & Filter Alga</p></div>
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div id="icon-uv" class="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center transition-all duration-500 border border-slate-100">
+                                            <i data-lucide="lightbulb" class="h-6 w-6"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-base font-bold text-slate-800">Lampu Grow LED (UV)</h3>
+                                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Fotosintesis Buatan</p>
+                                        </div>
                                     </div>
-                                    <button onclick="toggleControl('uvLight')" id="btn-uv" class="w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-slate-200">
-                                        <div id="dot-uv" class="bg-white w-4.5 h-4.5 rounded-full shadow-md transform transition-transform duration-300 translate-x-0" style="width: 18px; height: 18px;"></div>
+                                    <button onclick="toggleControl('uvLight')" class="relative inline-flex items-center cursor-pointer group/toggle">
+                                        <div id="btn-uv" class="w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1">
+                                            <div id="dot-uv" class="bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-0"></div>
+                                        </div>
                                     </button>
                                 </div>
-                                <div id="desc-uv" class="mt-4 bg-slate-50 p-2.5 rounded-xl border border-slate-100/60 text-[10px] text-slate-500 flex items-center gap-2">
-                                    <i data-lucide="info" class="h-3 w-3 shrink-0"></i><span>Lampu padam. Tanaman mengandalkan cahaya ambien ruangan saja saat ini.</span>
+                                <div id="desc-uv" class="mt-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs text-slate-500 flex gap-3 font-medium leading-relaxed transition-colors duration-300">
+                                    <i data-lucide="moon" class="h-4 w-4 shrink-0 text-slate-400"></i>
+                                    <span>Lampu UV padam. Tanaman saat ini mengandalkan cahaya dari lingkungan sekitar.</span>
                                 </div>
                             </div>
-                            <div class="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center text-[11px] text-slate-500"><span>Daya Listrik:</span><span id="power-uv" class="font-mono font-bold text-emerald-800">0.0 Watt</span></div>
+                            <div class="pt-6 border-t border-slate-100/80 mt-6 flex justify-between items-center text-xs">
+                                <span class="font-bold text-slate-400 uppercase tracking-wider">Konsumsi Daya</span>
+                                <span id="power-uv" class="font-mono font-bold text-slate-600 bg-slate-100 px-3 py-1 rounded-lg">0.0 Watt</span>
+                            </div>
                         </div>
+
                         <!-- Auto Feeder -->
-                        <div id="card-feeder" class="bg-white p-6 rounded-3xl border border-emerald-100/70 transition-all duration-300 shadow-sm flex flex-col justify-between lg:col-span-2">
+                        <div id="card-feeder" class="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-200 transition-all duration-500 flex flex-col justify-between group lg:col-span-2">
                             <div>
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2.5">
-                                        <div id="icon-feeder" class="p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400"><i data-lucide="coffee" class="h-5 w-5"></i></div>
-                                        <div><h3 class="text-sm font-bold text-emerald-950">Auto Fish Feeder</h3><p class="text-[10px] text-slate-500">Pemberi Pakan Ikan Otomatis</p></div>
+                                <div class="flex items-start justify-between">
+                                    <div class="flex items-center gap-4">
+                                        <div id="icon-feeder" class="w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center transition-all duration-500 border border-slate-100">
+                                            <i data-lucide="fish-symbol" class="h-6 w-6"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-base font-bold text-slate-800">Pemberi Pakan Otomatis</h3>
+                                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Servo Auto Feeder</p>
+                                        </div>
                                     </div>
-                                    <button onclick="toggleControl('autoFeeder')" id="btn-feeder" class="w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-slate-200">
-                                        <div id="dot-feeder" class="bg-white w-4.5 h-4.5 rounded-full shadow-md transform transition-transform duration-300 translate-x-0" style="width: 18px; height: 18px;"></div>
+                                    <button onclick="toggleControl('autoFeeder')" class="relative inline-flex items-center cursor-pointer group/toggle">
+                                        <div id="btn-feeder" class="w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1">
+                                            <div id="dot-feeder" class="bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-0"></div>
+                                        </div>
                                     </button>
                                 </div>
-                                <div id="desc-feeder" class="mt-4 bg-slate-50 p-2.5 rounded-xl border border-slate-100/60 text-[10px] text-slate-500 flex items-center gap-2">
-                                    <i data-lucide="info" class="h-3 w-3 shrink-0"></i><span>Pakan otomatis mati. Anda perlu memberi pakan ikan secara manual.</span>
+                                <div id="desc-feeder" class="mt-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs text-slate-500 flex gap-3 font-medium leading-relaxed transition-colors duration-300">
+                                    <i data-lucide="clock" class="h-4 w-4 shrink-0 text-slate-400"></i>
+                                    <span>Jadwal pakan otomatis nonaktif. Anda perlu memberikan pakan ikan secara manual.</span>
                                 </div>
                             </div>
-                            <div class="pt-6 border-t border-slate-100 mt-6 flex justify-between items-center text-[11px] text-slate-500"><span>Status Koneksi:</span><span class="font-mono font-bold text-emerald-800">Siap</span></div>
+                            <div class="pt-6 border-t border-slate-100/80 mt-6 flex justify-between items-center text-xs">
+                                <span class="font-bold text-slate-400 uppercase tracking-wider">Status Modul</span>
+                                <span class="font-mono font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-100">Siap / Standby</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -382,20 +500,29 @@
                 <!-- ========================================== -->
                 <!-- VIEW: AI ASSISTANT -->
                 <!-- ========================================== -->
-                <div id="view-ai" class="hidden view-section flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)]">
-                    <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm mb-4 shrink-0">
-                        <h1 class="text-xl font-black text-emerald-950 flex items-center gap-2"><i data-lucide="sparkles" class="text-emerald-600 h-5 w-5"></i> LihatKebunku AI Companion</h1>
-                        <p class="text-xs text-emerald-700/80 mt-1">Tanyakan permasalahan daun menguning, pH air, kebersihan filter, serta nutrisi pakan ikan Anda.</p>
+                <div id="view-ai" class="hidden view-section flex flex-col h-[calc(100vh-8rem)] md:h-[calc(100vh-6rem)] animate-fade-in-up">
+                    <div class="bg-slate-800 text-white p-6 rounded-[2rem] shadow-lg shadow-slate-900/10 mb-5 shrink-0 flex items-center justify-between relative overflow-hidden">
+                        <div class="absolute -right-8 -top-8 w-32 h-32 bg-indigo-500 rounded-full filter blur-3xl opacity-30"></div>
+                        <div class="relative z-10">
+                            <h1 class="text-xl font-black flex items-center gap-2">
+                                <span class="p-2 rounded-xl bg-white/10 backdrop-blur-sm"><i data-lucide="sparkles" class="text-amber-400 h-5 w-5"></i></span>
+                                Agronomist AI
+                            </h1>
+                            <p class="text-sm text-slate-300 mt-2 font-medium">Asisten cerdas pendamping budidaya Anda.</p>
+                        </div>
+                        <div class="hidden md:block bg-white/10 backdrop-blur border border-white/20 px-4 py-2 rounded-xl text-xs font-bold text-emerald-300 flex items-center gap-2 relative z-10">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Terhubung dengan Sensor
+                        </div>
                     </div>
                     
-                    <div id="chat-container" class="flex-grow bg-white border border-emerald-100 rounded-3xl p-4 overflow-y-auto space-y-4 mb-4 shadow-inner flex flex-col">
-                        <!-- Pesan akan dimuat di sini oleh JS -->
+                    <div id="chat-container" class="flex-grow bg-white/80 backdrop-blur-md border border-slate-200 rounded-[2rem] p-5 overflow-y-auto space-y-5 mb-5 shadow-inner flex flex-col scroll-smooth">
+                        <!-- Chat messages injected by JS -->
                     </div>
 
-                    <form id="ai-form" class="bg-white p-2 rounded-3xl border border-emerald-100 shadow-sm flex items-center shrink-0">
-                        <input type="text" id="ai-input" class="flex-grow px-4 py-3 outline-none text-sm font-medium text-emerald-900 placeholder:text-slate-400 bg-transparent" placeholder="Tanya AI tentang kondisi kebunmu...">
-                        <button type="submit" class="p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl transition-all cursor-pointer shadow-md shadow-emerald-600/20">
-                            <i data-lucide="send" class="h-5 w-5"></i>
+                    <form id="ai-form" class="bg-white p-2 rounded-[2rem] border border-slate-200 shadow-sm flex items-center shrink-0 focus-within:border-indigo-300 focus-within:ring-4 focus-within:ring-indigo-100 transition-all">
+                        <input type="text" id="ai-input" class="flex-grow px-5 py-3 outline-none text-sm font-semibold text-slate-700 placeholder:text-slate-400 placeholder:font-medium bg-transparent" placeholder="Tanyakan kondisi tanaman, pH ideal, atau saran pakan...">
+                        <button type="submit" class="p-3.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[1.25rem] transition-all cursor-pointer shadow-md shadow-indigo-600/20 active:scale-95 group">
+                            <i data-lucide="send" class="h-5 w-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
                         </button>
                     </form>
                 </div>
@@ -403,78 +530,85 @@
                 <!-- ========================================== -->
                 <!-- VIEW: NOTIFIKASI -->
                 <!-- ========================================== -->
-                <div id="view-notifikasi" class="space-y-6 hidden view-section">
-                    <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div id="view-notifikasi" class="space-y-6 hidden view-section animate-fade-in-up">
+                    <div class="bg-white p-6 md:p-8 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-5">
                         <div>
-                            <h1 class="text-xl font-black text-emerald-950 flex items-center gap-2"><i data-lucide="bell" class="text-emerald-600 h-5 w-5"></i> Pusat Notifikasi</h1>
-                            <p class="text-xs text-emerald-700/80 mt-1">Peringatan sensor dan log aktivitas mesin Anda.</p>
+                            <h1 class="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-3">
+                                <span class="p-2 rounded-xl bg-slate-50 border border-slate-100"><i data-lucide="bell" class="text-slate-600 h-6 w-6"></i></span> 
+                                Pusat Notifikasi
+                            </h1>
+                            <p class="text-sm text-slate-500 mt-2 font-medium">Log aktivitas sistem dan peringatan anomali.</p>
                         </div>
-                        <div class="flex gap-2 w-full md:w-auto">
-                            <button onclick="markAllNotifRead()" class="flex-1 md:flex-none text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-4 py-2.5 rounded-xl border border-emerald-200 transition-all cursor-pointer">Tandai Semua Dibaca</button>
-                            <button onclick="clearNotif()" class="flex-1 md:flex-none text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 px-4 py-2.5 rounded-xl border border-red-200 transition-all cursor-pointer">Hapus Semua</button>
-                        </div>
-                    </div>
-
-                    <!-- Developer Tools untuk Testing Simulasi Notifikasi -->
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 border-dashed">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3 block">Alat Simulasi Notifikasi</span>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="addSimulatedNotif('warning')" class="text-xs font-bold bg-white text-amber-600 border border-amber-200 hover:bg-amber-50 px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"><i data-lucide="alert-triangle" class="h-3 w-3 inline mr-1"></i>Simulasi Error pH Drop</button>
-                            <button onclick="addSimulatedNotif('success')" class="text-xs font-bold bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-50 px-4 py-2 rounded-xl transition-all shadow-sm cursor-pointer"><i data-lucide="check-circle" class="h-3 w-3 inline mr-1"></i>Simulasi Pemulihan Sistem</button>
+                        <div class="flex gap-3 w-full md:w-auto">
+                            <button onclick="markAllNotifRead()" class="flex-1 md:flex-none text-xs font-bold text-slate-600 bg-white hover:bg-slate-50 px-5 py-3 rounded-xl border border-slate-200 shadow-sm transition-all cursor-pointer active:scale-95">Tandai Dibaca</button>
+                            <button onclick="clearNotif()" class="flex-1 md:flex-none text-xs font-bold text-rose-600 bg-rose-50 hover:bg-rose-100 px-5 py-3 rounded-xl border border-rose-100 shadow-sm transition-all cursor-pointer active:scale-95">Bersihkan</button>
                         </div>
                     </div>
 
-                    <div id="notif-list" class="space-y-3">
-                        <!-- List Notifikasi dimuat oleh JS -->
+                    <!-- Dev Tools for UI Demo -->
+                    <div class="bg-indigo-50/50 p-5 rounded-[1.5rem] border border-indigo-100/50 backdrop-blur-sm">
+                        <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-3 block flex items-center gap-1.5"><i data-lucide="code" class="w-3 h-3"></i> Alat Uji Coba Cepat (Demo)</span>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="addSimulatedNotif('warning')" class="text-xs font-bold bg-white text-amber-600 border border-amber-200 hover:bg-amber-50 px-4 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer hover:shadow-amber-900/5 active:scale-95"><i data-lucide="alert-triangle" class="h-4 w-4 inline mr-1.5 align-text-bottom"></i>Picuan Peringatan pH</button>
+                            <button onclick="addSimulatedNotif('success')" class="text-xs font-bold bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-50 px-4 py-2.5 rounded-xl transition-all shadow-sm cursor-pointer hover:shadow-emerald-900/5 active:scale-95"><i data-lucide="check-circle" class="h-4 w-4 inline mr-1.5 align-text-bottom"></i>Picuan Pemulihan</button>
+                        </div>
+                    </div>
+
+                    <div id="notif-list" class="space-y-4 mt-4">
+                        <!-- Notifications injected via JS -->
                     </div>
                 </div>
 
                 <!-- ========================================== -->
                 <!-- VIEW: PROFILE -->
                 <!-- ========================================== -->
-                <div id="view-profile" class="space-y-6 hidden view-section">
-                    <div class="bg-white p-6 md:p-8 rounded-3xl border border-emerald-100 shadow-sm">
-                        <div class="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-                            <div class="w-24 h-24 bg-emerald-600 text-white flex items-center justify-center rounded-3xl text-4xl font-bold shadow-lg shadow-emerald-600/20">
-                                A
+                <div id="view-profile" class="space-y-6 hidden view-section animate-fade-in-up">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm relative overflow-hidden group">
+                        <div class="absolute right-0 top-0 w-64 h-full bg-gradient-to-l from-emerald-50 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+                        <div class="flex flex-col md:flex-row items-center gap-8 text-center md:text-left relative z-10">
+                            <div class="relative">
+                                <div class="w-28 h-28 bg-gradient-to-br from-slate-800 to-slate-700 text-white flex items-center justify-center rounded-[2rem] text-4xl font-black shadow-xl shadow-slate-900/10 border-4 border-white">
+                                    A
+                                </div>
+                                <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full border-4 border-white flex items-center justify-center text-white"><i data-lucide="check" class="w-4 h-4 font-bold"></i></div>
                             </div>
                             <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-500 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Administrator</span>
-                                <h2 class="text-2xl font-black text-emerald-950 mt-3" id="profile-email">lihatkebun@gmail.com</h2>
-                                <p class="text-sm text-emerald-700/80 mt-1 flex items-center justify-center md:justify-start gap-1">
-                                    <i data-lucide="shield-check" class="h-4 w-4 text-emerald-500"></i> Akun Terverifikasi
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-600 bg-emerald-100 px-3 py-1.5 rounded-lg">Administrator Utama</span>
+                                <h2 class="text-3xl font-black text-slate-800 mt-3 tracking-tight" id="profile-email">lihatkebun@gmail.com</h2>
+                                <p class="text-sm font-medium text-slate-500 mt-1.5 flex items-center justify-center md:justify-start gap-1.5">
+                                    <i data-lucide="shield-check" class="h-4 w-4 text-emerald-500"></i> Akun Terverifikasi & Terlindungi
                                 </p>
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm space-y-4">
-                            <h3 class="text-sm font-bold text-emerald-900 border-b border-emerald-50 pb-3">Informasi Perangkat</h3>
-                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                <span class="text-xs text-slate-500">ID Mesin IoT</span>
-                                <span class="text-xs font-bold font-mono text-emerald-800" id="profile-machine-id">LKB-XXX</span>
-                            </div>
-                            <div class="flex justify-between items-center py-2 border-b border-slate-50">
-                                <span class="text-xs text-slate-500">Status Koneksi</span>
-                                <span class="text-[10px] font-bold text-white bg-emerald-500 px-2 py-0.5 rounded-full">Online / Sinkron</span>
-                            </div>
-                            <div class="flex justify-between items-center py-2">
-                                <span class="text-xs text-slate-500">Lokasi Server Firebase</span>
-                                <span class="text-xs font-semibold text-slate-700">asia-southeast1</span>
+                        <div class="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm">
+                            <h3 class="text-sm font-black text-slate-800 mb-5 flex items-center gap-2"><i data-lucide="cpu" class="w-5 h-5 text-slate-400"></i> Detail Perangkat IoT</h3>
+                            <div class="space-y-1">
+                                <div class="flex justify-between items-center py-3 border-b border-slate-50">
+                                    <span class="text-xs font-semibold text-slate-500">ID Mesin Controller</span>
+                                    <span class="text-xs font-bold font-mono text-slate-800 bg-slate-100 px-2 py-1 rounded-md" id="profile-machine-id">LKB-XXX</span>
+                                </div>
+                                <div class="flex justify-between items-center py-3 border-b border-slate-50">
+                                    <span class="text-xs font-semibold text-slate-500">Status Koneksi</span>
+                                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Online</span>
+                                </div>
+                                <div class="flex justify-between items-center py-3">
+                                    <span class="text-xs font-semibold text-slate-500">Protokol Jaringan</span>
+                                    <span class="text-xs font-bold text-slate-600">Firebase RTDB (WSS)</span>
+                                </div>
                             </div>
                         </div>
 
-                        <div class="bg-white p-6 rounded-3xl border border-emerald-100 shadow-sm space-y-4 flex flex-col justify-center items-center text-center">
-                            <div class="w-12 h-12 bg-red-50 text-red-500 rounded-full flex items-center justify-center mb-2">
-                                <i data-lucide="power" class="h-6 w-6"></i>
+                        <div class="bg-white p-7 rounded-[2rem] border border-slate-100 shadow-sm flex flex-col justify-center items-center text-center">
+                            <div class="w-16 h-16 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-4">
+                                <i data-lucide="log-out" class="h-7 w-7"></i>
                             </div>
-                            <div>
-                                <h3 class="text-sm font-bold text-slate-800">Sesi Aplikasi</h3>
-                                <p class="text-xs text-slate-500 mt-1 mb-4">Putuskan koneksi mesin dari perangkat ini.</p>
-                            </div>
-                            <button onclick="logout()" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs py-3 rounded-xl border border-red-200 transition-all cursor-pointer">
-                                Keluar / Logout
+                            <h3 class="text-base font-black text-slate-800">Akhiri Sesi Aplikasi</h3>
+                            <p class="text-xs font-medium text-slate-500 mt-2 mb-6 max-w-[200px] leading-relaxed">Putuskan koneksi perangkat IoT ini secara aman.</p>
+                            <button onclick="logout()" class="w-full bg-white hover:bg-rose-50 text-rose-600 font-bold text-sm py-3.5 rounded-2xl border-2 border-rose-100 transition-all cursor-pointer hover:shadow-md active:scale-95">
+                                Keluar Aplikasi
                             </button>
                         </div>
                     </div>
@@ -483,22 +617,34 @@
             </main>
 
             <!-- Mobile Sticky Bottom Nav -->
-            <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-emerald-100 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] px-2 flex items-center justify-between z-40 pb-safe">
-                <button onclick="switchTab('beranda')" id="mob-nav-beranda" class="flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-emerald-600 font-bold mob-nav-btn">
-                    <i data-lucide="home" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">Beranda</span>
+            <nav class="md:hidden fixed bottom-0 left-0 right-0 glass-panel border-t border-slate-200/50 shadow-[0_-20px_40px_-20px_rgba(0,0,0,0.1)] px-3 py-2 flex items-center justify-between z-40 pb-safe">
+                <button onclick="switchTab('beranda')" id="mob-nav-beranda" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all text-emerald-600 group">
+                    <span class="absolute inset-0 bg-emerald-50 rounded-xl opacity-100 transition-opacity nav-bg"></span>
+                    <i data-lucide="layout-dashboard" class="h-5 w-5 relative z-10 transition-transform group-active:scale-90"></i>
+                    <span class="text-[9px] mt-1 font-bold relative z-10">Ringkasan</span>
                 </button>
-                <button onclick="switchTab('kontrol')" id="mob-nav-kontrol" class="flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn">
-                    <i data-lucide="sliders" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">Kontrol</span>
+                <button onclick="switchTab('kontrol')" id="mob-nav-kontrol" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
+                    <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
+                    <i data-lucide="sliders-horizontal" class="h-5 w-5 relative z-10 transition-transform group-active:scale-90"></i>
+                    <span class="text-[9px] mt-1 font-bold relative z-10">Kendali</span>
                 </button>
-                <button onclick="switchTab('ai')" id="mob-nav-ai" class="flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn">
-                    <i data-lucide="sparkles" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">AI</span>
+                <button onclick="switchTab('ai')" id="mob-nav-ai" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
+                    <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
+                    <i data-lucide="sparkles" class="h-5 w-5 relative z-10 transition-transform group-active:scale-90"></i>
+                    <span class="text-[9px] mt-1 font-bold relative z-10">AI Chat</span>
                 </button>
-                <button onclick="switchTab('notifikasi')" id="mob-nav-notifikasi" class="relative flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn">
-                    <i data-lucide="bell" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">Notif</span>
-                    <span id="mob-bot-notif-badge" class="hidden absolute top-2 right-4 w-2 h-2 bg-red-500 rounded-full"></span>
+                <button onclick="switchTab('notifikasi')" id="mob-nav-notifikasi" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
+                    <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
+                    <div class="relative z-10">
+                        <i data-lucide="bell" class="h-5 w-5 transition-transform group-active:scale-90"></i>
+                        <span id="mob-bot-notif-badge" class="hidden absolute -top-1 -right-1 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
+                    </div>
+                    <span class="text-[9px] mt-1 font-bold relative z-10">Notif</span>
                 </button>
-                <button onclick="switchTab('profile')" id="mob-nav-profile" class="flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn">
-                    <i data-lucide="user" class="h-5 w-5"></i><span class="text-[9px] mt-1 font-medium">Profile</span>
+                <button onclick="switchTab('profile')" id="mob-nav-profile" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center p-2 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
+                    <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
+                    <i data-lucide="user-circle" class="h-5 w-5 relative z-10 transition-transform group-active:scale-90"></i>
+                    <span class="text-[9px] mt-1 font-bold relative z-10">Akun</span>
                 </button>
             </nav>
 
@@ -513,7 +659,6 @@
         import { getDatabase, ref, get, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        // Initialize Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCLMe-B0pw964It2fxuR6_mPLdHuBJ9rEQ",
             authDomain: "lihatkebunku-33c78.firebaseapp.com",
@@ -532,98 +677,89 @@
         let activeMachineCode = "";
         let currentControls = { waterPump: false, uvLight: false, autoFeeder: false };
 
-        // Render Icons
         lucide.createIcons();
 
         // =====================================
         // STATE: NOTIFIKASI
         // =====================================
         let notifications = [
-            { id: Date.now(), title: "Sirkulasi Aliran Air Lancar", message: "Sistem mendeteksi operasional normal.", type: "success", read: false },
-            { id: Date.now()-1000, title: "Suhu Air Stabil", message: "Aerasi kolam berfungsi dengan baik.", type: "info", read: true }
+            { id: Date.now(), title: "Kondisi Kebun Optimal", message: "Sistem mendeteksi semua metrik berjalan normal sesuai standar.", type: "success", read: false },
+            { id: Date.now()-1000, title: "Sensor Aktif", message: "Perekaman data lingkungan real-time diaktifkan.", type: "info", read: true }
         ];
 
         function renderNotifications() {
             const listEl = document.getElementById('notif-list');
             listEl.innerHTML = '';
-            
             let unreadCount = 0;
 
             if(notifications.length === 0) {
-                listEl.innerHTML = `<div class="text-center p-6 text-slate-400 text-xs font-medium border-2 border-dashed border-slate-200 rounded-2xl">Tidak ada notifikasi baru.</div>`;
+                listEl.innerHTML = `<div class="text-center p-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center">
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-sm mb-3"><i data-lucide="check-check"></i></div>
+                    <p class="text-sm font-bold text-slate-400">Semua tenang! Tidak ada peringatan baru.</p>
+                </div>`;
             }
 
             notifications.forEach(n => {
                 if(!n.read) unreadCount++;
+                let iconClass, bgClass, borderClass, textClass, iconName;
                 
-                let iconClass, bgClass, borderClass, textClass;
                 if(n.type === 'warning') {
-                    iconClass = "text-amber-600 bg-amber-100"; bgClass = n.read ? "bg-white" : "bg-amber-50/50"; borderClass = "border-amber-100"; textClass="text-amber-900";
+                    iconClass = "text-amber-500 bg-amber-50 shadow-inner"; bgClass = n.read ? "bg-white border-slate-100" : "bg-gradient-to-r from-amber-50/50 to-white border-amber-100 shadow-sm"; textClass="text-amber-900"; iconName = "alert-triangle";
                 } else if(n.type === 'success') {
-                    iconClass = "text-emerald-600 bg-emerald-100"; bgClass = n.read ? "bg-white" : "bg-emerald-50/50"; borderClass = "border-emerald-100"; textClass="text-emerald-900";
+                    iconClass = "text-emerald-500 bg-emerald-50 shadow-inner"; bgClass = n.read ? "bg-white border-slate-100" : "bg-gradient-to-r from-emerald-50/50 to-white border-emerald-100 shadow-sm"; textClass="text-slate-800"; iconName = "check-circle";
                 } else {
-                    iconClass = "text-blue-600 bg-blue-100"; bgClass = n.read ? "bg-white" : "bg-blue-50/50"; borderClass = "border-blue-100"; textClass="text-blue-900";
+                    iconClass = "text-blue-500 bg-blue-50 shadow-inner"; bgClass = n.read ? "bg-white border-slate-100" : "bg-gradient-to-r from-blue-50/50 to-white border-blue-100 shadow-sm"; textClass="text-slate-800"; iconName = "info";
                 }
 
                 const notifHtml = `
-                <div onclick="markSingleNotifRead(${n.id})" class="cursor-pointer ${bgClass} p-4 rounded-2xl border ${borderClass} flex gap-4 items-start transition-all hover:shadow-sm relative overflow-hidden group">
-                    ${!n.read ? `<div class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>` : ''}
-                    <div class="p-2 rounded-xl shrink-0 ${iconClass}">
-                        <i data-lucide="${n.type === 'warning' ? 'alert-triangle' : n.type === 'success' ? 'check-circle' : 'info'}" class="h-5 w-5"></i>
+                <div onclick="markSingleNotifRead(${n.id})" class="cursor-pointer ${bgClass} p-5 rounded-[1.5rem] border flex gap-4 items-start transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 relative overflow-hidden group">
+                    ${!n.read ? `<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-${n.type === 'warning' ? 'amber' : 'emerald'}-400"></div>` : ''}
+                    <div class="p-3 rounded-2xl shrink-0 ${iconClass} transition-transform group-hover:scale-110">
+                        <i data-lucide="${iconName}" class="h-5 w-5"></i>
                     </div>
-                    <div>
-                        <h3 class="text-sm font-bold ${textClass}">${n.title}</h3>
-                        <p class="text-xs text-slate-600 mt-1 leading-relaxed">${n.message}</p>
+                    <div class="flex-grow pt-0.5">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-sm font-black ${textClass}">${n.title}</h3>
+                            ${!n.read ? `<span class="w-2 h-2 rounded-full bg-${n.type === 'warning' ? 'amber' : 'emerald'}-400 mt-1 shrink-0"></span>` : ''}
+                        </div>
+                        <p class="text-xs font-medium text-slate-500 mt-1 leading-relaxed">${n.message}</p>
                     </div>
                 </div>
                 `;
                 listEl.innerHTML += notifHtml;
             });
 
-            // Update Badges di Navigasi Desktop & Mobile
+            // Update Badges
             const deskBadge = document.getElementById('desk-notif-badge');
             const mobTopBadge = document.getElementById('mob-top-notif-badge');
             const mobBotBadge = document.getElementById('mob-bot-notif-badge');
 
             if(unreadCount > 0) {
                 deskBadge.innerText = unreadCount;
-                deskBadge.classList.remove('hidden');
+                deskBadge.classList.remove('hidden'); deskBadge.classList.add('flex');
                 mobTopBadge.classList.remove('hidden');
                 mobBotBadge.classList.remove('hidden');
             } else {
-                deskBadge.classList.add('hidden');
+                deskBadge.classList.add('hidden'); deskBadge.classList.remove('flex');
                 mobTopBadge.classList.add('hidden');
                 mobBotBadge.classList.add('hidden');
             }
-
             lucide.createIcons();
         }
 
-        window.markAllNotifRead = () => {
-            notifications = notifications.map(n => ({...n, read: true}));
-            renderNotifications();
-        };
-        
-        window.markSingleNotifRead = (id) => {
-            notifications = notifications.map(n => n.id === id ? {...n, read: true} : n);
-            renderNotifications();
-        };
-
-        window.clearNotif = () => {
-            notifications = [];
-            renderNotifications();
-        };
-
+        window.markAllNotifRead = () => { notifications = notifications.map(n => ({...n, read: true})); renderNotifications(); };
+        window.markSingleNotifRead = (id) => { notifications = notifications.map(n => n.id === id ? {...n, read: true} : n); renderNotifications(); };
+        window.clearNotif = () => { notifications = []; renderNotifications(); };
         window.addSimulatedNotif = (type) => {
             let title, message;
             if (type === 'warning') {
-                title = "⚠️ Peringatan: Tingkat pH Air Drop";
-                message = "Sensor mendeteksi pH sirkulasi turun drastis ke angka 5.8 (Asam). Sistem menyarankan untuk menaburkan sedikit kapur dolomit organik.";
-                if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 5.8 });
+                title = "Anomali: pH Air Terlalu Asam";
+                message = "Sensor mendeteksi pH turun drastis ke 5.8. Sistem menyarankan penambahan buffer basa/kapur ke filter.";
+                if(activeMachineCode) update(ref(db, `data`), { ph: 5.8 });
             } else {
-                title = "✅ Status: pH Air Kembali Optimal";
-                message = "Sensor mendeteksi pH air telah stabil kembali ke zona ideal 7.2. Filter biologis pengurai amonia berfungsi tanpa hambatan.";
-                if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 7.2 });
+                title = "Kondisi pH Pulih";
+                message = "Nilai pH kembali stabil di zona ideal 7.2. Filter biologis berfungsi normal kembali.";
+                if(activeMachineCode) update(ref(db, `data`), { ph: 7.2 });
             }
             notifications.unshift({ id: Date.now(), title, message, type, read: false });
             renderNotifications();
@@ -633,31 +769,28 @@
         // STATE: AI CHAT
         // =====================================
         let chatHistory = [
-            { role: 'model', text: 'Halo! Selamat bertemu di **LihatKebunku AI Smart Companion**! 🌿🐟\n\nSaya telah memuat data sensor IoT terkini. Tanyakan permasalahan daun menguning, pH air, atau gizi tanaman Anda!' }
+            { role: 'model', text: 'Halo! Saya **Agronomist AI** 🌿\n\nSaya sedang memonitor data sensor Anda. Ingin tahu analisis kesehatan tanaman atau saran pemberian nutrisi hari ini?' }
         ];
 
         function renderChat() {
             const container = document.getElementById('chat-container');
             container.innerHTML = '';
-
             chatHistory.forEach(msg => {
                 const isUser = msg.role === 'user';
-                const alignClass = isUser ? 'self-end' : 'self-start';
-                const bgClass = isUser ? 'bg-emerald-600 text-white rounded-br-sm' : 'bg-slate-100 text-slate-800 rounded-bl-sm';
-                const iconHtml = !isUser ? `<div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200 mt-1"><i data-lucide="sparkles" class="h-4 w-4"></i></div>` : '';
+                const alignWrap = isUser ? 'justify-end' : 'justify-start';
+                const bgClass = isUser ? 'bg-indigo-600 text-white rounded-br-sm shadow-indigo-600/20' : 'bg-slate-50 border border-slate-100 text-slate-700 rounded-bl-sm shadow-slate-200/50';
+                const iconHtml = !isUser ? `<div class="w-8 h-8 rounded-[0.8rem] bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100 mt-1 shadow-sm"><i data-lucide="sparkles" class="h-4 w-4"></i></div>` : '';
                 const formattedText = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
 
                 const msgHtml = `
-                <div class="flex gap-3 max-w-[85%] ${alignClass}">
+                <div class="flex gap-3 w-full ${alignWrap}">
                     ${iconHtml}
-                    <div class="p-3.5 rounded-2xl text-sm leading-relaxed shadow-sm ${bgClass}">
+                    <div class="max-w-[85%] md:max-w-[75%] p-4 rounded-[1.25rem] text-sm font-medium leading-relaxed shadow-sm ${bgClass}">
                         ${formattedText}
                     </div>
-                </div>
-                `;
+                </div>`;
                 container.innerHTML += msgHtml;
             });
-
             container.scrollTop = container.scrollHeight;
             lucide.createIcons();
         }
@@ -673,128 +806,126 @@
             renderChat();
 
             const container = document.getElementById('chat-container');
-            container.innerHTML += `<div id="ai-typing" class="self-start text-xs text-slate-400 font-medium italic p-2">AI sedang mengetik...</div>`;
+            container.innerHTML += `<div id="ai-typing" class="flex gap-3 w-full justify-start"><div class="w-8 h-8 rounded-[0.8rem] bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100 mt-1"><i data-lucide="loader-2" class="h-4 w-4 animate-spin"></i></div><div class="p-4 rounded-[1.25rem] rounded-bl-sm text-sm font-medium text-slate-400 bg-slate-50 border border-slate-100">Memproses data...</div></div>`;
             container.scrollTop = container.scrollHeight;
 
             setTimeout(() => {
                 document.getElementById('ai-typing')?.remove();
-                let reply = "Maaf, saya hanya AI simulasi untuk versi Front-End ini. Namun dari data yang saya baca, kebun Anda terlihat stabil!";
-                
+                let reply = "Semua metrik terlihat sangat baik. Teruskan perawatan rutin Anda, dan hasil panen akan optimal!";
                 if(text.toLowerCase().includes('ph') || text.toLowerCase().includes('asam')) {
-                    reply = "**Analisis AI:** pH air Anda adalah isu utama. Disarankan untuk mematikan pakan ikan selama 24 jam dan menambah sedikit *cangkang telur* atau *kapur pertanian* ke sistem filter.";
-                } else if(text.toLowerCase().includes('suhu') || text.toLowerCase().includes('panas')) {
-                    reply = "**Analisis AI:** Pompa sirkulasi air Anda sedang aktif. Ini bagus karena meningkatkan aerasi saat suhu naik.";
+                    reply = "**Analisis Sistem:** Jika pH terus menurun, kurangilah porsi pakan ikan sementara waktu. Penumpukan sisa pakan menghasilkan amonia yang merubah air menjadi asam.";
                 }
-
                 chatHistory.push({ role: 'model', text: reply });
                 renderChat();
-            }, 1500);
+            }, 1200);
         });
 
         // =====================================
         // NAVIGATION LOGIC
         // =====================================
-        const tabs = ['beranda', 'kontrol', 'ai', 'notifikasi', 'profile'];
-        
         window.switchTab = (targetTab) => {
-            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`view-${targetTab}`).classList.remove('hidden');
+            document.querySelectorAll('.view-section').forEach(el => {
+                el.classList.add('hidden'); el.classList.remove('animate-fade-in-up');
+            });
+            const targetEl = document.getElementById(`view-${targetTab}`);
+            targetEl.classList.remove('hidden');
+            // Re-trigger animation
+            void targetEl.offsetWidth; 
+            targetEl.classList.add('animate-fade-in-up');
             
+            // Desktop Nav Styling
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 if(btn.id === `nav-${targetTab}`) {
-                    btn.className = "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer bg-emerald-600 text-white shadow-md shadow-emerald-600/15 nav-btn relative";
+                    btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-bold transition-all cursor-pointer bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-100 group";
+                    const icon = btn.querySelector('i'); if(icon) icon.className = icon.className.replace('text-slate-500', 'text-emerald-600');
                 } else {
-                    btn.className = "w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer text-emerald-900 hover:bg-emerald-50 nav-btn relative";
+                    btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all cursor-pointer text-slate-500 hover:bg-white hover:text-slate-700 hover:shadow-sm group";
                 }
             });
 
+            // Mobile Nav Styling
             document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+                const bg = btn.querySelector('.nav-bg');
+                const text = btn.querySelector('span:not(.bg-rose-500)');
+                const icon = btn.querySelector('i');
                 if(btn.id === `mob-nav-${targetTab}`) {
-                    btn.className = "relative flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-emerald-600 font-bold mob-nav-btn";
+                    btn.classList.add('text-emerald-600'); btn.classList.remove('text-slate-400', 'hover:text-slate-600');
+                    if(bg) bg.classList.replace('opacity-0', 'opacity-100');
                 } else {
-                    btn.className = "relative flex-1 flex flex-col items-center justify-center py-3 rounded-xl transition-all cursor-pointer text-slate-400 mob-nav-btn";
+                    btn.classList.remove('text-emerald-600'); btn.classList.add('text-slate-400', 'hover:text-slate-600');
+                    if(bg) bg.classList.replace('opacity-100', 'opacity-0');
                 }
             });
 
-            if(targetTab === 'notifikasi') {
-                document.getElementById('mob-top-notif-badge').classList.add('hidden');
-            }
-
-            if(targetTab === 'notifikasi') renderNotifications();
+            if(targetTab === 'notifikasi') { document.getElementById('mob-top-notif-badge').classList.add('hidden'); renderNotifications(); }
             if(targetTab === 'ai') renderChat();
         };
 
         window.logout = () => {
-            activeMachineCode = "";
-            auth.signOut();
-            document.getElementById('app-view').classList.add('hidden');
-            document.getElementById('login-view').classList.remove('hidden');
+            activeMachineCode = ""; auth.signOut();
+            document.getElementById('app-view').classList.remove('opacity-100');
+            document.getElementById('app-view').classList.add('opacity-0');
+            setTimeout(() => {
+                document.getElementById('app-view').classList.add('hidden');
+                document.getElementById('login-view').classList.remove('hidden');
+            }, 500);
         };
 
         // =====================================
-        // LOGIN & FIREBASE DATABASE LOGIC
+        // LOGIN & FIREBASE LOGIC
         // =====================================
         const handleLogin = async (codeInput) => {
             const errorEl = document.getElementById('login-error');
+            const errorText = document.getElementById('login-error-text');
             const btnText = document.getElementById('login-btn-text');
             const passwordInput = document.getElementById('input-machine-password').value;
             
-            if(!codeInput) { errorEl.innerText = "Kode Mesin tidak boleh kosong."; errorEl.classList.remove('hidden'); return; }
+            if(!codeInput) { errorText.innerText = "Masukkan ID Mesin."; errorEl.classList.remove('hidden'); return; }
+            if(codeInput !== "lihatkebunku_01") { errorText.innerText = "Mesin tidak ditemukan dalam database."; errorEl.classList.remove('hidden'); return; }
+            if(passwordInput !== "admin123") { errorText.innerText = "Kata Sandi salah. Coba lagi."; errorEl.classList.remove('hidden'); return; }
+
+            btnText.innerText = "Mengecek Kredensial...";
             
-            if(codeInput !== "lihatkebunku_01") { errorEl.innerText = "Akses ditolak! Mesin tidak ditemukan."; errorEl.classList.remove('hidden'); return; }
-            if(passwordInput !== "admin123") { errorEl.innerText = "Sandi Mesin salah! (Petunjuk: admin123)"; errorEl.classList.remove('hidden'); return; }
-
-            btnText.innerText = "Mengecek Autentikasi...";
-
             try {
                 await signInWithEmailAndPassword(auth, "lihatkebun@gmail.com", "aquaponik");
-                btnText.innerText = "Menghubungkan ke Mesin...";
-
+                btnText.innerText = "Menghubungkan ke IoT...";
                 activeMachineCode = codeInput;
                 
                 document.getElementById('display-machine-id').innerText = activeMachineCode;
                 document.getElementById('profile-machine-id').innerText = activeMachineCode;
 
-                document.getElementById('login-view').classList.add('hidden');
-                document.getElementById('app-view').classList.remove('hidden');
-                errorEl.classList.add('hidden');
-
-                renderNotifications();
-                renderChat();
-                switchTab('beranda');
+                document.getElementById('login-view').classList.add('opacity-0');
+                setTimeout(() => {
+                    document.getElementById('login-view').classList.add('hidden');
+                    const appView = document.getElementById('app-view');
+                    appView.classList.remove('hidden');
+                    // slight delay to trigger fade in
+                    setTimeout(() => appView.classList.replace('opacity-0', 'opacity-100'), 50);
+                }, 500);
                 
-                // Memulai fungsi pendengar Firebase SEKARANG
+                errorEl.classList.add('hidden');
+                renderNotifications(); renderChat(); switchTab('beranda');
                 startFirebaseListeners();
 
             } catch (error) {
-                console.error(error);
-                if (error.code === 'auth/invalid-credential') {
-                    errorEl.innerText = "Gagal terhubung ke server Firebase. Cek pendaftaran email di Authentication.";
-                } else {
-                    errorEl.innerText = "Error Firebase: " + error.message;
-                }
+                if (error.code === 'auth/invalid-credential') errorText.innerText = "Koneksi server gagal. Cek konfigurasi Firebase.";
+                else errorText.innerText = "Error: " + error.message;
                 errorEl.classList.remove('hidden');
             } finally {
-                btnText.innerText = "Hubungkan Mesin";
+                btnText.innerText = "Hubungkan Sistem";
             }
         };
 
-        document.getElementById('btn-login').addEventListener('click', () => {
-            const code = document.getElementById('input-machine-code').value.trim();
-            handleLogin(code);
-        });
-
+        document.getElementById('btn-login').addEventListener('click', () => handleLogin(document.getElementById('input-machine-code').value.trim()));
         document.getElementById('btn-demo').addEventListener('click', () => {
-            document.getElementById('input-machine-code').value = "lihatkebunku_01";
-            document.getElementById('input-machine-password').value = "admin123";
+            document.getElementById('input-machine-code').value = "lihatkebunku_01"; document.getElementById('input-machine-password').value = "admin123";
             handleLogin("lihatkebunku_01");
         });
 
         // =====================================
-        // UI UPDATERS & FIREBASE LISTENERS
+        // UI METRICS UPDATER
         // =====================================
         function updateMetricsUI(data) {
-            // UPDATED LOGIC: Match specific keys from Firebase screenshot
             const dayaPanel = data.dayaPanel ?? '--';
             const kelembapan = data.kelembapan ?? '--';
             const ph = data.ph ?? '--';
@@ -802,7 +933,6 @@
             const suhuUdara = data.suhuUdara ?? '--';
             const tds = data.tds ?? '--';
 
-            // Set Values
             document.getElementById('val-dayaPanel').innerText = dayaPanel;
             document.getElementById('val-kelembapan').innerText = kelembapan;
             document.getElementById('val-ph').innerText = ph;
@@ -810,78 +940,62 @@
             document.getElementById('val-suhuUdara').innerText = suhuUdara;
             document.getElementById('val-tds').innerText = tds;
 
-            // Parse to float for logic
-            const numDayaPanel = parseFloat(dayaPanel) || 0;
-            const numKelembapan = parseFloat(kelembapan) || 0;
-            const numPh = parseFloat(ph) || 0;
-            const numSuhuAir = parseFloat(suhuAir) || 0;
-            const numSuhuUdara = parseFloat(suhuUdara) || 0;
-            const numTds = parseFloat(tds) || 0;
+            const nDP = parseFloat(dayaPanel) || 0; const nK = parseFloat(kelembapan) || 0;
+            const nPh = parseFloat(ph) || 0; const nSA = parseFloat(suhuAir) || 0;
+            const nSU = parseFloat(suhuUdara) || 0; const nTDS = parseFloat(tds) || 0;
 
-            // Logic Status Aman/Bahaya
-            const isDayaPanelSafe = numDayaPanel >= 10; // example logic
-            const isKelembapanSafe = numKelembapan >= 50 && numKelembapan <= 85;
-            const isPhSafe = numPh >= 6.5 && numPh <= 7.5;
-            const isSuhuAirSafe = numSuhuAir >= 24 && numSuhuAir <= 30;
-            const isSuhuUdaraSafe = numSuhuUdara >= 25 && numSuhuUdara <= 32;
-            const isTdsSafe = numTds < 500; // example logic for hydroponics/aquaponics
+            const isDP = nDP >= 10; const isK = nK >= 50 && nK <= 85;
+            const isPh = nPh >= 6.5 && nPh <= 7.5; const isSA = nSA >= 24 && nSA <= 30;
+            const isSU = nSU >= 25 && nSU <= 32; const isTDS = nTDS < 500;
 
-            const setBadge = (id, safe, val, safeText = 'Ideal', unsafeText = 'Kurang Baik') => {
+            const setBadge = (id, safe, txtSafe = 'Optimal', txtUnsafe = 'Perhatian') => {
                 const el = document.getElementById(id);
-                if (val === '--') {
-                    el.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-500`;
-                    el.innerText = 'No Data';
-                    return;
-                }
-                el.className = `text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${safe ? 'bg-emerald-50 text-emerald-700' : 'bg-red-50 text-red-600'}`;
-                el.innerText = safe ? safeText : unsafeText;
+                el.className = `text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full ${safe ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-rose-50 text-rose-600 border border-rose-100 animate-pulse'}`;
+                el.innerText = safe ? txtSafe : txtUnsafe;
             };
             
-            setBadge('badge-dayaPanel', isDayaPanelSafe, dayaPanel, 'Optimal', 'Rendah');
-            setBadge('badge-kelembapan', isKelembapanSafe, kelembapan);
-            setBadge('badge-ph', isPhSafe, ph);
-            setBadge('badge-suhuAir', isSuhuAirSafe, suhuAir);
-            setBadge('badge-suhuUdara', isSuhuUdaraSafe, suhuUdara);
-            setBadge('badge-tds', isTdsSafe, tds, 'Normal', 'Tinggi!');
+            setBadge('badge-dayaPanel', isDP, 'Cukup', 'Drop');
+            setBadge('badge-kelembapan', isK);
+            setBadge('badge-ph', isPh);
+            setBadge('badge-suhuAir', isSA);
+            setBadge('badge-suhuUdara', isSU);
+            setBadge('badge-tds', isTDS, 'Jernih', 'Keruh');
 
-            // Update Visual Progress Bar
-            document.getElementById('bar-dayaPanel').style.width = `${Math.min(100, (numDayaPanel / 50) * 100)}%`; // Assumed max 50W
-            document.getElementById('bar-dayaPanel').className = `h-full rounded-full transition-all duration-500 ${isDayaPanelSafe ? 'bg-amber-500' : 'bg-red-500'}`;
+            // Bar Styling (Gradient + Glow)
+            const styleBar = (id, pct, colorSafe, colorUnsafe, isSafe) => {
+                const el = document.getElementById(id);
+                el.style.width = `${pct}%`;
+                const safeClass = `bg-gradient-to-r from-${colorSafe}-400 to-${colorSafe}-500 shadow-[0_0_10px_rgba(var(--tw-colors-${colorSafe}-500),0.5)]`;
+                const unsafeClass = `bg-gradient-to-r from-rose-400 to-rose-500 shadow-[0_0_10px_rgba(244,63,94,0.5)]`;
+                // Simple parsing for dynamic tw classes isn't perfect in arbitrary runtime, using hardcoded for glow
+                el.className = `h-full rounded-full transition-all duration-1000 ease-out relative z-10 ${isSafe ? safeClass : unsafeClass}`;
+            };
 
-            document.getElementById('bar-kelembapan').style.width = `${numKelembapan}%`;
-            
-            document.getElementById('bar-ph').style.width = `${(numPh / 14) * 100}%`;
-            document.getElementById('bar-ph').className = `h-full rounded-full transition-all duration-500 ${isPhSafe ? 'bg-purple-500' : 'bg-red-500'}`;
-            
-            document.getElementById('bar-suhuAir').style.width = `${Math.min(100, Math.max(10, (numSuhuAir / 40) * 100))}%`;
-            document.getElementById('bar-suhuAir').className = `h-full rounded-full transition-all duration-500 ${isSuhuAirSafe ? 'bg-orange-500' : 'bg-red-500'}`;
-            
-            document.getElementById('bar-suhuUdara').style.width = `${Math.min(100, Math.max(10, (numSuhuUdara / 45) * 100))}%`;
-            document.getElementById('bar-suhuUdara').className = `h-full rounded-full transition-all duration-500 ${isSuhuUdaraSafe ? 'bg-red-500' : 'bg-orange-500'}`;
+            // Custom specific glow mappings to avoid raw interpolation issues
+            document.getElementById('bar-dayaPanel').className = `h-full rounded-full transition-all duration-1000 ease-out ${isDP ? 'bg-gradient-to-r from-amber-400 to-amber-500 shadow-[0_0_12px_rgba(245,158,11,0.6)]' : 'bg-gradient-to-r from-rose-400 to-rose-500 shadow-[0_0_12px_rgba(244,63,94,0.6)]'}`;
+            document.getElementById('bar-dayaPanel').style.width = `${Math.min(100, (nDP / 50) * 100)}%`;
 
-            document.getElementById('bar-tds').style.width = `${Math.min(100, (numTds / 2000) * 100)}%`; // Assumed max 2000ppm
-            document.getElementById('bar-tds').className = `h-full rounded-full transition-all duration-500 ${isTdsSafe ? 'bg-indigo-500' : 'bg-red-500'}`;
+            document.getElementById('bar-kelembapan').className = `h-full rounded-full transition-all duration-1000 ease-out ${isK ? 'bg-gradient-to-r from-blue-400 to-cyan-400 shadow-[0_0_12px_rgba(56,189,248,0.6)]' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
+            document.getElementById('bar-kelembapan').style.width = `${nK}%`;
+
+            document.getElementById('bar-ph').className = `h-full rounded-full transition-all duration-1000 ease-out relative z-10 ${isPh ? 'bg-gradient-to-r from-purple-400 to-fuchsia-400 shadow-[0_0_12px_rgba(192,132,252,0.6)]' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
+            document.getElementById('bar-ph').style.width = `${(nPh / 14) * 100}%`;
+
+            document.getElementById('bar-suhuAir').className = `h-full rounded-full transition-all duration-1000 ease-out ${isSA ? 'bg-gradient-to-r from-orange-400 to-amber-400 shadow-[0_0_12px_rgba(251,146,60,0.6)]' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
+            document.getElementById('bar-suhuAir').style.width = `${Math.min(100, Math.max(10, (nSA / 40) * 100))}%`;
+
+            document.getElementById('bar-suhuUdara').className = `h-full rounded-full transition-all duration-1000 ease-out ${isSU ? 'bg-gradient-to-r from-rose-300 to-pink-400 shadow-[0_0_12px_rgba(251,113,133,0.6)]' : 'bg-gradient-to-r from-orange-500 to-red-500'}`;
+            document.getElementById('bar-suhuUdara').style.width = `${Math.min(100, Math.max(10, (nSU / 45) * 100))}%`;
+
+            document.getElementById('bar-tds').className = `h-full rounded-full transition-all duration-1000 ease-out ${isTDS ? 'bg-gradient-to-r from-indigo-400 to-violet-400 shadow-[0_0_12px_rgba(129,140,248,0.6)]' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
+            document.getElementById('bar-tds').style.width = `${Math.min(100, (nTDS / 2000) * 100)}%`;
         }
 
         function startFirebaseListeners() {
-            // 1. DATA SENSOR KEBUN (Dari Path: data)
-            // UPDATED: Now listens to the "data" node which matches your screenshot
-            onValue(ref(db, `data`), (snapshot) => {
-                if (snapshot.exists()) {
-                    updateMetricsUI(snapshot.val());
-                } else {
-                    console.log("No data available at 'data' path");
-                }
-            });
-
-            // 2. DATA KONTROL AKTUATOR (Dari Path: control - Assuming it's at the root level alongside 'data' or inside machines node)
-            // Note: Since the screenshot only showed 'data', I am leaving this pointing to the machine specific control path for now,
-            // or you can adjust it to ref(db, 'control') if your control nodes are at the root level too.
+            onValue(ref(db, `data`), (snapshot) => { if (snapshot.exists()) updateMetricsUI(snapshot.val()); });
             onValue(ref(db, `machines/${activeMachineCode}/control`), (snapshot) => {
                 if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    currentControls = data;
-                    
+                    const data = snapshot.val(); currentControls = data;
                     if(data.waterPump !== undefined) applyControlUI('waterPump', data.waterPump);
                     if(data.uvLight !== undefined) applyControlUI('uvLight', data.uvLight);
                     if(data.autoFeeder !== undefined) applyControlUI('autoFeeder', data.autoFeeder);
@@ -891,74 +1005,42 @@
 
         window.toggleControl = (device) => {
             const newState = !currentControls[device];
-            
-            // Update tampilan langsung agar terasa cepat
-            applyControlUI(device, newState);
-            currentControls[device] = newState;
-
-            // Update HANYA kunci perangkat spesifik di dalam path "control"
+            applyControlUI(device, newState); currentControls[device] = newState;
             set(ref(db, `machines/${activeMachineCode}/control/${device}`), newState).catch((err) => {
-                console.error("Gagal Firebase sync:", err);
-                // Kembalikan tombol jika gagal
-                applyControlUI(device, !newState);
-                currentControls[device] = !newState;
+                console.error(err); applyControlUI(device, !newState); currentControls[device] = !newState;
             });
         };
 
         function applyControlUI(device, isActive) {
-            let btnId, dotId, iconId, cardId, descId, powerId, themeColor, onIconClass, descOn, descOff, powerText;
+            let config = {
+                waterPump: { color: 'blue', power: '12.4 W', iconOn: 'text-blue-500 animate-pulse', desc: ['Aktif. Sirkulasi nutrisi dan oksigen berjalan stabil.', 'Nonaktif. Berisiko penumpukan amonia.'] },
+                uvLight: { color: 'amber', power: '8.5 W', iconOn: 'text-amber-500', desc: ['Aktif. Memberikan spektrum cahaya esensial fotosintesis.', 'Padam. Menghemat daya saat cuaca cerah.'] },
+                autoFeeder: { color: 'emerald', power: 'Standby', iconOn: 'text-emerald-500', desc: ['Jadwal Aktif. Ikan akan menerima pakan sesuai timer.', 'Manual. Berikan pakan sendiri.'] }
+            }[device];
 
-            if(device === 'waterPump') {
-                btnId = 'btn-pump'; dotId = 'dot-pump'; iconId = 'icon-pump'; cardId = 'card-pump'; descId = 'desc-pump'; powerId = 'power-pump';
-                themeColor = 'emerald'; onIconClass = "bg-emerald-600 text-white animate-bounce";
-                descOn = `<i data-lucide="zap" class="h-3 w-3 text-emerald-600 animate-pulse shrink-0"></i><span>Tekanan sirkulasi berjalan lancar. Mengisap amonia kolam ke media filter tanaman.</span>`;
-                descOff = `<i data-lucide="info" class="h-3 w-3 text-red-600 shrink-0"></i><span class="text-red-800">Aliran air mati! Tanaman kangkung tidak menerima gizi dan ikan kekurangan oksigen.</span>`;
-                powerText = isActive ? '12.4 Watt' : '0.0 Watt';
-            } else if(device === 'uvLight') {
-                btnId = 'btn-uv'; dotId = 'dot-uv'; iconId = 'icon-uv'; cardId = 'card-uv'; descId = 'desc-uv'; powerId = 'power-uv';
-                themeColor = 'amber'; onIconClass = "bg-amber-500 text-white shadow-lg shadow-amber-200";
-                descOn = `<i data-lucide="zap" class="h-3 w-3 text-amber-600 animate-pulse shrink-0"></i><span>Spektrum fotosintesis murni aktif. Meniru spektrum sinar matahari agar daun tanaman tegak segar.</span>`;
-                descOff = `<i data-lucide="info" class="h-3 w-3 text-slate-500 shrink-0"></i><span>Lampu padam. Tanaman mengandalkan cahaya ambien ruangan saja saat ini.</span>`;
-                powerText = isActive ? '8.5 Watt' : '0.0 Watt';
-            } else {
-                btnId = 'btn-feeder'; dotId = 'dot-feeder'; iconId = 'icon-feeder'; cardId = 'card-feeder'; descId = 'desc-feeder';
-                themeColor = 'orange'; onIconClass = "bg-orange-600 text-white animate-pulse";
-                descOn = `<i data-lucide="check" class="h-3 w-3 text-orange-600 shrink-0"></i><span>Pakan otomatis menyala secara terjadwal. Ikan nila mendapat asupan gizi konsisten.</span>`;
-                descOff = `<i data-lucide="info" class="h-3 w-3 text-slate-500 shrink-0"></i><span>Pakan otomatis mati. Anda perlu memberi pakan ikan secara manual.</span>`;
-            }
-
-            const cardEl = document.getElementById(cardId);
-            const btnEl = document.getElementById(btnId);
-            const dotEl = document.getElementById(dotId);
-            const iconEl = document.getElementById(iconId);
-            const descEl = document.getElementById(descId);
-            const powerEl = document.getElementById(powerId);
+            const btnEl = document.getElementById(`btn-${device.split('L')[0].replace('autoF','f')}`);
+            const dotEl = document.getElementById(`dot-${device.split('L')[0].replace('autoF','f')}`);
+            const iconWrap = document.getElementById(`icon-${device.split('L')[0].replace('autoF','f')}`);
+            const cardEl = document.getElementById(`card-${device.split('L')[0].replace('autoF','f')}`);
+            const descEl = document.getElementById(`desc-${device.split('L')[0].replace('autoF','f')}`);
+            const pwrEl = document.getElementById(`power-${device.split('L')[0].replace('autoF','f')}`);
 
             if (isActive) {
-                btnEl.className = "w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-emerald-600";
-                dotEl.className = "bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-6";
-                dotEl.style.width = "18px"; dotEl.style.height = "18px";
-                iconEl.className = `p-3 rounded-2xl transition-all duration-300 ${onIconClass}`;
-                cardEl.className = "bg-white p-6 rounded-3xl border transition-all duration-300 shadow-md flex flex-col justify-between border-emerald-500/30 ring-1 ring-emerald-500/10";
-                if(device === 'autoFeeder') cardEl.classList.add('lg:col-span-2');
-                descEl.className = `mt-4 p-2.5 rounded-xl border text-[10px] flex items-center gap-2 bg-${themeColor}-50 border-${themeColor}-100/60 text-${themeColor}-800`;
-                descEl.innerHTML = descOn;
+                btnEl.className = `w-14 h-8 bg-${config.color}-500 rounded-full transition-colors duration-300 shadow-inner p-1`;
+                dotEl.className = "bg-white w-6 h-6 rounded-full shadow-[0_2px_5px_rgba(0,0,0,0.2)] transform transition-transform duration-300 translate-x-6";
+                iconWrap.className = `w-14 h-14 rounded-2xl bg-${config.color}-50 flex items-center justify-center transition-all duration-500 border border-${config.color}-200 shadow-inner ${config.iconOn}`;
+                cardEl.className = `bg-white p-6 md:p-8 rounded-[2rem] border transition-all duration-500 flex flex-col justify-between group border-${config.color}-300 shadow-lg shadow-${config.color}-900/5 lg:col-span-${device==='autoFeeder'?'2':'1'}`;
+                descEl.className = `mt-6 p-4 rounded-2xl border text-xs flex gap-3 font-semibold leading-relaxed transition-colors duration-300 bg-${config.color}-50/50 border-${config.color}-100 text-${config.color}-800`;
+                descEl.innerHTML = `<i data-lucide="zap" class="h-4 w-4 shrink-0 text-${config.color}-500"></i><span>${config.desc[0]}</span>`;
             } else {
-                btnEl.className = "w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-300 bg-slate-200";
-                dotEl.className = "bg-white rounded-full shadow-md transform transition-transform duration-300 translate-x-0";
-                dotEl.style.width = "18px"; dotEl.style.height = "18px";
-                iconEl.className = "p-3 rounded-2xl transition-all duration-300 bg-slate-100 text-slate-400";
-                cardEl.className = "bg-white p-6 rounded-3xl border transition-all duration-300 shadow-sm flex flex-col justify-between border-emerald-100/70";
-                if(device === 'autoFeeder') cardEl.classList.add('lg:col-span-2');
-                if(device === 'waterPump') {
-                    descEl.className = "mt-4 p-2.5 rounded-xl border text-[10px] flex items-center gap-2 bg-red-50 border-red-100/60";
-                } else {
-                    descEl.className = "mt-4 p-2.5 rounded-xl border text-[10px] flex items-center gap-2 bg-slate-50 border-slate-100/60 text-slate-500";
-                }
-                descEl.innerHTML = descOff;
+                btnEl.className = "w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1";
+                dotEl.className = "bg-white w-6 h-6 rounded-full shadow-sm transform transition-transform duration-300 translate-x-0";
+                iconWrap.className = "w-14 h-14 rounded-2xl bg-slate-50 text-slate-400 flex items-center justify-center transition-all duration-500 border border-slate-100";
+                cardEl.className = `bg-white p-6 md:p-8 rounded-[2rem] border border-slate-200 transition-all duration-500 flex flex-col justify-between group lg:col-span-${device==='autoFeeder'?'2':'1'}`;
+                descEl.className = "mt-6 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs text-slate-500 flex gap-3 font-medium leading-relaxed transition-colors duration-300";
+                descEl.innerHTML = `<i data-lucide="power-off" class="h-4 w-4 shrink-0 text-slate-400"></i><span>${config.desc[1]}</span>`;
             }
-
-            if(powerEl) powerEl.innerText = powerText;
+            if(pwrEl && device !== 'autoFeeder') pwrEl.innerText = isActive ? config.power : '0.0 W';
             lucide.createIcons();
         }
     </script>
