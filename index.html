@@ -191,6 +191,10 @@
  <span class="bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-sm shadow-orange-500/20">PRO</span>
  </button>
 
+ <button onclick="switchTab('komunitas')" id="nav-komunitas" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-sm">
+ <div class="flex items-center gap-3"><i data-lucide="users" class="h-4 w-4"></i><span>Komunitas</span></div>
+ </button>
+
  <button onclick="switchTab('notifikasi')" id="nav-notifikasi" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-sm">
  <div class="flex items-center gap-3"><i data-lucide="bell" class="h-4 w-4"></i><span>Notifikasi</span></div>
  <span id="desk-notif-badge" class="hidden bg-rose-500 text-white font-bold text-[9px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-sm shadow-rose-500/20">0</span>
@@ -550,6 +554,33 @@
  </div>
 
  <!-- ========================================== -->
+ <!-- VIEW: KOMUNITAS -->
+ <!-- ========================================== -->
+ <div id="view-komunitas" class="hidden view-section flex flex-col h-[calc(100vh-7.5rem)] md:h-[calc(100vh-5.5rem)] animate-fade-in-up">
+ <div class="glass-card bg-gradient-to-r from-emerald-600 to-teal-600 text-white p-6 rounded-[2rem] shadow-lg shadow-emerald-900/10 mb-4 shrink-0 flex items-center justify-between relative overflow-hidden border-none">
+ <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/20 rounded-full filter blur-2xl"></div>
+ <div class="relative z-10">
+ <h1 class="text-lg md:text-xl font-bold flex items-center gap-2.5">
+ <span class="p-2 rounded-xl bg-white/20 backdrop-blur-md"><i data-lucide="users" class="text-white h-4 w-4"></i></span>
+ Komunitas Petani
+ </h1>
+ <p class="text-xs text-emerald-50 font-normal mt-1">Diskusi real-time dengan pengguna sistem LihatKebunku lainnya.</p>
+ </div>
+ </div>
+ 
+ <div id="community-chat-container" class="flex-grow glass-card border border-slate-200/80 rounded-[2rem] p-4 md:p-6 overflow-y-auto space-y-4 mb-4 shadow-inner flex flex-col scroll-smooth bg-slate-50/50">
+ <!-- Messages injected via JS -->
+ </div>
+
+ <form id="community-form" class="glass-card p-2 rounded-[2rem] border border-slate-200/80 shadow-xs flex items-center shrink-0 focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all bg-white">
+ <input type="text" id="community-input" class="flex-grow px-4 py-3 outline-none text-xs md:text-sm font-normal text-slate-700 placeholder:text-slate-400 bg-transparent" placeholder="Ketik pesan ke komunitas petani...">
+ <button type="submit" class="p-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl transition-all cursor-pointer shadow-md shadow-emerald-600/20 active:scale-95 group">
+ <i data-lucide="send" class="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+ </button>
+ </form>
+ </div>
+
+ <!-- ========================================== -->
  <!-- VIEW: NOTIFIKASI -->
  <!-- ========================================== -->
  <div id="view-notifikasi" class="space-y-6 hidden view-section animate-fade-in-up">
@@ -590,21 +621,32 @@ Pusat Notifikasi Sistem
  <div class="flex flex-col md:flex-row items-center gap-6 text-center md:text-left relative z-10">
  <div class="relative">
  <div class="w-24 h-24 bg-gradient-to-tr from-slate-800 to-slate-700 text-white flex items-center justify-center rounded-[2rem] text-3xl font-bold shadow-xl shadow-slate-900/15 border-4 border-white">
- A
+ <i data-lucide="user" class="w-10 h-10"></i>
  </div>
  <div class="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-white"><i data-lucide="check" class="w-3.5 h-3.5 font-bold"></i></div>
  </div>
  <div>
- <span class="text-[10px] font-semibold uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-lg">Administrator Utama</span>
- <h2 class="text-xl md:text-2xl font-bold text-slate-800 mt-2 tracking-tight" id="profile-email">lihatkebun@gmail.com</h2>
+ <span class="text-[10px] font-semibold uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-lg">Pengguna Sistem Terhubung</span>
+ <h2 class="text-xl md:text-2xl font-bold text-slate-800 mt-2 tracking-tight" id="profile-display-name">Memuat Profil...</h2>
  <p class="text-xs font-normal text-slate-500 mt-1.5 flex items-center justify-center md:justify-start gap-1.5">
- <i data-lucide="shield-check" class="h-4 w-4 text-emerald-600"></i> Terlindungi dan Terverifikasi oleh Firebase Auth
+ <i data-lucide="shield-check" class="h-4 w-4 text-emerald-600"></i> Terlindungi dan Terverifikasi oleh Firebase
  </p>
  </div>
  </div>
  </div>
 
  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+ <!-- EDIT PROFILE CARD -->
+ <div class="glass-card p-6 rounded-[1.75rem] border border-slate-200/80 shadow-sm md:col-span-2">
+ <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider"><i data-lucide="user-pen" class="w-4 h-4 text-slate-400"></i> Pengaturan Profil Pengguna</h3>
+ <div class="flex flex-col md:flex-row gap-3">
+ <input type="text" id="input-profile-name" class="flex-grow px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs md:text-sm outline-none focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-slate-700 placeholder:text-slate-400" placeholder="Ketik nama petani atau username baru Anda...">
+ <button onclick="saveProfileName()" id="btn-save-profile" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3.5 rounded-2xl text-xs font-semibold shadow-lg shadow-emerald-600/20 active:scale-95 transition-all shrink-0 flex items-center justify-center gap-2">
+ <i data-lucide="save" class="w-4 h-4"></i> Simpan Profil
+ </button>
+ </div>
+ </div>
+
  <div class="glass-card p-6 rounded-[1.75rem] border border-slate-200/80 shadow-sm">
  <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider"><i data-lucide="cpu" class="w-4 h-4 text-slate-400"></i> Detail Perangkat IoT</h3>
  <div class="space-y-1">
@@ -655,6 +697,11 @@ Pusat Notifikasi Sistem
  <i data-lucide="sparkles" class="h-4 w-4 relative z-10"></i>
  <span class="text-[9px] mt-1 font-semibold relative z-10">AI Chat</span>
  </button>
+ <button onclick="switchTab('komunitas')" id="mob-nav-komunitas" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-2 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
+ <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
+ <i data-lucide="users" class="h-4 w-4 relative z-10"></i>
+ <span class="text-[9px] mt-1 font-semibold relative z-10">Sosial</span>
+ </button>
  <button onclick="switchTab('notifikasi')" id="mob-nav-notifikasi" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-2 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
  <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
  <div class="relative z-10">
@@ -678,7 +725,7 @@ Pusat Notifikasi Sistem
  <!-- ========================================== -->
  <script type="module">
  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
- import { getDatabase, ref, get, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+ import { getDatabase, ref, get, set, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
  const firebaseConfig = {
@@ -697,6 +744,7 @@ Pusat Notifikasi Sistem
  const auth = getAuth(app);
 
  let activeMachineCode = "";
+ let currentUsername = "Petani";
  let currentControls = { waterPump: false, uvLight: false, autoFeeder: false };
 
  lucide.createIcons();
@@ -874,6 +922,10 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 
  if(targetTab === 'notifikasi') { document.getElementById('mob-top-notif-badge').classList.add('hidden'); renderNotifications(); }
  if(targetTab === 'ai') renderChat();
+ if(targetTab === 'komunitas') { 
+ const container = document.getElementById('community-chat-container');
+ container.scrollTop = container.scrollHeight;
+ }
  };
 
  window.logout = () => {
@@ -1008,7 +1060,110 @@ setBadge('badge-dayaPanel', isDP, 'Cukup', 'Drop');
  if(data.autoFeeder !== undefined) applyControlUI('autoFeeder', data.autoFeeder);
  }
  });
+
+ // Listener Profil Username
+ onValue(ref(db, `profiles/${activeMachineCode}/name`), (snapshot) => {
+ if(snapshot.exists()) {
+ currentUsername = snapshot.val();
+ } else {
+ // Default Name fallback jika belum pernah diedit
+ currentUsername = "Petani " + (activeMachineCode.split('_')[1] || "Anonim");
  }
+ document.getElementById('profile-display-name').innerText = currentUsername;
+ document.getElementById('input-profile-name').value = currentUsername;
+ });
+
+ // Listener Chat Komunitas Global
+ onValue(ref(db, 'community/messages'), (snapshot) => {
+ renderCommunityMessages(snapshot.val());
+ });
+ }
+
+ // =====================================
+ // FITUR KOMUNITAS & PROFIL PENGGUNA
+ // =====================================
+ function renderCommunityMessages(messagesObj) {
+ const container = document.getElementById('community-chat-container');
+ container.innerHTML = '';
+ if(!messagesObj) {
+ container.innerHTML = '<div class="flex-grow flex flex-col items-center justify-center text-slate-400 opacity-70"><i data-lucide="message-square-dashed" class="w-10 h-10 mb-2"></i><p class="text-xs">Belum ada obrolan. Jadilah yang pertama menyapa!</p></div>';
+ lucide.createIcons();
+ return;
+ }
+ 
+ const msgs = Object.values(messagesObj).sort((a,b) => a.timestamp - b.timestamp);
+ 
+ msgs.forEach(msg => {
+ const isMe = msg.senderId === activeMachineCode;
+ const alignWrap = isMe ? 'justify-end' : 'justify-start';
+ const bgClass = isMe ? 'bg-emerald-600 text-white rounded-br-sm shadow-sm' : 'bg-white border border-slate-200/70 text-slate-700 rounded-bl-sm shadow-xs';
+ const timeStr = new Date(msg.timestamp).toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+ 
+ const nameHtml = !isMe ? `<div class="text-[10px] font-bold text-slate-500 mb-1 ml-1 flex items-center gap-1"><i data-lucide="user" class="w-3 h-3"></i> ${msg.senderName}</div>` : '';
+ 
+ const msgHtml = `
+ <div class="flex flex-col w-full ${isMe ? 'items-end' : 'items-start'} mb-3">
+ ${nameHtml}
+ <div class="max-w-[85%] md:max-w-[75%] p-3.5 rounded-[1.25rem] text-xs md:text-sm font-normal leading-relaxed ${bgClass} relative">
+ ${msg.text}
+ <div class="text-[9px] mt-1.5 opacity-60 ${isMe ? 'text-emerald-100' : 'text-slate-400'} text-right w-full font-medium tracking-wide">${timeStr}</div>
+ </div>
+ </div>`;
+ container.innerHTML += msgHtml;
+ });
+ container.scrollTop = container.scrollHeight;
+ lucide.createIcons();
+ }
+
+ document.getElementById('community-form').addEventListener('submit', async (e) => {
+ e.preventDefault();
+ const input = document.getElementById('community-input');
+ const text = input.value.trim();
+ if(!text) return;
+ 
+ input.value = ''; // Bersihkan input segera untuk kenyamanan UI
+ 
+ try {
+ await push(ref(db, 'community/messages'), {
+ text: text,
+ senderId: activeMachineCode, // Tetap gunakan ID Mesin asli di DB
+ senderName: currentUsername, // Gunakan custom Profil Nama
+ timestamp: Date.now()
+ });
+ } catch(e) {
+ console.error("Gagal mengirim pesan komunitas", e);
+ }
+ });
+
+ window.saveProfileName = async () => {
+ const newName = document.getElementById('input-profile-name').value.trim();
+ if(!newName) return;
+ 
+ const btn = document.getElementById('btn-save-profile');
+ const origHtml = btn.innerHTML;
+ btn.innerHTML = '<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Menyimpan...';
+ 
+ try {
+ await set(ref(db, `profiles/${activeMachineCode}/name`), newName);
+ btn.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4"></i> Tersimpan!';
+ btn.classList.replace('bg-emerald-600', 'bg-teal-600');
+ setTimeout(() => {
+ btn.innerHTML = origHtml;
+ btn.classList.replace('bg-teal-600', 'bg-emerald-600');
+ lucide.createIcons();
+ }, 2000);
+ } catch(e) {
+ console.error("Gagal simpan profil", e);
+ btn.innerHTML = '<i data-lucide="alert-circle" class="w-4 h-4"></i> Gagal';
+ btn.classList.replace('bg-emerald-600', 'bg-rose-600');
+ setTimeout(() => {
+ btn.innerHTML = origHtml;
+ btn.classList.replace('bg-rose-600', 'bg-emerald-600');
+ lucide.createIcons();
+ }, 2000);
+ }
+ lucide.createIcons();
+ };
 
  window.toggleControl = (device) => {
  const newState = !currentControls[device];
