@@ -524,7 +524,7 @@
  </div>
 
  <!-- ========================================== -->
- <!-- VIEW: KOMUNITAS PETANI (FITUR BARU) -->
+ <!-- VIEW: KOMUNITAS PETANI (DENGAN FITUR BALAS) -->
  <!-- ========================================== -->
  <div id="view-komunitas" class="space-y-6 hidden view-section animate-fade-in-up">
  <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-slate-200/80 shadow-sm relative overflow-hidden">
@@ -537,7 +537,7 @@
  </div>
  <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Forum Komunitas Petani 🌾</h1>
  <p class="text-xs md:text-sm text-slate-500 font-normal mt-1 max-w-xl leading-relaxed">
- Tempat berbagi pengalaman, tips nutrisi, kendala sensor, dan diskusi antar sesama pemilik mesin aquaponics.
+ Tempat berbagi pengalaman, tips nutrisi, kendala sensor, dan saling membalas diskusi antar pemilik mesin aquaponics.
  </p>
  </div>
  <button onclick="toggleCommunityPostForm()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs px-5 py-3.5 rounded-2xl flex items-center gap-2 shadow-lg shadow-emerald-600/20 active:scale-95 transition-all shrink-0 cursor-pointer">
@@ -597,7 +597,7 @@
  <button onclick="filterCommunityCategory('Hasil Panen')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">🥬 Hasil Panen</button>
  </div>
 
- <!-- Feed Komunitas (Container Postingan) -->
+ <!-- Feed Komunitas (Container Postingan & Utas Balasan) -->
  <div id="community-feed" class="space-y-4">
  <div class="text-center p-10 glass-card rounded-[2rem]">
  <i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto text-emerald-600 mb-2"></i>
@@ -879,7 +879,7 @@
  };
 
  // =====================================
- // STATE & LOGIC: KOMUNITAS FIREBASE (FITUR BARU)
+ // STATE & LOGIC: KOMUNITAS FIREBASE (FITUR POST & BALAS)
  // =====================================
  let communityPostsList = [];
  let activeCategoryFilter = "Semua";
@@ -889,6 +889,13 @@
  form.classList.toggle('hidden');
  if(!form.classList.contains('hidden')) {
  document.getElementById('post-author').value = activeMachineCode ? `Petani (${activeMachineCode})` : "Pengguna LihatKebunku";
+ }
+ };
+
+ window.toggleReplySection = (postId) => {
+ const replyBox = document.getElementById(`reply-section-${postId}`);
+ if(replyBox) {
+ replyBox.classList.toggle('hidden');
  }
  };
 
@@ -923,7 +930,15 @@
  category: 'Tips & Trik',
  message: 'Tips menjaga pH air tetap stabil di angka 6.8: selalu cek biofilter setiap 3 hari sekali dan kurangi pakan berlebih di malam hari.',
  timestamp: Date.now() - 3600000,
- likes: 12
+ likes: 12,
+ replies: {
+ 'r-1': {
+ author: 'Budi Santoso',
+ machineId: 'lihatkebunku_03',
+ message: 'Terima kasih tipsnya Pak Herman! Sangat membantu sistem aquaponics saya.',
+ timestamp: Date.now() - 1800000
+ }
+ }
  },
  {
  id: 'demo-2',
@@ -932,7 +947,8 @@
  category: 'Nutrisi & Pakan',
  message: 'Tanaman kangkung dan selada saya tumbuh sangat subur dengan bantuan LED UV otomatis! Hasil panen minggu ini melimpah.',
  timestamp: Date.now() - 86400000,
- likes: 8
+ likes: 8,
+ replies: {}
  }
  ];
  }
@@ -969,6 +985,33 @@
  else if(post.category === 'Tips & Trik') catBadgeColor = "bg-amber-50 text-amber-700 border-amber-200";
  else if(post.category === 'Nutrisi & Pakan') catBadgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
 
+ // Konversi replies object ke array
+ const repliesObj = post.replies || {};
+ const repliesArray = Object.keys(repliesObj).map(rKey => ({
+ id: rKey,
+ ...repliesObj[rKey]
+ })).sort((a,b) => a.timestamp - b.timestamp);
+
+ let repliesListHtml = '';
+ repliesArray.forEach(reply => {
+ const replyDate = new Date(reply.timestamp).toLocaleDateString('id-ID', {
+ day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+ });
+ repliesListHtml += `
+ <div class="flex items-start gap-2.5 bg-slate-50/80 p-3 rounded-xl border border-slate-200/60 text-xs">
+ <div class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0">
+ ${reply.author ? reply.author.charAt(0).toUpperCase() : 'R'}
+ </div>
+ <div class="flex-grow">
+ <div class="flex items-center justify-between mb-0.5">
+ <span class="font-bold text-slate-700 text-[11px]">${reply.author || 'Petani'}</span>
+ <span class="text-[9px] text-slate-400">${replyDate}</span>
+ </div>
+ <p class="text-slate-600 font-normal leading-relaxed text-[11px]">${reply.message}</p>
+ </div>
+ </div>`;
+ });
+
  const postHtml = `
  <div class="glass-card p-5 md:p-6 rounded-[1.75rem] border border-slate-200/80 shadow-xs hover:border-emerald-200 transition-all">
  <div class="flex items-start justify-between gap-3 mb-3">
@@ -991,12 +1034,37 @@
  ${post.message}
  </p>
 
+ <!-- Tombol Aksi (Like & Balas) -->
  <div class="flex items-center justify-between pt-2 border-t border-slate-100">
+ <div class="flex items-center gap-2">
  <button onclick="likeCommunityPost('${post.id}', ${post.likes || 0})" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-600 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 cursor-pointer shadow-2xs active:scale-95">
  <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500"></i>
  <span class="font-semibold text-slate-700">${post.likes || 0}</span> Suka
  </button>
- <span class="text-[10px] text-slate-400 font-medium">Tersimpan di Firebase Database</span>
+ <button onclick="toggleReplySection('${post.id}')" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-600 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 cursor-pointer shadow-2xs active:scale-95">
+ <i data-lucide="message-square" class="w-3.5 h-3.5 text-emerald-600"></i>
+ <span class="font-semibold text-slate-700">${repliesArray.length}</span> Balas
+ </button>
+ </div>
+ <span class="text-[10px] text-slate-400 font-medium hidden sm:inline">Tersimpan di Firebase</span>
+ </div>
+
+ <!-- Area Balasan (Nested Reply Threads) -->
+ <div id="reply-section-${post.id}" class="mt-4 pt-3 border-t border-slate-100 space-y-3 ${repliesArray.length > 0 ? '' : 'hidden'}">
+ ${repliesArray.length > 0 ? `
+ <div class="space-y-2.5 pl-2 border-l-2 border-emerald-200">
+ ${repliesListHtml}
+ </div>
+ ` : ''}
+
+ <!-- Form Tambah Balasan Inline -->
+ <form onsubmit="submitReply(event, '${post.id}')" class="flex gap-2 items-center mt-2">
+ <input type="text" id="reply-author-${post.id}" placeholder="Nama Anda" value="${activeMachineCode ? 'Petani ('+activeMachineCode+')' : ''}" required class="w-28 bg-white border border-slate-200 rounded-xl px-2.5 py-2 text-[11px] font-medium text-slate-700 focus:outline-none focus:border-emerald-500">
+ <input type="text" id="reply-input-${post.id}" placeholder="Tulis balasan..." required class="flex-grow bg-white border border-slate-200 rounded-xl px-3 py-2 text-[11px] font-medium text-slate-700 focus:outline-none focus:border-emerald-500">
+ <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1 shrink-0 active:scale-95">
+ <i data-lucide="send" class="w-3 h-3"></i>
+ </button>
+ </form>
  </div>
  </div>`;
  feedEl.innerHTML += postHtml;
@@ -1025,7 +1093,8 @@
  category,
  message,
  timestamp: Date.now(),
- likes: 0
+ likes: 0,
+ replies: {}
  });
 
  document.getElementById('post-message').value = '';
@@ -1039,6 +1108,47 @@
  lucide.createIcons();
  }
  });
+
+ window.submitReply = async (event, postId) => {
+ event.preventDefault();
+ const authorInput = document.getElementById(`reply-author-${postId}`);
+ const messageInput = document.getElementById(`reply-input-${postId}`);
+
+ const author = authorInput ? authorInput.value.trim() : 'Petani';
+ const message = messageInput ? messageInput.value.trim() : '';
+
+ if(!author || !message) return;
+
+ if(postId.startsWith('demo-')) {
+ const p = communityPostsList.find(x => x.id === postId);
+ if(p) {
+ if(!p.replies) p.replies = {};
+ const rId = 'r-' + Date.now();
+ p.replies[rId] = {
+ author,
+ machineId: activeMachineCode || 'lihatkebunku_01',
+ message,
+ timestamp: Date.now()
+ };
+ renderCommunityFeed();
+ }
+ return;
+ }
+
+ try {
+ const replyRef = push(ref(db, `community_posts/${postId}/replies`));
+ await set(replyRef, {
+ author,
+ machineId: activeMachineCode || 'lihatkebunku_01',
+ message,
+ timestamp: Date.now()
+ });
+ if(messageInput) messageInput.value = '';
+ } catch(err) {
+ console.error("Gagal membalas pesan:", err);
+ alert("Terjadi kesalahan saat membalas pesan.");
+ }
+ };
 
  window.likeCommunityPost = async (postId, currentLikes) => {
  if(postId.startsWith('demo-')) {
