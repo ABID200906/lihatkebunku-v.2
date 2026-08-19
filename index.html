@@ -31,6 +31,8 @@
  'float': 'float 6s ease-in-out infinite',
  'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
  'shimmer': 'shimmer 2.5s infinite linear',
+ 'wave': 'wave 2.5s infinite',
+ 'slide-in-right': 'slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards',
  },
  keyframes: {
  fadeInUp: {
@@ -48,6 +50,19 @@
  shimmer: {
  '0%': { backgroundPosition: '-200% 0' },
  '100%': { backgroundPosition: '200% 0' }
+ },
+ wave: {
+ '0%': { transform: 'rotate(0deg)' },
+ '10%': { transform: 'rotate(14deg)' },
+ '20%': { transform: 'rotate(-8deg)' },
+ '30%': { transform: 'rotate(14deg)' },
+ '40%': { transform: 'rotate(-4deg)' },
+ '50%': { transform: 'rotate(10deg)' },
+ '60%, 100%': { transform: 'rotate(0deg)' }
+ },
+ slideInRight: {
+ '0%': { opacity: '0', transform: 'translateX(50px)' },
+ '100%': { opacity: '1', transform: 'translateX(0)' }
  }
  }
  }
@@ -100,11 +115,29 @@
  <div class="fixed top-[-10%] right-[-5%] w-[450px] h-[450px] rounded-full bg-emerald-200/20 blur-[120px] z-[-1] pointer-events-none"></div>
  <div class="fixed bottom-[-10%] left-[-5%] w-[450px] h-[450px] rounded-full bg-teal-200/20 blur-[120px] z-[-1] pointer-events-none"></div>
 
+ <!-- ========================================== -->
+ <!-- CUSTOM MODALS & TOASTS (Replacing alert/confirm) -->
+ <!-- ========================================== -->
+ <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+ <div id="custom-confirm" class="hidden fixed inset-0 z-[100] bg-slate-900/40 backdrop-blur-sm flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="glass-card p-6 md:p-8 rounded-[2rem] max-w-sm w-full mx-auto text-center border border-white/80 shadow-[0_20px_50px_rgba(0,0,0,0.2)] animate-fade-in-up">
+       <div id="confirm-icon-wrapper" class="w-16 h-16 bg-rose-100 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-inner border border-rose-200/50">
+           <i data-lucide="alert-triangle" class="w-8 h-8"></i>
+       </div>
+       <h3 id="confirm-title" class="text-xl font-bold text-slate-800 mb-2 tracking-tight">Konfirmasi</h3>
+       <p id="confirm-msg" class="text-sm text-slate-500 mb-8 leading-relaxed">Apakah Anda yakin ingin melanjutkan tindakan ini?</p>
+       <div class="flex gap-3">
+          <button id="btn-cancel-confirm" class="flex-1 py-3.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs transition-all active:scale-95 cursor-pointer">Batal</button>
+          <button id="btn-accept-confirm" class="flex-1 py-3.5 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-md shadow-rose-500/20 transition-all active:scale-95 cursor-pointer">Ya, Lanjutkan</button>
+       </div>
+    </div>
+ </div>
+
 <!-- ========================================== -->
  <!-- 1. HALAMAN LOGIN -->
  <!-- ========================================== -->
  <style>
-   /* Custom Keyframes untuk Animasi Playful */
    @keyframes float-slow {
      0%, 100% { transform: translateY(0) rotate(0deg); }
      50% { transform: translateY(-20px) rotate(5deg); }
@@ -120,29 +153,24 @@
    
    .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
    .animate-float-medium { animation: float-medium 4s ease-in-out infinite; }
-   .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+   .animate-pulse-glow-custom { animation: pulse-glow 2s infinite; }
  </style>
 
- <div id="login-view" class="flex min-h-screen w-full flex-col items-center justify-center p-4 fixed inset-0 z-50 bg-cover bg-center bg-no-repeat overflow-hidden" style="background-image: url('background.png');">
+ <div id="login-view" class="flex min-h-screen w-full flex-col items-center justify-center p-4 fixed inset-0 z-50 bg-cover bg-center bg-no-repeat overflow-hidden" style="background-image: url('https://placehold.co/1920x1080/0f172a/ffffff?text=Background');">
  
- <!-- Overlay Gelap dengan sedikit warna hijau agar menyatu dengan tema -->
  <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm z-0"></div>
 
- <!-- Elemen Mengambang (Floating Ornaments) di atas background -->
  <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
    <div class="absolute top-1/4 left-1/4 w-24 h-24 bg-emerald-400/20 rounded-full blur-xl animate-float-slow"></div>
    <div class="absolute bottom-1/4 right-1/4 w-32 h-32 bg-teal-400/20 rounded-full blur-xl animate-float-slow" style="animation-delay: 2s;"></div>
-   <!-- Elemen visual daun/titik air sederhana -->
    <div class="absolute top-1/3 right-1/3 w-4 h-4 bg-emerald-400/40 rounded-full animate-float-medium blur-[1px]"></div>
    <div class="absolute bottom-1/3 left-1/3 w-6 h-6 bg-teal-300/40 rounded-full animate-float-medium blur-[1px]" style="animation-delay: 1.5s;"></div>
  </div>
 
- <!-- Form Login Container (Glassmorphism & Playful UI) -->
  <div class="w-full max-w-md bg-white/85 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/50 relative z-10 animate-fade-in-up transition-transform duration-500 hover:-translate-y-1 group">
  
  <div class="flex flex-col items-center justify-center text-center pb-8">
- <!-- Logo dengan animasi pulse glow -->
- <div class="w-20 h-20 mb-5 rounded-[1.75rem] bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center p-1.5 shadow-lg shadow-emerald-500/30 animate-pulse-glow animate-float-medium">
+ <div class="w-20 h-20 mb-5 rounded-[1.75rem] bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center p-1.5 shadow-lg shadow-emerald-500/30 animate-pulse-glow-custom animate-float-medium">
  <img src="logo.png" alt="Logo LihatKebunku" class="w-full h-full object-cover rounded-2xl border-2 border-white/50" onerror="this.onerror=null;this.src='https://placehold.co/80x80/059669/ffffff?text=LK'">
  </div>
  <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">LihatKebunku</h1>
@@ -152,13 +180,11 @@
  </div>
 
  <div class="space-y-5">
- <!-- Pesan Error -->
  <div id="login-error" class="hidden bg-rose-100/80 backdrop-blur-sm text-rose-600 text-xs font-semibold p-4 rounded-2xl border border-rose-200 shadow-sm flex items-center gap-3">
  <div class="bg-rose-200 p-1 rounded-full"><i data-lucide="alert-circle" class="w-4 h-4 text-rose-700"></i></div>
  <span id="login-error-text"></span>
  </div>
 
- <!-- Input ID Mesin -->
  <div class="space-y-1.5 relative group/input">
  <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-2 transition-colors group-focus-within/input:text-emerald-500">ID Mesin IoT</label>
  <div class="relative flex items-center overflow-hidden rounded-2xl">
@@ -169,7 +195,6 @@
  </div>
  </div>
 
- <!-- Input Kata Sandi -->
  <div class="space-y-1.5 relative group/input">
  <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-2 transition-colors group-focus-within/input:text-emerald-500">Kata Sandi</label>
  <div class="relative flex items-center overflow-hidden rounded-2xl">
@@ -180,22 +205,19 @@
  </div>
  </div>
 
- <!-- Tombol Login -->
- <button id="btn-login" class="relative w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm py-4 rounded-2xl flex items-center justify-center transition-all duration-300 mt-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_30px_rgba(16,185,129,0.4)] hover:-translate-y-1 active:scale-95 overflow-hidden group/btn">
+ <button id="btn-login" class="relative w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm py-4 rounded-2xl flex items-center justify-center transition-all duration-300 mt-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_30px_rgba(16,185,129,0.4)] hover:-translate-y-1 active:scale-95 overflow-hidden group/btn cursor-pointer">
  <div class="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite] transform skew-x-12"></div>
  <span id="login-btn-text" class="relative z-10">Hubungkan Sistem</span>
  <i data-lucide="sparkles" class="w-4 h-4 ml-2 relative z-10"></i>
  </button>
 
- <!-- Divider -->
  <div class="relative flex py-3 items-center">
  <div class="flex-grow border-t-2 border-slate-100 rounded-full"></div>
  <span class="flex-shrink mx-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest px-3 py-1 bg-slate-100/50 rounded-full">atau</span>
  <div class="flex-grow border-t-2 border-slate-100 rounded-full"></div>
  </div>
 
- <!-- Tombol Mode Demo -->
- <button id="btn-demo" class="w-full bg-white hover:bg-slate-50 text-slate-600 font-bold text-sm py-3.5 rounded-2xl border-2 border-slate-200 hover:border-emerald-300 hover:text-emerald-600 flex items-center justify-center transition-all duration-300 active:scale-95 shadow-sm group/demo">
+ <button id="btn-demo" class="w-full bg-white hover:bg-slate-50 text-slate-600 font-bold text-sm py-3.5 rounded-2xl border-2 border-slate-200 hover:border-emerald-300 hover:text-emerald-600 flex items-center justify-center transition-all duration-300 active:scale-95 shadow-sm group/demo cursor-pointer">
  <div class="bg-slate-100 group-hover/demo:bg-emerald-100 p-1.5 rounded-full mr-3 transition-colors">
  <i data-lucide="play" class="w-3.5 h-3.5 text-slate-500 group-hover/demo:text-emerald-600 fill-current"></i>
  </div>
@@ -213,7 +235,6 @@
  <!-- Sidebar Desktop -->
  <aside class="hidden md:flex flex-col w-[260px] glass-panel border-r border-slate-200/60 min-h-screen p-6 shrink-0 justify-between sticky top-0 h-screen shadow-[4px_0_24px_rgba(0,0,0,0.015)] z-30">
  <div class="space-y-8">
- <!-- Logo Header -->
  <div class="flex items-center gap-3 px-2">
  <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-600/20 overflow-hidden p-1">
  <img src="logo.png" alt="Logo" class="w-full h-full object-cover object-center rounded-lg" onerror="this.onerror=null;this.src='https://placehold.co/36x36/059669/ffffff?text=LK'">
@@ -221,7 +242,6 @@
  <span class="text-base font-bold text-slate-800 tracking-tight">LihatKebunku</span>
  </div>
 
- <!-- Navigations -->
  <nav class="space-y-1.5">
  <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-100/60">
  <div class="flex items-center gap-3"><i data-lucide="layout-dashboard" class="h-4 w-4"></i><span>Ringkasan</span></div>
@@ -252,7 +272,6 @@
  </nav>
  </div>
 
- <!-- Footer Badge -->
  <div class="space-y-4">
  <div class="p-3.5 bg-white/70 rounded-2xl border border-white shadow-xs flex items-center gap-3 backdrop-blur-sm">
  <div class="relative flex h-2.5 w-2.5">
@@ -270,7 +289,6 @@
  <!-- Main Content Area -->
  <div class="flex-grow flex flex-col min-h-screen relative overflow-x-hidden w-full">
  
- <!-- Mobile Sticky Header -->
  <header class="md:hidden glass-panel flex items-center justify-between px-5 py-3.5 sticky top-0 z-40 border-b border-slate-200/60 shadow-xs">
  <div class="flex items-center gap-2.5">
  <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-xs overflow-hidden p-1">
@@ -294,33 +312,94 @@
  <!-- ========================================== -->
  <div id="view-beranda" class="space-y-6 view-section animate-fade-in-up">
  
- <!-- Hero Banner -->
- <div class="relative overflow-hidden glass-card p-6 md:p-8 rounded-[2rem] border border-slate-200/80 shadow-sm group">
- <div class="absolute top-0 right-0 w-72 h-72 bg-gradient-to-bl from-emerald-200/40 via-teal-100/20 to-transparent rounded-full blur-3xl pointer-events-none"></div>
- 
- <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
- <div>
- <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100/80 mb-3">
- <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
- <span class="text-[10px] font-semibold uppercase tracking-wider">Sinkronisasi Real-time Aktif</span>
+ <!-- NEW: Greeting Section -->
+ <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-2">
+    <div>
+       <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight flex items-center flex-wrap gap-2">
+          <span id="dynamic-greeting">Halo</span>, Petani Cerdas! 
+          <span class="animate-wave origin-bottom-right inline-block">👋</span>
+       </h1>
+       <p class="text-slate-500 text-xs md:text-sm mt-1.5 font-medium">
+           Pantau ringkasan kondisi kebun aquaponics Anda hari ini, <span id="current-date" class="text-slate-700"></span>.
+       </p>
+    </div>
+    <div class="flex gap-2 shrink-0">
+        <button onclick="showToast('Memuat ulang data terbaru...')" class="bg-white/80 hover:bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 active:scale-95 transition-all text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm cursor-pointer flex items-center gap-2">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5 text-slate-400"></i> Segarkan
+        </button>
+    </div>
  </div>
- <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Kondisi Kebun Terjaga Optimal 🌱</h1>
- <p class="text-slate-500 text-xs md:text-sm font-normal mt-1.5 max-w-xl leading-relaxed">Seluruh parameter sensor air, suhu udara, dan kelistrikan tenaga surya berada pada ambang batas normal.</p>
+
+ <!-- NEW: Quick Insights Cards -->
+ <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+     <div class="glass-card p-4 rounded-2xl border border-emerald-100/80 shadow-sm flex items-center gap-3 relative overflow-hidden group">
+         <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:scale-125 transition-transform"><i data-lucide="activity" class="w-16 h-16 text-emerald-500"></i></div>
+         <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-100"><i data-lucide="leaf" class="w-5 h-5"></i></div>
+         <div>
+             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kesehatan</p>
+             <h4 class="text-lg font-bold text-slate-800 mt-0.5">98% <span class="text-[10px] text-emerald-500 font-bold bg-emerald-100 px-1.5 py-0.5 rounded ml-1">BAIK</span></h4>
+         </div>
+     </div>
+     <div class="glass-card p-4 rounded-2xl border border-blue-100/80 shadow-sm flex items-center gap-3 relative overflow-hidden group">
+         <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:scale-125 transition-transform"><i data-lucide="droplets" class="w-16 h-16 text-blue-500"></i></div>
+         <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100"><i data-lucide="droplet" class="w-5 h-5"></i></div>
+         <div>
+             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Kualitas Air</p>
+             <h4 class="text-lg font-bold text-slate-800 mt-0.5">Jernih</h4>
+         </div>
+     </div>
+     <div class="glass-card p-4 rounded-2xl border border-amber-100/80 shadow-sm flex items-center gap-3 relative overflow-hidden group">
+         <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:scale-125 transition-transform"><i data-lucide="calendar-clock" class="w-16 h-16 text-amber-500"></i></div>
+         <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 border border-amber-100"><i data-lucide="sprout" class="w-5 h-5"></i></div>
+         <div>
+             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Est. Panen</p>
+             <h4 class="text-lg font-bold text-slate-800 mt-0.5">14 Hari</h4>
+         </div>
+     </div>
+     <div class="glass-card p-4 rounded-2xl border border-indigo-100/80 shadow-sm flex items-center gap-3 relative overflow-hidden group">
+         <div class="absolute -right-2 -bottom-2 opacity-10 group-hover:scale-125 transition-transform"><i data-lucide="zap" class="w-16 h-16 text-indigo-500"></i></div>
+         <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 border border-indigo-100"><i data-lucide="sun" class="w-5 h-5"></i></div>
+         <div>
+             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sumber Daya</p>
+             <h4 class="text-lg font-bold text-slate-800 mt-0.5">Solar</h4>
+         </div>
+     </div>
  </div>
- <div class="flex gap-2.5 shrink-0">
- <button onclick="switchTab('kontrol')" class="bg-white/90 hover:bg-white text-slate-600 border border-slate-200 hover:border-slate-300 active:scale-98 transition-all text-xs font-semibold px-4 py-3 rounded-xl shadow-xs cursor-pointer flex items-center gap-2">
- <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-slate-400"></i> Buka Kendali
- </button>
- <button onclick="switchTab('ai')" class="bg-slate-800 hover:bg-slate-700 text-white active:scale-98 transition-all text-xs font-semibold px-4 py-3 rounded-xl shadow-md shadow-slate-900/10 cursor-pointer flex items-center gap-2 group/btn">
- <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400 group-hover/btn:rotate-12 transition-transform"></i> Analisis AI
- </button>
- </div>
- </div>
+
+ <!-- Hero Banner (Upgraded System Status) -->
+ <div class="relative overflow-hidden glass-card p-6 rounded-[2rem] border border-emerald-200/60 shadow-sm group bg-gradient-to-r from-emerald-500/10 to-teal-500/5">
+    <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-emerald-300/30 via-teal-200/20 to-transparent rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -left-10 -bottom-10 w-40 h-40 bg-gradient-to-tr from-amber-200/20 to-transparent rounded-full blur-2xl pointer-events-none"></div>
+    
+    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">
+       <div class="flex items-start gap-4">
+           <div class="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-emerald-500/30 shrink-0 relative">
+               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-40"></span>
+               <i data-lucide="check-circle-2" class="w-6 h-6 relative z-10"></i>
+           </div>
+           <div>
+               <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/60 border border-white mb-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  <span class="text-[9px] font-bold text-emerald-700 uppercase tracking-wider">Sistem Real-Time Online</span>
+               </div>
+               <h2 class="text-xl font-bold text-slate-800 tracking-tight">Kondisi Kebun Terjaga Optimal</h2>
+               <p class="text-slate-600 text-xs font-medium mt-1 max-w-xl leading-relaxed">Seluruh parameter sensor air, suhu, dan kelistrikan berada pada ambang batas normal dan siap beroperasi mandiri.</p>
+           </div>
+       </div>
+       <div class="flex gap-2.5 shrink-0 ml-16 md:ml-0">
+          <button onclick="switchTab('kontrol')" class="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 active:scale-95 transition-all text-xs font-bold px-4 py-3 rounded-xl shadow-sm cursor-pointer flex items-center gap-2 group/btn">
+             <i data-lucide="sliders-horizontal" class="w-4 h-4 text-emerald-500 group-hover/btn:-rotate-12 transition-transform"></i> Buka Kendali
+          </button>
+          <button onclick="switchTab('ai')" class="bg-slate-800 hover:bg-slate-700 text-white active:scale-95 transition-all text-xs font-bold px-4 py-3 rounded-xl shadow-md shadow-slate-900/10 cursor-pointer flex items-center gap-2 group/btn2">
+             <i data-lucide="sparkles" class="w-4 h-4 text-amber-400 group-hover/btn2:rotate-12 transition-transform"></i> Tanya AI
+          </button>
+       </div>
+    </div>
  </div>
 
  <div class="flex items-center justify-between px-1 mt-6 mb-2">
- <h2 class="text-sm font-bold text-slate-800 tracking-tight">Metrik Perangkat Sensor IoT</h2>
- <span class="text-[11px] font-medium text-slate-400">Diperbarui detik ini</span>
+ <h2 class="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2"><i data-lucide="bar-chart-2" class="w-4 h-4 text-emerald-600"></i> Metrik Pembacaan Sensor</h2>
+ <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 bg-white rounded-lg border border-slate-200">Live Data</span>
  </div>
 
  <!-- Metrics Grid -->
@@ -570,7 +649,7 @@
  </div>
 
  <!-- ========================================== -->
- <!-- VIEW: KOMUNITAS PETANI (LENGKAP FOTO & HAPUS UTAS) -->
+ <!-- VIEW: KOMUNITAS PETANI -->
  <!-- ========================================== -->
  <div id="view-komunitas" class="space-y-6 hidden view-section animate-fade-in-up">
  <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-slate-200/80 shadow-sm relative overflow-hidden">
@@ -579,7 +658,7 @@
  <div>
  <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100/80 mb-2.5">
  <i data-lucide="globe" class="w-3.5 h-3.5"></i>
- <span class="text-[10px] font-semibold uppercase tracking-wider">Komunitas Firebase Terhubung</span>
+ <span class="text-[10px] font-semibold uppercase tracking-wider">Komunitas Terhubung</span>
  </div>
  <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Forum Komunitas Petani 🌾</h1>
  <p class="text-xs md:text-sm text-slate-500 font-normal mt-1 max-w-xl leading-relaxed">
@@ -593,7 +672,6 @@
  </div>
  </div>
 
- <!-- Form Tulis Postingan Baru (Toggle + Image Upload) -->
  <div id="community-post-form" class="hidden glass-card p-5 md:p-6 rounded-[2rem] border border-emerald-200 shadow-md transition-all animate-fade-in-up">
  <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
  <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
@@ -625,11 +703,10 @@
  <textarea id="post-message" rows="3" placeholder="Tuliskan pengalaman, pertanyaan pH air, atau saran perbaikan mesin..." required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs font-medium text-slate-700 focus:outline-none focus:border-emerald-500 leading-relaxed"></textarea>
  </div>
 
- <!-- Lampirkan Foto / Gambar -->
  <div>
  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Lampirkan Foto (Opsional)</label>
  <div class="flex items-center gap-3">
- <label for="post-image-input" class="cursor-pointer bg-slate-100 hover:bg-slate-200/80 text-slate-600 text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 transition-colors flex items-center gap-2">
+ <label for="post-image-input" class="cursor-pointer bg-slate-100 hover:bg-slate-200/80 text-slate-600 text-xs font-bold px-3.5 py-2.5 rounded-xl border border-slate-200 transition-colors flex items-center gap-2">
  <i data-lucide="image" class="w-4 h-4 text-emerald-600"></i>
  <span>Pilih Foto</span>
  </label>
@@ -645,28 +722,26 @@
  </div>
 
  <div class="flex justify-end gap-2.5 pt-2 border-t border-slate-100">
- <button type="button" onclick="toggleCommunityPostForm()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-500 hover:bg-slate-50">Batal</button>
- <button type="submit" id="btn-submit-post" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 flex items-center gap-2">
+ <button type="button" onclick="toggleCommunityPostForm()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-500 hover:bg-slate-50">Batal</button>
+ <button type="submit" id="btn-submit-post" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-2">
  <i data-lucide="send" class="w-3.5 h-3.5"></i> Kirim Pesan
  </button>
  </div>
  </form>
  </div>
 
- <!-- Filter Kategori Diskusi -->
  <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
- <button onclick="filterCommunityCategory('Semua')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-emerald-600 text-white shadow-xs">Semua Diskusi</button>
- <button onclick="filterCommunityCategory('Tips & Trik')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">💡 Tips & Trik</button>
- <button onclick="filterCommunityCategory('Kendala Sensor')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">⚠️ Kendala Sensor</button>
- <button onclick="filterCommunityCategory('Nutrisi & Pakan')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">🌱 Nutrisi & Pakan</button>
- <button onclick="filterCommunityCategory('Hasil Panen')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">🥬 Hasil Panen</button>
+ <button onclick="filterCommunityCategory('Semua')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 bg-emerald-600 text-white shadow-xs">Semua Diskusi</button>
+ <button onclick="filterCommunityCategory('Tips & Trik')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">💡 Tips & Trik</button>
+ <button onclick="filterCommunityCategory('Kendala Sensor')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">⚠️ Kendala Sensor</button>
+ <button onclick="filterCommunityCategory('Nutrisi & Pakan')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">🌱 Nutrisi & Pakan</button>
+ <button onclick="filterCommunityCategory('Hasil Panen')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">🥬 Hasil Panen</button>
  </div>
 
- <!-- Feed Komunitas (Container Postingan & Utas Balasan) -->
  <div id="community-feed" class="space-y-4">
  <div class="text-center p-10 glass-card rounded-[2rem]">
  <i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto text-emerald-600 mb-2"></i>
- <p class="text-xs text-slate-400 font-medium">Memuat pesan komunitas dari Firebase...</p>
+ <p class="text-xs text-slate-400 font-medium">Memuat pesan komunitas...</p>
  </div>
  </div>
  </div>
@@ -714,17 +789,16 @@
  <p class="text-xs md:text-sm text-slate-500 font-normal mt-1">Log aktivitas perangkat dan peringatan anomali lingkungan.</p>
  </div>
  <div class="flex gap-2.5 w-full md:w-auto">
- <button onclick="markAllNotifRead()" class="flex-1 md:flex-none text-xs font-semibold text-slate-600 bg-white hover:bg-slate-50 px-4 py-3 rounded-xl border border-slate-200/80 shadow-xs transition-all cursor-pointer active:scale-98">Tandai Dibaca</button>
- <button onclick="clearNotif()" class="flex-1 md:flex-none text-xs font-semibold text-rose-600 bg-rose-50/80 hover:bg-rose-100 px-4 py-3 rounded-xl border border-rose-100 shadow-xs transition-all cursor-pointer active:scale-98">Bersihkan</button>
+ <button onclick="markAllNotifRead()" class="flex-1 md:flex-none text-xs font-bold text-slate-600 bg-white hover:bg-slate-50 px-4 py-3 rounded-xl border border-slate-200/80 shadow-xs transition-all cursor-pointer active:scale-98">Tandai Dibaca</button>
+ <button onclick="clearNotif()" class="flex-1 md:flex-none text-xs font-bold text-rose-600 bg-rose-50/80 hover:bg-rose-100 px-4 py-3 rounded-xl border border-rose-100 shadow-xs transition-all cursor-pointer active:scale-98">Bersihkan</button>
  </div>
  </div>
 
- <!-- Dev Tools for Demo -->
  <div class="bg-indigo-50/40 p-4 rounded-[1.5rem] border border-indigo-100/60 backdrop-blur-sm">
- <span class="text-[10px] font-semibold text-indigo-500 uppercase tracking-widest mb-3 block flex items-center gap-1.5"><i data-lucide="code" class="w-3.5 h-3.5"></i> Panel Simulasi Uji Coba Cepat</span>
+ <span class="text-[10px] font-bold text-indigo-500 uppercase tracking-widest mb-3 block flex items-center gap-1.5"><i data-lucide="code" class="w-3.5 h-3.5"></i> Panel Simulasi Uji Coba Cepat</span>
  <div class="flex flex-wrap gap-2.5">
- <button onclick="addSimulatedNotif('warning')" class="text-xs font-semibold bg-white text-amber-600 border border-amber-200/80 hover:bg-amber-50/80 px-4 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"><i data-lucide="alert-triangle" class="h-3.5 w-3.5 inline mr-1.5 align-text-bottom"></i>Simulasi Peringatan pH</button>
- <button onclick="addSimulatedNotif('success')" class="text-xs font-semibold bg-white text-emerald-600 border border-emerald-200/80 hover:bg-emerald-50/80 px-4 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"><i data-lucide="check-circle" class="h-3.5 w-3.5 inline mr-1.5 align-text-bottom"></i>Simulasi Pemulihan</button>
+ <button onclick="addSimulatedNotif('warning')" class="text-xs font-bold bg-white text-amber-600 border border-amber-200/80 hover:bg-amber-50/80 px-4 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"><i data-lucide="alert-triangle" class="h-3.5 w-3.5 inline mr-1.5 align-text-bottom"></i>Simulasi Peringatan pH</button>
+ <button onclick="addSimulatedNotif('success')" class="text-xs font-bold bg-white text-emerald-600 border border-emerald-200/80 hover:bg-emerald-50/80 px-4 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"><i data-lucide="check-circle" class="h-3.5 w-3.5 inline mr-1.5 align-text-bottom"></i>Simulasi Pemulihan</button>
  </div>
  </div>
 
@@ -747,10 +821,10 @@
  <div class="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-white"><i data-lucide="check" class="w-3.5 h-3.5 font-bold"></i></div>
  </div>
  <div>
- <span class="text-[10px] font-semibold uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-lg">Administrator Utama</span>
+ <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-lg">Administrator Utama</span>
  <h2 class="text-xl md:text-2xl font-bold text-slate-800 mt-2 tracking-tight" id="profile-email">lihatkebun@gmail.com</h2>
  <p class="text-xs font-normal text-slate-500 mt-1.5 flex items-center justify-center md:justify-start gap-1.5">
- <i data-lucide="shield-check" class="h-4 w-4 text-emerald-600"></i> Terlindungi dan Terverifikasi oleh Firebase Auth
+ <i data-lucide="shield-check" class="h-4 w-4 text-emerald-600"></i> Terlindungi dan Terverifikasi oleh Firebase
  </p>
  </div>
  </div>
@@ -766,11 +840,11 @@
  </div>
  <div class="flex justify-between items-center py-3 border-b border-slate-100/80">
  <span class="text-xs font-normal text-slate-500">Status Koneksi</span>
- <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Online (Real-time)</span>
+ <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Online (Real-time)</span>
  </div>
  <div class="flex justify-between items-center py-3">
  <span class="text-xs font-normal text-slate-500">Protokol Jaringan</span>
- <span class="text-xs font-semibold text-slate-600">Firebase RTDB (SSL)</span>
+ <span class="text-xs font-bold text-slate-600">Firebase RTDB (SSL)</span>
  </div>
  </div>
  </div>
@@ -779,9 +853,9 @@
  <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-3.5 border border-rose-100/80">
  <i data-lucide="log-out" class="h-6 w-6"></i>
  </div>
- <h3 class="text-sm font-semibold text-slate-800">Akhiri Sesi Aplikasi</h3>
+ <h3 class="text-sm font-bold text-slate-800">Akhiri Sesi Aplikasi</h3>
  <p class="text-xs font-normal text-slate-400 mt-1 mb-5 max-w-[210px] leading-relaxed">Putuskan sesi koneksi mesin IoT dari browser ini secara aman.</p>
- <button onclick="logout()" class="w-full bg-white hover:bg-rose-50 text-rose-600 font-semibold text-xs py-3.5 rounded-2xl border border-rose-200/80 transition-all cursor-pointer shadow-xs active:scale-98">
+ <button onclick="logout()" class="w-full bg-white hover:bg-rose-50 text-rose-600 font-bold text-xs py-3.5 rounded-2xl border border-rose-200/80 transition-all cursor-pointer shadow-xs active:scale-98">
  Keluar Aplikasi
  </button>
  </div>
@@ -795,22 +869,22 @@
  <button onclick="switchTab('beranda')" id="mob-nav-beranda" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-emerald-600 group">
  <span class="absolute inset-0 bg-emerald-50 rounded-xl opacity-100 transition-opacity nav-bg"></span>
  <i data-lucide="layout-dashboard" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Ringkasan</span>
+ <span class="text-[9px] mt-1 font-bold relative z-10">Ringkasan</span>
  </button>
  <button onclick="switchTab('kontrol')" id="mob-nav-kontrol" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
  <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
  <i data-lucide="sliders-horizontal" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Kendali</span>
+ <span class="text-[9px] mt-1 font-bold relative z-10">Kendali</span>
  </button>
  <button onclick="switchTab('komunitas')" id="mob-nav-komunitas" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
  <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
  <i data-lucide="users" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Komunitas</span>
+ <span class="text-[9px] mt-1 font-bold relative z-10">Komunitas</span>
  </button>
  <button onclick="switchTab('ai')" id="mob-nav-ai" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
  <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
  <i data-lucide="sparkles" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">AI Chat</span>
+ <span class="text-[9px] mt-1 font-bold relative z-10">AI Chat</span>
  </button>
  <button onclick="switchTab('notifikasi')" id="mob-nav-notifikasi" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
  <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
@@ -818,12 +892,12 @@
  <i data-lucide="bell" class="h-4 w-4"></i>
  <span id="mob-bot-notif-badge" class="hidden absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
  </div>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Notif</span>
+ <span class="text-[9px] mt-1 font-bold relative z-10">Notif</span>
  </button>
  <button onclick="switchTab('profile')" id="mob-nav-profile" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
  <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
  <i data-lucide="user-circle" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Akun</span>
+ <span class="text-[9px] mt-1 font-bold relative z-10">Akun</span>
  </button>
  </nav>
 
@@ -855,9 +929,85 @@
 
  let activeMachineCode = "";
  let currentControls = { waterPump: false, uvLight: false, autoFeeder: false };
- let selectedImageData = ""; // Variable menampung data foto Base64
+ let selectedImageData = ""; 
 
  lucide.createIcons();
+
+ // =====================================
+ // UTILITIES: TOAST & CUSTOM MODAL
+ // =====================================
+ window.showToast = (message, type = 'success') => {
+    const container = document.getElementById('toast-container');
+    const toastId = 'toast-' + Date.now();
+    
+    let icon = type === 'error' ? '<i data-lucide="alert-circle" class="w-4 h-4 text-rose-500"></i>' : '<i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>';
+    let bgClass = type === 'error' ? 'bg-rose-50 border-rose-200' : 'bg-white border-slate-200';
+    let textClass = type === 'error' ? 'text-rose-700' : 'text-slate-700';
+
+    const toastHTML = `
+        <div id="${toastId}" class="flex items-center gap-3 px-4 py-3 rounded-2xl border shadow-lg shadow-slate-900/5 animate-slide-in-right ${bgClass}">
+            ${icon}
+            <span class="text-xs font-bold ${textClass}">${message}</span>
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', toastHTML);
+    lucide.createIcons();
+
+    setTimeout(() => {
+        const t = document.getElementById(toastId);
+        if(t) {
+            t.classList.add('opacity-0', 'translate-x-full');
+            setTimeout(() => t.remove(), 300);
+        }
+    }, 3500);
+ };
+
+ window.customConfirm = (message) => {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('custom-confirm');
+        const msgEl = document.getElementById('confirm-msg');
+        const btnCancel = document.getElementById('btn-cancel-confirm');
+        const btnAccept = document.getElementById('btn-accept-confirm');
+        
+        msgEl.innerText = message;
+        modal.classList.remove('hidden');
+        
+        const cleanup = () => {
+            modal.classList.add('hidden');
+            btnCancel.removeEventListener('click', onCancel);
+            btnAccept.removeEventListener('click', onAccept);
+        };
+
+        const onCancel = () => { cleanup(); resolve(false); };
+        const onAccept = () => { cleanup(); resolve(true); };
+
+        btnCancel.addEventListener('click', onCancel);
+        btnAccept.addEventListener('click', onAccept);
+    });
+ };
+
+ // =====================================
+ // DYNAMIC GREETING & DATE
+ // =====================================
+ function updateGreeting() {
+    const hour = new Date().getHours();
+    let greeting = "Selamat Malam";
+    if (hour >= 5 && hour < 11) greeting = "Selamat Pagi";
+    else if (hour >= 11 && hour < 15) greeting = "Selamat Siang";
+    else if (hour >= 15 && hour < 18) greeting = "Selamat Sore";
+
+    const greetingEl = document.getElementById('dynamic-greeting');
+    if(greetingEl) greetingEl.innerText = greeting;
+
+    const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateEl = document.getElementById('current-date');
+    if(dateEl) dateEl.innerText = new Date().toLocaleDateString('id-ID', dateOptions);
+ }
+ // Init Greeting
+ updateGreeting();
+ setInterval(updateGreeting, 60000); // Update setiap menit
+
 
  // =====================================
  // STATE: NOTIFIKASI
@@ -875,7 +1025,7 @@
  if(notifications.length === 0) {
  listEl.innerHTML = `<div class="text-center p-8 bg-white/60 border border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center">
  <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-xs mb-3 border border-slate-100"><i data-lucide="check-check"></i></div>
- <p class="text-xs font-semibold text-slate-400">Semua tenang! Tidak ada peringatan baru.</p>
+ <p class="text-xs font-bold text-slate-400">Semua tenang! Tidak ada peringatan baru.</p>
  </div>`;
  }
 
@@ -899,7 +1049,7 @@
  </div>
  <div class="flex-grow pt-0.5">
  <div class="flex justify-between items-start">
- <h3 class="text-xs font-semibold ${textClass}">${n.title}</h3>
+ <h3 class="text-xs font-bold ${textClass}">${n.title}</h3>
  ${!n.read ? `<span class="w-2 h-2 rounded-full bg-${n.type === 'warning' ? 'amber' : 'emerald'}-400 mt-0.5 shrink-0"></span>` : ''}
  </div>
  <p class="text-xs font-normal text-slate-500 mt-1 leading-relaxed">${n.message}</p>
@@ -935,10 +1085,12 @@
  title = "Anomali: pH Air Terlalu Asam";
  message = "Sensor mendeteksi pH turun ke level 5.8. Tambahkan larutan buffer basa secukupnya.";
  if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 5.8 });
+ showToast("Peringatan pH disimulasikan", "error");
  } else {
  title = "Kondisi pH Kembali Stabil";
  message = "Nilai pH kembali pada rentang ideal 7.2. Filter biologis berjalan normal.";
  if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 7.2 });
+ showToast("Pemulihan pH disimulasikan");
  }
  notifications.unshift({ id: Date.now(), title, message, type, read: false });
  renderNotifications();
@@ -953,8 +1105,8 @@
  window.handleImageSelect = (event) => {
  const file = event.target.files[0];
  if (file) {
- if (file.size > 2 * 1024 * 1024) { // Batas 2MB
- alert("Ukuran foto maksimal adalah 2MB!");
+ if (file.size > 2 * 1024 * 1024) {
+ showToast("Gagal: Ukuran foto maksimal adalah 2MB!", "error");
  event.target.value = "";
  return;
  }
@@ -1000,9 +1152,9 @@
  activeCategoryFilter = category;
  document.querySelectorAll('.cat-filter-btn').forEach(btn => {
  if(btn.innerText.includes(category) || (category === 'Semua' && btn.innerText.includes('Semua'))) {
- btn.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-emerald-600 text-white shadow-xs";
+ btn.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 bg-emerald-600 text-white shadow-xs";
  } else {
- btn.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300";
+ btn.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300";
  }
  });
  renderCommunityFeed();
@@ -1018,7 +1170,6 @@
  ...data[key]
  })).sort((a, b) => b.timestamp - a.timestamp);
  } else {
- // Postingan default awal jika database masih kosong
  communityPostsList = [
  {
  id: 'demo-1',
@@ -1030,12 +1181,7 @@
  timestamp: Date.now() - 3600000,
  likes: 12,
  replies: {
- 'r-1': {
- author: 'Budi Santoso',
- machineId: 'lihatkebunku_03',
- message: 'Terima kasih tipsnya Pak Herman! Sangat membantu sistem aquaponics saya.',
- timestamp: Date.now() - 1800000
- }
+ 'r-1': { author: 'Budi Santoso', machineId: 'lihatkebunku_03', message: 'Terima kasih tipsnya Pak Herman! Sangat membantu sistem aquaponics saya.', timestamp: Date.now() - 1800000 }
  }
  },
  {
@@ -1067,7 +1213,7 @@
  feedEl.innerHTML = `
  <div class="text-center p-8 glass-card rounded-[2rem] border border-dashed border-slate-200">
  <i data-lucide="messages-square" class="w-10 h-10 text-slate-300 mx-auto mb-2"></i>
- <p class="text-xs font-semibold text-slate-500">Belum ada diskusi untuk kategori "${activeCategoryFilter}"</p>
+ <p class="text-xs font-bold text-slate-500">Belum ada diskusi untuk kategori "${activeCategoryFilter}"</p>
  <p class="text-[11px] text-slate-400 mt-0.5">Jadilah yang pertama untuk memulai postingan!</p>
  </div>`;
  lucide.createIcons();
@@ -1084,18 +1230,12 @@
  else if(post.category === 'Tips & Trik') catBadgeColor = "bg-amber-50 text-amber-700 border-amber-200";
  else if(post.category === 'Nutrisi & Pakan') catBadgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
 
- // Konversi replies object ke array
  const repliesObj = post.replies || {};
- const repliesArray = Object.keys(repliesObj).map(rKey => ({
- id: rKey,
- ...repliesObj[rKey]
- })).sort((a,b) => a.timestamp - b.timestamp);
+ const repliesArray = Object.keys(repliesObj).map(rKey => ({ id: rKey, ...repliesObj[rKey] })).sort((a,b) => a.timestamp - b.timestamp);
 
  let repliesListHtml = '';
  repliesArray.forEach(reply => {
- const replyDate = new Date(reply.timestamp).toLocaleDateString('id-ID', {
- day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
- });
+ const replyDate = new Date(reply.timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
  repliesListHtml += `
  <div class="flex items-start gap-2.5 bg-slate-50/80 p-3 rounded-xl border border-slate-200/60 text-xs">
  <div class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0">
@@ -1124,7 +1264,7 @@
  </div>
  </div>
  <div class="flex items-center gap-2 shrink-0">
- <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${catBadgeColor}">${post.category}</span>
+ <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${catBadgeColor}">${post.category}</span>
  <button onclick="deleteCommunityPost('${post.id}')" title="Hapus Utas" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 p-1.5 rounded-lg transition-colors cursor-pointer">
  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
  </button>
@@ -1141,22 +1281,20 @@
  </div>
  ` : ''}
 
- <!-- Tombol Aksi (Like & Balas) -->
  <div class="flex items-center justify-between pt-2 border-t border-slate-100">
  <div class="flex items-center gap-2">
  <button onclick="likeCommunityPost('${post.id}', ${post.likes || 0})" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-600 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 cursor-pointer shadow-2xs active:scale-95">
  <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500"></i>
- <span class="font-semibold text-slate-700">${post.likes || 0}</span> Suka
+ <span class="font-bold text-slate-700">${post.likes || 0}</span> Suka
  </button>
  <button onclick="toggleReplySection('${post.id}')" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-600 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 cursor-pointer shadow-2xs active:scale-95">
  <i data-lucide="message-square" class="w-3.5 h-3.5 text-emerald-600"></i>
- <span class="font-semibold text-slate-700">${repliesArray.length}</span> Balas
+ <span class="font-bold text-slate-700">${repliesArray.length}</span> Balas
  </button>
  </div>
  <span class="text-[10px] text-slate-400 font-medium hidden sm:inline">${dateStr}</span>
  </div>
 
- <!-- Area Balasan (Nested Reply Threads) -->
  <div id="reply-section-${post.id}" class="mt-4 pt-3 border-t border-slate-100 space-y-3 ${repliesArray.length > 0 ? '' : 'hidden'}">
  ${repliesArray.length > 0 ? `
  <div class="space-y-2.5 pl-2 border-l-2 border-emerald-200">
@@ -1164,11 +1302,10 @@
  </div>
  ` : ''}
 
- <!-- Form Tambah Balasan Inline -->
  <form onsubmit="submitReply(event, '${post.id}')" class="flex gap-2 items-center mt-2">
  <input type="text" id="reply-author-${post.id}" placeholder="Nama Anda" value="${activeMachineCode ? 'Petani ('+activeMachineCode+')' : ''}" required class="w-28 bg-white border border-slate-200 rounded-xl px-2.5 py-2 text-[11px] font-medium text-slate-700 focus:outline-none focus:border-emerald-500">
  <input type="text" id="reply-input-${post.id}" placeholder="Tulis balasan..." required class="flex-grow bg-white border border-slate-200 rounded-xl px-3 py-2 text-[11px] font-medium text-slate-700 focus:outline-none focus:border-emerald-500">
- <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1 shrink-0 active:scale-95">
+ <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-bold shadow-xs flex items-center gap-1 shrink-0 active:scale-95 cursor-pointer">
  <i data-lucide="send" class="w-3 h-3"></i>
  </button>
  </form>
@@ -1195,22 +1332,16 @@
  try {
  const newPostRef = push(ref(db, 'community_posts'));
  await set(newPostRef, {
- author,
- machineId: activeMachineCode || 'lihatkebunku_01',
- category,
- message,
- image: selectedImageData || null,
- timestamp: Date.now(),
- likes: 0,
- replies: {}
+ author, machineId: activeMachineCode || 'lihatkebunku_01', category, message, image: selectedImageData || null, timestamp: Date.now(), likes: 0, replies: {}
  });
 
  document.getElementById('post-message').value = '';
  removeSelectedImage();
  toggleCommunityPostForm();
+ showToast('Diskusi berhasil dipublikasikan!');
  } catch(err) {
  console.error("Gagal mengirim postingan:", err);
- alert("Terjadi kesalahan saat mengirim postingan.");
+ showToast("Terjadi kesalahan saat mengirim postingan.", "error");
  } finally {
  btn.disabled = false;
  btn.innerHTML = `<i data-lucide="send" class="w-3.5 h-3.5"></i> Kirim Pesan`;
@@ -1219,17 +1350,20 @@
  });
 
  window.deleteCommunityPost = async (postId) => {
- if (confirm("Apakah Anda yakin ingin menghapus utas diskusi ini?")) {
+ const confirmed = await customConfirm("Apakah Anda yakin ingin menghapus utas diskusi ini secara permanen?");
+ if (confirmed) {
  if(postId.startsWith('demo-')) {
  communityPostsList = communityPostsList.filter(x => x.id !== postId);
  renderCommunityFeed();
+ showToast("Utas diskusi dihapus.");
  return;
  }
  try {
  await remove(ref(db, `community_posts/${postId}`));
+ showToast("Utas diskusi dihapus.");
  } catch(err) {
  console.error("Gagal menghapus postingan:", err);
- alert("Gagal menghapus postingan.");
+ showToast("Gagal menghapus postingan dari server.", "error");
  }
  }
  };
@@ -1249,12 +1383,7 @@
  if(p) {
  if(!p.replies) p.replies = {};
  const rId = 'r-' + Date.now();
- p.replies[rId] = {
- author,
- machineId: activeMachineCode || 'lihatkebunku_01',
- message,
- timestamp: Date.now()
- };
+ p.replies[rId] = { author, machineId: activeMachineCode || 'lihatkebunku_01', message, timestamp: Date.now() };
  renderCommunityFeed();
  }
  return;
@@ -1262,16 +1391,12 @@
 
  try {
  const replyRef = push(ref(db, `community_posts/${postId}/replies`));
- await set(replyRef, {
- author,
- machineId: activeMachineCode || 'lihatkebunku_01',
- message,
- timestamp: Date.now()
- });
+ await set(replyRef, { author, machineId: activeMachineCode || 'lihatkebunku_01', message, timestamp: Date.now() });
  if(messageInput) messageInput.value = '';
+ showToast('Balasan dikirim!');
  } catch(err) {
  console.error("Gagal membalas pesan:", err);
- alert("Terjadi kesalahan saat membalas pesan.");
+ showToast("Terjadi kesalahan saat membalas pesan.", "error");
  }
  };
 
@@ -1282,9 +1407,7 @@
  return;
  }
  try {
- await update(ref(db, `community_posts/${postId}`), {
- likes: currentLikes + 1
- });
+ await update(ref(db, `community_posts/${postId}`), { likes: currentLikes + 1 });
  } catch(err) {
  console.error("Gagal memperbarui like:", err);
  }
@@ -1359,7 +1482,7 @@
  
  document.querySelectorAll('.nav-btn').forEach(btn => {
  if(btn.id === `nav-${targetTab}`) {
- btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer bg-emerald-50 text-emerald-700 shadow-xs border border-emerald-100/80";
+ btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-bold transition-all cursor-pointer bg-emerald-50 text-emerald-700 shadow-xs border border-emerald-100/80";
  } else {
  btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-xs";
  }
@@ -1381,181 +1504,19 @@
  if(targetTab === 'komunitas') renderCommunityFeed();
  };
 
- window.logout = () => {
- activeMachineCode = ""; auth.signOut();
- document.getElementById('app-view').classList.remove('opacity-100');
- document.getElementById('app-view').classList.add('opacity-0');
- setTimeout(() => {
- document.getElementById('app-view').classList.add('hidden');
- document.getElementById('login-view').classList.remove('hidden');
- }, 500);
- };
-
- // =====================================
- // LOGIN & FIREBASE LOGIC
- // =====================================
- const handleLogin = async (codeInput) => {
- const errorEl = document.getElementById('login-error');
- const errorText = document.getElementById('login-error-text');
- const btnText = document.getElementById('login-btn-text');
- const passwordInput = document.getElementById('input-machine-password').value;
- 
- if(!codeInput) { errorText.innerText = "Masukkan ID Mesin IoT."; errorEl.classList.remove('hidden'); return; }
- if(codeInput !== "lihatkebunku_01") { errorText.innerText = "ID Mesin tidak terdaftar di sistem."; errorEl.classList.remove('hidden'); return; }
- if(passwordInput !== "admin123") { errorText.innerText = "Kata sandi salah."; errorEl.classList.remove('hidden'); return; }
-
- btnText.innerText = "Memverifikasi...";
- 
- try {
- await signInWithEmailAndPassword(auth, "lihatkebun@gmail.com", "aquaponik");
- btnText.innerText = "Menghubungkan...";
- activeMachineCode = codeInput;
- 
- document.getElementById('display-machine-id').innerText = activeMachineCode;
- document.getElementById('profile-machine-id').innerText = activeMachineCode;
-
- document.getElementById('login-view').classList.add('opacity-0');
- setTimeout(() => {
- document.getElementById('login-view').classList.add('hidden');
- const appView = document.getElementById('app-view');
- appView.classList.remove('hidden');
- setTimeout(() => appView.classList.replace('opacity-0', 'opacity-100'), 50);
- }, 500);
- 
- errorEl.classList.add('hidden');
- renderNotifications(); renderChat(); switchTab('beranda');
- startFirebaseListeners();
- startCommunityPostsListener();
-
- } catch (error) {
- errorText.innerText = "Koneksi server gagal: " + error.message;
- errorEl.classList.remove('hidden');
- } finally {
- btnText.innerText = "Hubungkan Sistem";
+ window.logout = async () => {
+ const confirmed = await customConfirm("Apakah Anda yakin ingin keluar dari sesi aplikasi ini?");
+ if (confirmed) {
+     activeMachineCode = ""; auth.signOut();
+     document.getElementById('app-view').classList.remove('opacity-100');
+     document.getElementById('app-view').classList.add('opacity-0');
+     setTimeout(() => {
+     document.getElementById('app-view').classList.add('hidden');
+     document.getElementById('login-view').classList.remove('hidden');
+     showToast("Berhasil keluar dari aplikasi.", "info");
+     }, 500);
  }
  };
-
- document.getElementById('btn-login').addEventListener('click', () => handleLogin(document.getElementById('input-machine-code').value.trim()));
- document.getElementById('btn-demo').addEventListener('click', () => {
- document.getElementById('input-machine-code').value = "lihatkebunku_01"; document.getElementById('input-machine-password').value = "admin123";
- handleLogin("lihatkebunku_01");
- });
-
- // =====================================
- // UI METRICS UPDATER
- // =====================================
- function updateMetricsUI(data) {
- const dayaPanel = data.dayaPanel ?? '--';
- const kelembapan = data.kelembapan ?? '--';
- const ph = data.ph ?? '--';
- const suhuAir = data.suhuAir ?? '--';
- const suhuUdara = data.suhuUdara ?? '--';
- const tds = data.tds ?? '--';
-
- document.getElementById('val-dayaPanel').innerText = dayaPanel;
- document.getElementById('val-kelembapan').innerText = kelembapan;
- document.getElementById('val-ph').innerText = ph;
- document.getElementById('val-suhuAir').innerText = suhuAir;
- document.getElementById('val-suhuUdara').innerText = suhuUdara;
- document.getElementById('val-tds').innerText = tds;
-
- const nDP = parseFloat(dayaPanel) || 0; const nK = parseFloat(kelembapan) || 0;
- const nPh = parseFloat(ph) || 0; const nSA = parseFloat(suhuAir) || 0;
- const nSU = parseFloat(suhuUdara) || 0; const nTDS = parseFloat(tds) || 0;
-
- const isDP = nDP >= 10; const isK = nK >= 50 && nK <= 85;
- const isPh = nPh >= 6.5 && nPh <= 7.5; const isSA = nSA >= 24 && nSA <= 30;
- const isSU = nSU >= 25 && nSU <= 32; const isTDS = nTDS < 500;
-
- const setBadge = (id, safe, txtSafe = 'Optimal', txtUnsafe = 'Perhatian') => {
- const el = document.getElementById(id);
- el.className = `text-[9px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full ${safe ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100 animate-pulse'}`;
- el.innerText = safe ? txtSafe : txtUnsafe;
- };
- 
- setBadge('badge-dayaPanel', isDP, 'Cukup', 'Drop');
- setBadge('badge-kelembapan', isK);
- setBadge('badge-ph', isPh);
- setBadge('badge-suhuAir', isSA);
- setBadge('badge-suhuUdara', isSU);
- setBadge('badge-tds', isTDS, 'Jernih', 'Keruh');
-
- document.getElementById('bar-dayaPanel').className = `h-full rounded-full transition-all duration-1000 ease-out ${isDP ? 'bg-gradient-to-r from-amber-400 to-amber-500' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
- document.getElementById('bar-dayaPanel').style.width = `${Math.min(100, (nDP / 50) * 100)}%`;
-
- document.getElementById('bar-kelembapan').className = `h-full rounded-full transition-all duration-1000 ease-out ${isK ? 'bg-gradient-to-r from-blue-400 to-cyan-400' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
- document.getElementById('bar-kelembapan').style.width = `${nK}%`;
-
- document.getElementById('bar-ph').className = `h-full rounded-full transition-all duration-1000 ease-out relative z-10 ${isPh ? 'bg-gradient-to-r from-purple-400 to-fuchsia-400' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
- document.getElementById('bar-ph').style.width = `${(nPh / 14) * 100}%`;
-
- document.getElementById('bar-suhuAir').className = `h-full rounded-full transition-all duration-1000 ease-out ${isSA ? 'bg-gradient-to-r from-orange-400 to-amber-400' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
- document.getElementById('bar-suhuAir').style.width = `${Math.min(100, Math.max(10, (nSA / 40) * 100))}%`;
-
- document.getElementById('bar-suhuUdara').className = `h-full rounded-full transition-all duration-1000 ease-out ${isSU ? 'bg-gradient-to-r from-rose-300 to-pink-400' : 'bg-gradient-to-r from-orange-500 to-red-500'}`;
- document.getElementById('bar-suhuUdara').style.width = `${Math.min(100, Math.max(10, (nSU / 45) * 100))}%`;
-
- document.getElementById('bar-tds').className = `h-full rounded-full transition-all duration-1000 ease-out ${isTDS ? 'bg-gradient-to-r from-indigo-400 to-violet-400' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
- document.getElementById('bar-tds').style.width = `${Math.min(100, (nTDS / 2000) * 100)}%`;
- }
-
- function startFirebaseListeners() {
- onValue(ref(db, `machines/${activeMachineCode}/data`), (snapshot) => {
- if (snapshot.exists()) {
- updateMetricsUI(snapshot.val());
- }
- });
-
- onValue(ref(db, `machines/${activeMachineCode}/control`), (snapshot) => {
- if (snapshot.exists()) {
- const data = snapshot.val(); currentControls = data;
- if(data.waterPump !== undefined) applyControlUI('waterPump', data.waterPump);
- if(data.uvLight !== undefined) applyControlUI('uvLight', data.uvLight);
- if(data.autoFeeder !== undefined) applyControlUI('autoFeeder', data.autoFeeder);
- }
- });
- }
-
- window.toggleControl = (device) => {
- const newState = !currentControls[device];
- applyControlUI(device, newState); currentControls[device] = newState;
- set(ref(db, `machines/${activeMachineCode}/control/${device}`), newState).catch((err) => {
- console.error(err); applyControlUI(device, !newState); currentControls[device] = !newState;
- });
- };
-
- function applyControlUI(device, isActive) {
- let config = {
- waterPump: { color: 'blue', power: '12.4 W', desc: ['Aktif. Sirkulasi nutrisi berjalan.', 'Nonaktif. Berisiko penurunan oksigen kolam.'] },
- uvLight: { color: 'amber', power: '8.5 W', desc: ['Aktif. Proses fotosintesis buatan menyala.', 'Padam. Menghemat daya operasional.'] },
- autoFeeder: { color: 'emerald', power: 'Standby', desc: ['Jadwal Aktif. Pemberian pakan otomatis terjadwal.', 'Manual. Pakan otomatis nonaktif.'] }
- }[device];
-
- const btnEl = document.getElementById(`btn-${device.split('L')[0].replace('autoF','f')}`);
- const dotEl = document.getElementById(`dot-${device.split('L')[0].replace('autoF','f')}`);
- const iconWrap = document.getElementById(`icon-${device.split('L')[0].replace('autoF','f')}`);
- const cardEl = document.getElementById(`card-${device.split('L')[0].replace('autoF','f')}`);
- const descEl = document.getElementById(`desc-${device.split('L')[0].replace('autoF','f')}`);
- const pwrEl = document.getElementById(`power-${device.split('L')[0].replace('autoF','f')}`);
-
- if (isActive) {
- btnEl.className = `w-14 h-8 bg-${config.color}-500 rounded-full transition-colors duration-300 shadow-inner p-1`;
- dotEl.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-6";
- iconWrap.className = `w-12 h-12 rounded-2xl bg-${config.color}-50 text-${config.color}-600 flex items-center justify-center transition-all duration-500 border border-${config.color}-200`;
- cardEl.className = `glass-card p-6 rounded-[1.75rem] border transition-all duration-500 flex flex-col justify-between group border-${config.color}-300 shadow-md shadow-${config.color}-900/5 lg:col-span-${device==='autoFeeder'?'2':'1'}`;
- descEl.className = `mt-5 p-3.5 rounded-xl border text-xs flex gap-2.5 font-normal leading-relaxed bg-${config.color}-50/60 border-${config.color}-200/80 text-${config.color}-900`;
- descEl.innerHTML = `<i data-lucide="zap" class="h-4 w-4 shrink-0 text-${config.color}-500 mt-0.5"></i><span>${config.desc[0]}</span>`;
- } else {
- btnEl.className = "w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1";
- dotEl.className = "bg-white w-6 h-6 rounded-full shadow-sm transform transition-transform duration-300 translate-x-0";
- iconWrap.className = "w-12 h-12 rounded-2xl bg-slate-100/80 text-slate-400 flex items-center justify-center transition-all duration-500 border border-slate-200/60";
- cardEl.className = `glass-card p-6 rounded-[1.75rem] border border-slate-200/80 transition-all duration-500 flex flex-col justify-between group lg:col-span-${device==='autoFeeder'?'2':'1'}`;
- descEl.className = "mt-5 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/60 text-xs text-slate-500 flex gap-2.5 font-normal leading-relaxed";
- descEl.innerHTML = `<i data-lucide="power-off" class="h-4 w-4 shrink-0 text-slate-400 mt-0.5"></i><span>${config.desc[1]}</span>`;
- }
- if(pwrEl && device !== 'autoFeeder') pwrEl.innerText = isActive ? config.power : '0.0 W';
- lucide.createIcons();
- }
  </script>
 </body>
 </html>
