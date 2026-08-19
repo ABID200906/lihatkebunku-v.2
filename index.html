@@ -101,63 +101,102 @@
 <!-- ========================================== -->
  <!-- 1. HALAMAN LOGIN -->
  <!-- ========================================== -->
- <div id="login-view" class="flex min-h-screen w-full flex-col items-center justify-center p-4 fixed inset-0 z-50 bg-cover bg-center bg-no-repeat" style="background-image: url('background.png');">
- 
- <!-- Overlay (Lapisan semi-transparan agar form tetap terbaca jelas) -->
- <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] z-0"></div>
+ <style>
+   /* Custom Keyframes untuk Animasi Playful */
+   @keyframes float-slow {
+     0%, 100% { transform: translateY(0) rotate(0deg); }
+     50% { transform: translateY(-20px) rotate(5deg); }
+   }
+   @keyframes float-medium {
+     0%, 100% { transform: translateY(0) scale(1); }
+     50% { transform: translateY(-15px) scale(1.05); }
+   }
+   @keyframes pulse-glow {
+     0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+     70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+   }
+   
+   .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+   .animate-float-medium { animation: float-medium 4s ease-in-out infinite; }
+   .animate-pulse-glow { animation: pulse-glow 2s infinite; }
+ </style>
 
- <!-- Form Login Container -->
- <div class="w-full max-w-md bg-white p-8 md:p-10 rounded-[2rem] shadow-2xl relative z-10 animate-fade-in-up">
+ <div id="login-view" class="flex min-h-screen w-full flex-col items-center justify-center p-4 fixed inset-0 z-50 bg-cover bg-center bg-no-repeat overflow-hidden" style="background-image: url('background.png');">
+ 
+ <!-- Overlay Gelap dengan sedikit warna hijau agar menyatu dengan tema -->
+ <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm z-0"></div>
+
+ <!-- Elemen Mengambang (Floating Ornaments) di atas background -->
+ <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+   <div class="absolute top-1/4 left-1/4 w-24 h-24 bg-emerald-400/20 rounded-full blur-xl animate-float-slow"></div>
+   <div class="absolute bottom-1/4 right-1/4 w-32 h-32 bg-teal-400/20 rounded-full blur-xl animate-float-slow" style="animation-delay: 2s;"></div>
+   <!-- Elemen visual daun/titik air sederhana -->
+   <div class="absolute top-1/3 right-1/3 w-4 h-4 bg-emerald-400/40 rounded-full animate-float-medium blur-[1px]"></div>
+   <div class="absolute bottom-1/3 left-1/3 w-6 h-6 bg-teal-300/40 rounded-full animate-float-medium blur-[1px]" style="animation-delay: 1.5s;"></div>
+ </div>
+
+ <!-- Form Login Container (Glassmorphism & Playful UI) -->
+ <div class="w-full max-w-md bg-white/85 backdrop-blur-xl p-8 md:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-white/50 relative z-10 animate-fade-in-up transition-transform duration-500 hover:-translate-y-1 group">
  
  <div class="flex flex-col items-center justify-center text-center pb-8">
- <div class="w-20 h-20 mb-4 rounded-[1.5rem] bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-sm p-2">
- <img src="logo.png" alt="Logo LihatKebunku" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null;this.src='https://placehold.co/80x80/10b981/ffffff?text=LK'">
+ <!-- Logo dengan animasi pulse glow -->
+ <div class="w-20 h-20 mb-5 rounded-[1.75rem] bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center p-1.5 shadow-lg shadow-emerald-500/30 animate-pulse-glow animate-float-medium">
+ <img src="logo.png" alt="Logo LihatKebunku" class="w-full h-full object-cover rounded-2xl border-2 border-white/50" onerror="this.onerror=null;this.src='https://placehold.co/80x80/059669/ffffff?text=LK'">
  </div>
- <h1 class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight">LihatKebunku</h1>
- <p class="mt-2 text-sm text-slate-500 font-medium leading-relaxed">Sistem Pemantauan Ekosistem Aquaponics</p>
+ <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">LihatKebunku</h1>
+ <p class="mt-2 text-sm text-slate-500 font-medium leading-relaxed bg-emerald-50 px-3 py-1 rounded-full inline-block border border-emerald-100">
+ Pantau Aquaponics Anda 🌱
+ </p>
  </div>
 
  <div class="space-y-5">
- <!-- Pesan Error (Hidden by default) -->
- <div id="login-error" class="hidden bg-rose-50 text-rose-600 text-xs font-semibold p-3.5 rounded-xl border border-rose-200 flex items-center gap-2">
- <i data-lucide="alert-circle" class="w-4 h-4"></i>
+ <!-- Pesan Error -->
+ <div id="login-error" class="hidden bg-rose-100/80 backdrop-blur-sm text-rose-600 text-xs font-semibold p-4 rounded-2xl border border-rose-200 shadow-sm flex items-center gap-3">
+ <div class="bg-rose-200 p-1 rounded-full"><i data-lucide="alert-circle" class="w-4 h-4 text-rose-700"></i></div>
  <span id="login-error-text"></span>
  </div>
 
  <!-- Input ID Mesin -->
- <div class="space-y-1.5">
- <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">ID Mesin IoT</label>
- <div class="relative flex items-center">
- <i data-lucide="cpu" class="absolute left-4 text-slate-400 w-4 h-4"></i>
- <input id="input-machine-code" type="text" placeholder="Contoh: lihatkebunku_01" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-slate-700">
+ <div class="space-y-1.5 relative group/input">
+ <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-2 transition-colors group-focus-within/input:text-emerald-500">ID Mesin IoT</label>
+ <div class="relative flex items-center overflow-hidden rounded-2xl">
+ <div class="absolute left-0 w-12 h-full flex items-center justify-center bg-slate-100/50 text-slate-400 group-focus-within/input:text-emerald-500 group-focus-within/input:bg-emerald-50 transition-colors">
+ <i data-lucide="cpu" class="w-5 h-5"></i>
+ </div>
+ <input id="input-machine-code" type="text" placeholder="Contoh: lihatkebunku_01" class="w-full bg-white/60 border-2 border-slate-200 rounded-2xl pl-14 pr-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-700 placeholder:text-slate-400 transition-all shadow-sm focus:shadow-emerald-100 focus:-translate-y-0.5">
  </div>
  </div>
 
  <!-- Input Kata Sandi -->
- <div class="space-y-1.5">
- <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-1">Kata Sandi</label>
- <div class="relative flex items-center">
- <i data-lucide="lock" class="absolute left-4 text-slate-400 w-4 h-4"></i>
- <input id="input-machine-password" type="password" placeholder="••••••••" class="w-full bg-slate-50 border border-slate-200 rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-slate-700">
+ <div class="space-y-1.5 relative group/input">
+ <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider ml-2 transition-colors group-focus-within/input:text-emerald-500">Kata Sandi</label>
+ <div class="relative flex items-center overflow-hidden rounded-2xl">
+ <div class="absolute left-0 w-12 h-full flex items-center justify-center bg-slate-100/50 text-slate-400 group-focus-within/input:text-emerald-500 group-focus-within/input:bg-emerald-50 transition-colors">
+ <i data-lucide="lock" class="w-5 h-5"></i>
+ </div>
+ <input id="input-machine-password" type="password" placeholder="••••••••" class="w-full bg-white/60 border-2 border-slate-200 rounded-2xl pl-14 pr-4 py-3.5 text-sm font-semibold focus:outline-none focus:border-emerald-400 focus:bg-white text-slate-700 placeholder:text-slate-400 transition-all shadow-sm focus:shadow-emerald-100 focus:-translate-y-0.5">
  </div>
  </div>
 
  <!-- Tombol Login -->
- <button id="btn-login" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm py-4 rounded-xl flex items-center justify-center transition-all mt-4 shadow-lg shadow-emerald-500/30 active:scale-[0.98]">
- <span id="login-btn-text">Hubungkan Sistem</span>
- <i data-lucide="arrow-right" class="w-4 h-4 ml-2"></i>
+ <button id="btn-login" class="relative w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-bold text-sm py-4 rounded-2xl flex items-center justify-center transition-all duration-300 mt-2 shadow-[0_10px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_30px_rgba(16,185,129,0.4)] hover:-translate-y-1 active:scale-95 overflow-hidden group/btn">
+ <div class="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite] transform skew-x-12"></div>
+ <span id="login-btn-text" class="relative z-10">Hubungkan Sistem</span>
+ <i data-lucide="sparkles" class="w-4 h-4 ml-2 relative z-10"></i>
  </button>
 
  <!-- Divider -->
- <div class="relative flex py-2 items-center">
- <div class="flex-grow border-t border-slate-200"></div>
- <span class="flex-shrink mx-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest">atau</span>
- <div class="flex-grow border-t border-slate-200"></div>
+ <div class="relative flex py-3 items-center">
+ <div class="flex-grow border-t-2 border-slate-100 rounded-full"></div>
+ <span class="flex-shrink mx-4 text-[10px] text-slate-400 font-bold uppercase tracking-widest px-3 py-1 bg-slate-100/50 rounded-full">atau</span>
+ <div class="flex-grow border-t-2 border-slate-100 rounded-full"></div>
  </div>
 
  <!-- Tombol Mode Demo -->
- <button id="btn-demo" class="w-full bg-white hover:bg-slate-50 text-slate-600 font-bold text-sm py-3.5 rounded-xl border border-slate-200 hover:border-slate-300 flex items-center justify-center transition-all active:scale-[0.98]">
- <i data-lucide="play-circle" class="w-4 h-4 mr-2 text-slate-400"></i>
+ <button id="btn-demo" class="w-full bg-white hover:bg-slate-50 text-slate-600 font-bold text-sm py-3.5 rounded-2xl border-2 border-slate-200 hover:border-emerald-300 hover:text-emerald-600 flex items-center justify-center transition-all duration-300 active:scale-95 shadow-sm group/demo">
+ <div class="bg-slate-100 group-hover/demo:bg-emerald-100 p-1.5 rounded-full mr-3 transition-colors">
+ <i data-lucide="play" class="w-3.5 h-3.5 text-slate-500 group-hover/demo:text-emerald-600 fill-current"></i>
+ </div>
  Masuk dengan Mode Demo
  </button>
  </div>
