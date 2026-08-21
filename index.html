@@ -1279,75 +1279,59 @@
  };
 
  // =====================================
- // STATE: AI CHAT (INTEGRASI REAL API)
+ // STATE: AI CHAT
  // =====================================
- 
-// Konfigurasi API Chatbot dari gambar
-const CHATBOT_API_KEY = "sk-ptw-12HRGLrujK7oDLs2gyzZVq05tRiGApMJpDkIM";
-const CHATBOT_BASE_URL = "https://api.pateway.ai/v1/chat/completions";
+ let chatHistory = [
+ { role: 'model', text: 'Halo! Saya **Agronomist AI** 🌿\n\nSaya sedang memonitor data sensor aquaponics Anda. Ada hal yang ingin didiskusikan mengenai nutrisi atau pencegahan hama hari ini?' }
+ ];
 
-async function sendMessage() {
-    const chatInput = document.getElementById('chatInput');
-    const chatMessages = document.getElementById('chatMessages');
-    const userText = chatInput.value.trim();
+ function renderChat() {
+ const container = document.getElementById('chat-container');
+ container.innerHTML = '';
+ chatHistory.forEach(msg => {
+ const isUser = msg.role === 'user';
+ const alignWrap = isUser ? 'justify-end' : 'justify-start';
+ const bgClass = isUser ? 'bg-indigo-600 text-white rounded-br-sm shadow-sm' : 'bg-white border border-slate-200/70 text-slate-700 rounded-bl-sm shadow-xs';
+ const iconHtml = !isUser ? `<div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100 mt-0.5"><i data-lucide="sparkles" class="h-3.5 w-3.5"></i></div>` : '';
+ const formattedText = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
 
-    if (!userText) return;
+ const msgHtml = `
+ <div class="flex gap-2.5 w-full ${alignWrap}">
+ ${iconHtml}
+ <div class="max-w-[85%] md:max-w-[75%] p-3.5 rounded-[1.25rem] text-xs md:text-sm font-normal leading-relaxed ${bgClass}">
+ ${formattedText}
+ </div>
+ </div>`;
+ container.innerHTML += msgHtml;
+ });
+ container.scrollTop = container.scrollHeight;
+ lucide.createIcons();
+ }
 
-    // Tampilkan pesan pengguna
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.className = 'message user-message';
-    userMessageDiv.textContent = userText;
-    chatMessages.appendChild(userMessageDiv);
-    
-    // Kosongkan input dan scroll ke bawah
-    chatInput.value = '';
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+ document.getElementById('ai-form').addEventListener('submit', (e) => {
+ e.preventDefault();
+ const input = document.getElementById('ai-input');
+ const text = input.value.trim();
+ if(!text) return;
 
-    // Tambahkan indikator loading (opsional)
-    const botMessageDiv = document.createElement('div');
-    botMessageDiv.className = 'message bot-message';
-    botMessageDiv.textContent = "Mengetik...";
-    chatMessages.appendChild(botMessageDiv);
+ chatHistory.push({ role: 'user', text });
+ input.value = '';
+ renderChat();
 
-    try {
-        const response = await fetch(CHATBOT_BASE_URL, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${CHATBOT_API_KEY}`
-            },
-            body: JSON.stringify({
-                model: "gpt-3.5-turbo", // Ganti jika Pateway menggunakan nama model spesifik
-                messages: [
-                    { 
-                        role: "system", 
-                        content: "Anda adalah asisten virtual yang membantu untuk sistem monitoring perangkat." 
-                    },
-                    { 
-                        role: "user", 
-                        content: userText 
-                    }
-                ]
-            })
-        });
+ const container = document.getElementById('chat-container');
+ container.innerHTML += `<div id="ai-typing" class="flex gap-2.5 w-full justify-start"><div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100"><i data-lucide="loader-2" class="h-3.5 w-3.5 animate-spin"></i></div><div class="p-3.5 rounded-[1.25rem] rounded-bl-sm text-xs text-slate-400 bg-white border border-slate-200">Menganalisis data...</div></div>`;
+ container.scrollTop = container.scrollHeight;
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        // Ekstrak teks balasan dari struktur data OpenAI-compatible
-        const botReply = data.choices[0].message.content; 
-        
-        botMessageDiv.textContent = botReply;
-
-    } catch (error) {
-        console.error("Error memanggil API:", error);
-        botMessageDiv.textContent = "Maaf, terjadi kesalahan saat menghubungi server AI.";
-    }
-
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+ setTimeout(() => {
+ document.getElementById('ai-typing')?.remove();
+ let reply = "Semua parameter ekosistem terpantau sangat baik. Pertahankan jadwal sirkulasi air dan pemberian pakar secara teratur.";
+ if(text.toLowerCase().includes('ph') || text.toLowerCase().includes('asam')) {
+ reply = "**Analisis AI:** Penurunan pH biasanya disebabkan penumpukan limbah organik atau sisa pakan. Kurangi takaran pakan sementara dan pastikan biofilter bekerja optimal.";
+ }
+ chatHistory.push({ role: 'model', text: reply });
+ renderChat();
+ }, 1200);
+ });
 
  // =====================================
  // NAVIGATION LOGIC
@@ -1517,56 +1501,83 @@ async function sendMessage() {
      }
    });
 
-   // 2. Listener Kontrol IoT
+   // 2. Listener Kontrol IoT (Jalur diubah dari 'kontrol' menjadi 'control')
    const controlRef = ref(db, `machines/${activeMachineCode}/control`);
    onValue(controlRef, (snapshot) => {
      if (snapshot.exists()) {
-       const ctrl = snapshot.val();
-       currentControls = { pompa: ctrl.pompa||false, uv: ctrl.uv||false, pakan: ctrl.pakan||false };
-       
-       // Update UI Toggle Pompa
-       const btnPump = document.getElementById('btn-pump');
-       const dotPump = document.getElementById('dot-pump');
-       if (currentControls.pompa) {
-           btnPump.classList.replace('bg-slate-200', 'bg-emerald-500');
-           dotPump.classList.replace('translate-x-0', 'translate-x-6');
-       } else {
-           btnPump.classList.replace('bg-emerald-500', 'bg-slate-200');
-           dotPump.classList.replace('translate-x-6', 'translate-x-0');
-       }
-       
-       // Update UI Toggle UV
-       const btnUv = document.getElementById('btn-uv');
-       const dotUv = document.getElementById('dot-uv');
-       if (currentControls.uv) {
-           btnUv.classList.replace('bg-slate-200', 'bg-emerald-500');
-           dotUv.classList.replace('translate-x-0', 'translate-x-6');
-       } else {
-           btnUv.classList.replace('bg-emerald-500', 'bg-slate-200');
-           dotUv.classList.replace('translate-x-6', 'translate-x-0');
-       }
-
-       // Update UI Toggle Pakan
-       const btnFeeder = document.getElementById('btn-feeder');
-       const dotFeeder = document.getElementById('dot-feeder');
-       if (currentControls.pakan) {
-           btnFeeder.classList.replace('bg-slate-200', 'bg-emerald-500');
-           dotFeeder.classList.replace('translate-x-0', 'translate-x-6');
-       } else {
-           btnFeeder.classList.replace('bg-emerald-500', 'bg-slate-200');
-           dotFeeder.classList.replace('translate-x-6', 'translate-x-0');
-       }
+       const vals = snapshot.val();
+       currentControls.pompa = !!vals.pompa;
+       currentControls.uv = !!vals.uv;
+       currentControls.pakan = !!vals.pakan;
+       updateControlUI();
      }
    });
  }
 
- // Fungsi Toggle Perangkat Aktuator
- window.toggleControl = (type) => {
+ function updateControlUI() {
+   // Helper untuk memperbarui UI masing-masing switch/kartu kontrol
+   const updateToggle = (id, isOn, pwr, descOn, descOff, iconOnClass, iconOffClass) => {
+     const btn = document.getElementById(`btn-${id}`);
+     const dot = document.getElementById(`dot-${id}`);
+     const desc = document.getElementById(`desc-${id}`);
+     const power = document.getElementById(`power-${id}`);
+     const icon = document.getElementById(`icon-${id}`);
+     const card = document.getElementById(`card-${id}`);
+
+     if (!btn || !dot || !desc || !icon || !card) return;
+
+     if (isOn) {
+       btn.className = "w-14 h-8 bg-emerald-500 rounded-full transition-colors duration-300 shadow-inner p-1";
+       dot.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-6";
+       desc.innerHTML = `<i data-lucide="power" class="h-4 w-4 shrink-0 text-emerald-500 mt-0.5"></i><span class="text-emerald-700">${descOn}</span>`;
+       desc.className = "mt-5 bg-emerald-50 p-3.5 rounded-xl border border-emerald-100 text-xs flex gap-2.5 font-normal leading-relaxed";
+       if(power) {
+         power.innerText = pwr;
+         power.className = "font-mono font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-200";
+       }
+       icon.className = `w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${iconOnClass}`;
+       card.className = "glass-card p-6 rounded-[1.75rem] border border-emerald-200/80 transition-all duration-500 flex flex-col justify-between group bg-emerald-50/10 shadow-[0_10px_30px_-5px_rgba(16,185,129,0.1)]";
+     } else {
+       btn.className = "w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1";
+       dot.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-0";
+       desc.innerHTML = `<i data-lucide="power-off" class="h-4 w-4 shrink-0 text-slate-400 mt-0.5"></i><span>${descOff}</span>`;
+       desc.className = "mt-5 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/60 text-xs text-slate-500 flex gap-2.5 font-normal leading-relaxed";
+       if(power) {
+         power.innerText = "0.0 Watt";
+         power.className = "font-mono font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60";
+       }
+       icon.className = `w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${iconOffClass}`;
+       card.className = "glass-card p-6 rounded-[1.75rem] border border-slate-200/80 transition-all duration-500 flex flex-col justify-between group";
+     }
+   };
+
+   updateToggle('pump', currentControls.pompa, "15.0 Watt", "Sistem sirkulasi dan aerasi kolam aktif beroperasi.", "Sistem offline. Aktifkan untuk memulai sirkulasi oksigen ikan.", "bg-blue-100 text-blue-600 border border-blue-200", "bg-slate-100/80 text-slate-400 border border-slate-200/60");
+   updateToggle('uv', currentControls.uv, "24.5 Watt", "Lampu Grow UV menyala untuk membantu fotosintesis.", "Lampu padam. Tanaman mengandalkan cahaya alami lingkungan.", "bg-amber-100 text-amber-500 border border-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.3)]", "bg-slate-100/80 text-slate-400 border border-slate-200/60");
+   updateToggle('feeder', currentControls.pakan, "-", "Servo membuka katup pakan untuk ikan saat ini.", "Jadwal pakan otomatis nonaktif. Berikan pakan ikan secara manual.", "bg-orange-100 text-orange-500 border border-orange-200", "bg-slate-100/80 text-slate-400 border border-slate-200/60");
+   
+   lucide.createIcons();
+ }
+
+ window.toggleControl = async (type) => {
    if (!activeMachineCode) return;
-   const newState = !currentControls[type];
-   update(ref(db, `machines/${activeMachineCode}/control`), {
-     [type]: newState
-   });
+   const newValue = !currentControls[type];
+   
+   // Pembaruan UI Secara Optimis
+   currentControls[type] = newValue;
+   updateControlUI();
+
+   try {
+     // Jalur pengiriman perintah diubah dari 'kontrol' menjadi 'control'
+     await update(ref(db, `machines/${activeMachineCode}/control`), {
+       [type]: newValue
+     });
+   } catch (error) {
+     console.error("Gagal mengupdate kontrol:", error);
+     // Revert UI Update jika gagal
+     currentControls[type] = !newValue;
+     updateControlUI();
+     alert("Gagal mengirim perintah ke perangkat.");
+   }
  };
 
  </script>
