@@ -1278,60 +1278,72 @@
  }
  };
 
- // =====================================
- // STATE: AI CHAT
- // =====================================
- let chatHistory = [
- { role: 'model', text: 'Halo! Saya **Agronomist AI** 🌿\n\nSaya sedang memonitor data sensor aquaponics Anda. Ada hal yang ingin didiskusikan mengenai nutrisi atau pencegahan hama hari ini?' }
- ];
+// Konfigurasi API Chatbot dari gambar
+const CHATBOT_API_KEY = "sk-ptw-12HRGLrujK7oDLs2gyzZVq05tRiGApMJpDkIM";
+const CHATBOT_BASE_URL = "https://api.pateway.ai/v1/chat/completions";
 
- function renderChat() {
- const container = document.getElementById('chat-container');
- container.innerHTML = '';
- chatHistory.forEach(msg => {
- const isUser = msg.role === 'user';
- const alignWrap = isUser ? 'justify-end' : 'justify-start';
- const bgClass = isUser ? 'bg-indigo-600 text-white rounded-br-sm shadow-sm' : 'bg-white border border-slate-200/70 text-slate-700 rounded-bl-sm shadow-xs';
- const iconHtml = !isUser ? `<div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100 mt-0.5"><i data-lucide="sparkles" class="h-3.5 w-3.5"></i></div>` : '';
- const formattedText = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
+async function sendMessage() {
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const userText = chatInput.value.trim();
 
- const msgHtml = `
- <div class="flex gap-2.5 w-full ${alignWrap}">
- ${iconHtml}
- <div class="max-w-[85%] md:max-w-[75%] p-3.5 rounded-[1.25rem] text-xs md:text-sm font-normal leading-relaxed ${bgClass}">
- ${formattedText}
- </div>
- </div>`;
- container.innerHTML += msgHtml;
- });
- container.scrollTop = container.scrollHeight;
- lucide.createIcons();
- }
+    if (!userText) return;
 
- document.getElementById('ai-form').addEventListener('submit', (e) => {
- e.preventDefault();
- const input = document.getElementById('ai-input');
- const text = input.value.trim();
- if(!text) return;
+    // Tampilkan pesan pengguna
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'message user-message';
+    userMessageDiv.textContent = userText;
+    chatMessages.appendChild(userMessageDiv);
+    
+    // Kosongkan input dan scroll ke bawah
+    chatInput.value = '';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 
- chatHistory.push({ role: 'user', text });
- input.value = '';
- renderChat();
+    // Tambahkan indikator loading (opsional)
+    const botMessageDiv = document.createElement('div');
+    botMessageDiv.className = 'message bot-message';
+    botMessageDiv.textContent = "Mengetik...";
+    chatMessages.appendChild(botMessageDiv);
 
- const container = document.getElementById('chat-container');
- container.innerHTML += `<div id="ai-typing" class="flex gap-2.5 w-full justify-start"><div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100"><i data-lucide="loader-2" class="h-3.5 w-3.5 animate-spin"></i></div><div class="p-3.5 rounded-[1.25rem] rounded-bl-sm text-xs text-slate-400 bg-white border border-slate-200">Menganalisis data...</div></div>`;
- container.scrollTop = container.scrollHeight;
+    try {
+        const response = await fetch(CHATBOT_BASE_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${CHATBOT_API_KEY}`
+            },
+            body: JSON.stringify({
+                model: "gpt-3.5-turbo", // Ganti jika Pateway menggunakan nama model spesifik
+                messages: [
+                    { 
+                        role: "system", 
+                        content: "Anda adalah asisten virtual yang membantu untuk sistem monitoring perangkat." 
+                    },
+                    { 
+                        role: "user", 
+                        content: userText 
+                    }
+                ]
+            })
+        });
 
- setTimeout(() => {
- document.getElementById('ai-typing')?.remove();
- let reply = "Semua parameter ekosistem terpantau sangat baik. Pertahankan jadwal sirkulasi air dan pemberian pakar secara teratur.";
- if(text.toLowerCase().includes('ph') || text.toLowerCase().includes('asam')) {
- reply = "**Analisis AI:** Penurunan pH biasanya disebabkan penumpukan limbah organik atau sisa pakan. Kurangi takaran pakan sementara dan pastikan biofilter bekerja optimal.";
- }
- chatHistory.push({ role: 'model', text: reply });
- renderChat();
- }, 1200);
- });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        // Ekstrak teks balasan dari struktur data OpenAI-compatible
+        const botReply = data.choices[0].message.content; 
+        
+        botMessageDiv.textContent = botReply;
+
+    } catch (error) {
+        console.error("Error memanggil API:", error);
+        botMessageDiv.textContent = "Maaf, terjadi kesalahan saat menghubungi server AI.";
+    }
+
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
  // =====================================
  // NAVIGATION LOGIC
