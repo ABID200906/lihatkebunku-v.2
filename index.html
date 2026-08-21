@@ -54,6 +54,7 @@
  }
  }
  </script>
+ 
  <style>
  ::-webkit-scrollbar { width: 5px; height: 5px; }
  ::-webkit-scrollbar-track { background: transparent; }
@@ -88,8 +89,26 @@
  linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
  linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
  }
+
+ @keyframes float-slow {
+   0%, 100% { transform: translateY(0) rotate(0deg); }
+   50% { transform: translateY(-20px) rotate(5deg); }
+ }
+ @keyframes float-medium {
+   0%, 100% { transform: translateY(0) scale(1); }
+   50% { transform: translateY(-15px) scale(1.05); }
+ }
+ @keyframes pulse-glow {
+   0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+   70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
+ }
+ 
+ .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+ .animate-float-medium { animation: float-medium 4s ease-in-out infinite; }
+ .animate-pulse-glow { animation: pulse-glow 2s infinite; }
  </style>
 </head>
+
 <body class="bg-[#f8fafc] selection:bg-emerald-100 text-slate-700 font-sans min-h-screen flex flex-col md:flex-row relative overflow-x-hidden">
  <!-- Layer Background Utama -->
  <div class="fixed inset-0 z-[-1] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-50/80 via-slate-50 to-teal-50/40"></div>
@@ -100,28 +119,9 @@
  <div class="fixed top-[-10%] right-[-5%] w-[450px] h-[450px] rounded-full bg-emerald-200/20 blur-[120px] z-[-1] pointer-events-none"></div>
  <div class="fixed bottom-[-10%] left-[-5%] w-[450px] h-[450px] rounded-full bg-teal-200/20 blur-[120px] z-[-1] pointer-events-none"></div>
 
-<!-- ========================================== -->
+ <!-- ========================================== -->
  <!-- 1. HALAMAN LOGIN -->
  <!-- ========================================== -->
- <style>
-   @keyframes float-slow {
-     0%, 100% { transform: translateY(0) rotate(0deg); }
-     50% { transform: translateY(-20px) rotate(5deg); }
-   }
-   @keyframes float-medium {
-     0%, 100% { transform: translateY(0) scale(1); }
-     50% { transform: translateY(-15px) scale(1.05); }
-   }
-   @keyframes pulse-glow {
-     0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-     70% { box-shadow: 0 0 0 15px rgba(16, 185, 129, 0); }
-   }
-   
-   .animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
-   .animate-float-medium { animation: float-medium 4s ease-in-out infinite; }
-   .animate-pulse-glow { animation: pulse-glow 2s infinite; }
- </style>
-
  <div id="login-view" class="flex min-h-screen w-full flex-col items-center justify-center p-4 fixed inset-0 z-50 bg-cover bg-center bg-no-repeat overflow-hidden" style="background-image: url('background.png');">
  
  <!-- Overlay Gelap -->
@@ -847,7 +847,6 @@
  const auth = getAuth(app);
 
  let activeMachineCode = "";
- // Update key: pompa, uv, pakan
  let currentControls = { pompa: false, uv: false, pakan: false };
  let selectedImageData = ""; 
 
@@ -1485,118 +1484,102 @@
  document.getElementById('bar-suhuUdara').style.width = `${Math.min(100, Math.max(10, (nSU / 45) * 100))}%`;
 
  document.getElementById('bar-tds').className = `h-full rounded-full transition-all duration-1000 ease-out ${isTDS ? 'bg-gradient-to-r from-indigo-400 to-violet-400' : 'bg-gradient-to-r from-rose-400 to-rose-500'}`;
- document.getElementById('bar-tds').style.width = `${Math.min(100, (nTDS / 2000) * 100)}%`;
+ document.getElementById('bar-tds').style.width = `${Math.min(100, (nTDS / 1000) * 100)}%`;
  }
 
  // =====================================
- // LOGIK KONTROL (pompa, uv, pakan)
+ // FIREBASE LISTENERS (Data & Control)
  // =====================================
- window.toggleControl = async (controlKey) => {
-   if (!activeMachineCode) return;
-   const newValue = !currentControls[controlKey];
-   try {
-     await update(ref(db, `machines/${activeMachineCode}/kontrol`), {
-       [controlKey]: newValue
-     });
-   } catch(err) {
-     console.error("Gagal memperbarui status kontrol:", err);
-   }
- };
-
- function updateControlsUI(data) {
-   currentControls = {
-     pompa: data?.pompa ?? false,
-     uv: data?.uv ?? false,
-     pakan: data?.pakan ?? false
-   };
-
-   // 1. Pompa Air
-   const isPumpOn = currentControls.pompa;
-   const btnPump = document.getElementById('btn-pump');
-   const dotPump = document.getElementById('dot-pump');
-   const iconPump = document.getElementById('icon-pump');
-   const descPump = document.getElementById('desc-pump');
-   const powerPump = document.getElementById('power-pump');
-
-   if (isPumpOn) {
-     btnPump.className = "w-14 h-8 bg-emerald-500 rounded-full transition-colors duration-300 shadow-inner p-1";
-     dotPump.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-6";
-     iconPump.className = "w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center transition-all duration-500 border border-emerald-200 shadow-sm";
-     descPump.innerHTML = `<i data-lucide="waves" class="h-4 w-4 shrink-0 text-emerald-500 mt-0.5"></i><span class="text-emerald-700 font-medium">Sistem aktif. Oksigen dan sirkulasi air kolam berjalan normal.</span>`;
-     descPump.className = "mt-5 bg-emerald-50/80 p-3.5 rounded-xl border border-emerald-200/80 text-xs flex gap-2.5 leading-relaxed";
-     if(powerPump) powerPump.innerText = "12.5 Watt";
-   } else {
-     btnPump.className = "w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1";
-     dotPump.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-0";
-     iconPump.className = "w-12 h-12 rounded-2xl bg-slate-100/80 text-slate-400 flex items-center justify-center transition-all duration-500 border border-slate-200/60";
-     descPump.innerHTML = `<i data-lucide="power-off" class="h-4 w-4 shrink-0 text-slate-400 mt-0.5"></i><span>Sistem offline. Aktifkan untuk memulai sirkulasi oksigen ikan.</span>`;
-     descPump.className = "mt-5 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/60 text-xs text-slate-500 flex gap-2.5 font-normal leading-relaxed";
-     if(powerPump) powerPump.innerText = "0.0 Watt";
-   }
-
-   // 2. Lampu UV
-   const isUvOn = currentControls.uv;
-   const btnUv = document.getElementById('btn-uv');
-   const dotUv = document.getElementById('dot-uv');
-   const iconUv = document.getElementById('icon-uv');
-   const descUv = document.getElementById('desc-uv');
-   const powerUv = document.getElementById('power-uv');
-
-   if (isUvOn) {
-     btnUv.className = "w-14 h-8 bg-purple-500 rounded-full transition-colors duration-300 shadow-inner p-1";
-     dotUv.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-6";
-     iconUv.className = "w-12 h-12 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center transition-all duration-500 border border-purple-200 shadow-sm";
-     descUv.innerHTML = `<i data-lucide="sun" class="h-4 w-4 shrink-0 text-purple-500 mt-0.5"></i><span class="text-purple-700 font-medium">Lampu UV aktif. Membantu fotosintesis dan mensterilkan air.</span>`;
-     descUv.className = "mt-5 bg-purple-50/80 p-3.5 rounded-xl border border-purple-200/80 text-xs flex gap-2.5 leading-relaxed";
-     if(powerUv) powerUv.innerText = "8.0 Watt";
-   } else {
-     btnUv.className = "w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1";
-     dotUv.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-0";
-     iconUv.className = "w-12 h-12 rounded-2xl bg-slate-100/80 text-slate-400 flex items-center justify-center transition-all duration-500 border border-slate-200/60";
-     descUv.innerHTML = `<i data-lucide="moon" class="h-4 w-4 shrink-0 text-slate-400 mt-0.5"></i><span>Lampu padam. Tanaman mengandalkan cahaya alami lingkungan.</span>`;
-     descUv.className = "mt-5 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/60 text-xs text-slate-500 flex gap-2.5 font-normal leading-relaxed";
-     if(powerUv) powerUv.innerText = "0.0 Watt";
-   }
-
-   // 3. Auto Feeder / Pakan
-   const isPakanOn = currentControls.pakan;
-   const btnFeeder = document.getElementById('btn-feeder');
-   const dotFeeder = document.getElementById('dot-feeder');
-   const iconFeeder = document.getElementById('icon-feeder');
-   const descFeeder = document.getElementById('desc-feeder');
-
-   if (isPakanOn) {
-     btnFeeder.className = "w-14 h-8 bg-amber-500 rounded-full transition-colors duration-300 shadow-inner p-1";
-     dotFeeder.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-6";
-     iconFeeder.className = "w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center transition-all duration-500 border border-amber-200 shadow-sm";
-     descFeeder.innerHTML = `<i data-lucide="check-circle-2" class="h-4 w-4 shrink-0 text-amber-500 mt-0.5"></i><span class="text-amber-700 font-medium">Jadwal pakan otomatis aktif. Pakan akan diberikan berkala.</span>`;
-     descFeeder.className = "mt-5 bg-amber-50/80 p-3.5 rounded-xl border border-amber-200/80 text-xs flex gap-2.5 leading-relaxed";
-   } else {
-     btnFeeder.className = "w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1";
-     dotFeeder.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-0";
-     iconFeeder.className = "w-12 h-12 rounded-2xl bg-slate-100/80 text-slate-400 flex items-center justify-center transition-all duration-500 border border-slate-200/60";
-     descFeeder.innerHTML = `<i data-lucide="clock" class="h-4 w-4 shrink-0 text-slate-400 mt-0.5"></i><span>Jadwal pakan otomatis nonaktif. Berikan pakan ikan secara manual.</span>`;
-     descFeeder.className = "mt-5 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/60 text-xs text-slate-500 flex gap-2.5 font-normal leading-relaxed";
-   }
-
-   lucide.createIcons();
- }
-
  function startFirebaseListeners() {
-   // Listener Sensor
-   onValue(ref(db, `machines/${activeMachineCode}/data`), (snapshot) => {
+   if (!activeMachineCode) return;
+
+   // 1. Listener Data Sensor
+   const dataRef = ref(db, `machines/${activeMachineCode}/data`);
+   onValue(dataRef, (snapshot) => {
      if (snapshot.exists()) {
        updateMetricsUI(snapshot.val());
      }
    });
 
-   // Listener Kontrol
-   onValue(ref(db, `machines/${activeMachineCode}/kontrol`), (snapshot) => {
+   // 2. Listener Kontrol IoT (Jalur diubah dari 'kontrol' menjadi 'control')
+   const controlRef = ref(db, `machines/${activeMachineCode}/control`);
+   onValue(controlRef, (snapshot) => {
      if (snapshot.exists()) {
-       updateControlsUI(snapshot.val());
+       const vals = snapshot.val();
+       currentControls.pompa = !!vals.pompa;
+       currentControls.uv = !!vals.uv;
+       currentControls.pakan = !!vals.pakan;
+       updateControlUI();
      }
    });
  }
+
+ function updateControlUI() {
+   // Helper untuk memperbarui UI masing-masing switch/kartu kontrol
+   const updateToggle = (id, isOn, pwr, descOn, descOff, iconOnClass, iconOffClass) => {
+     const btn = document.getElementById(`btn-${id}`);
+     const dot = document.getElementById(`dot-${id}`);
+     const desc = document.getElementById(`desc-${id}`);
+     const power = document.getElementById(`power-${id}`);
+     const icon = document.getElementById(`icon-${id}`);
+     const card = document.getElementById(`card-${id}`);
+
+     if (!btn || !dot || !desc || !icon || !card) return;
+
+     if (isOn) {
+       btn.className = "w-14 h-8 bg-emerald-500 rounded-full transition-colors duration-300 shadow-inner p-1";
+       dot.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-6";
+       desc.innerHTML = `<i data-lucide="power" class="h-4 w-4 shrink-0 text-emerald-500 mt-0.5"></i><span class="text-emerald-700">${descOn}</span>`;
+       desc.className = "mt-5 bg-emerald-50 p-3.5 rounded-xl border border-emerald-100 text-xs flex gap-2.5 font-normal leading-relaxed";
+       if(power) {
+         power.innerText = pwr;
+         power.className = "font-mono font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-200";
+       }
+       icon.className = `w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${iconOnClass}`;
+       card.className = "glass-card p-6 rounded-[1.75rem] border border-emerald-200/80 transition-all duration-500 flex flex-col justify-between group bg-emerald-50/10 shadow-[0_10px_30px_-5px_rgba(16,185,129,0.1)]";
+     } else {
+       btn.className = "w-14 h-8 bg-slate-200 rounded-full transition-colors duration-300 shadow-inner p-1";
+       dot.className = "bg-white w-6 h-6 rounded-full shadow-md transform transition-transform duration-300 translate-x-0";
+       desc.innerHTML = `<i data-lucide="power-off" class="h-4 w-4 shrink-0 text-slate-400 mt-0.5"></i><span>${descOff}</span>`;
+       desc.className = "mt-5 bg-slate-50/80 p-3.5 rounded-xl border border-slate-200/60 text-xs text-slate-500 flex gap-2.5 font-normal leading-relaxed";
+       if(power) {
+         power.innerText = "0.0 Watt";
+         power.className = "font-mono font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200/60";
+       }
+       icon.className = `w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-500 ${iconOffClass}`;
+       card.className = "glass-card p-6 rounded-[1.75rem] border border-slate-200/80 transition-all duration-500 flex flex-col justify-between group";
+     }
+   };
+
+   updateToggle('pump', currentControls.pompa, "15.0 Watt", "Sistem sirkulasi dan aerasi kolam aktif beroperasi.", "Sistem offline. Aktifkan untuk memulai sirkulasi oksigen ikan.", "bg-blue-100 text-blue-600 border border-blue-200", "bg-slate-100/80 text-slate-400 border border-slate-200/60");
+   updateToggle('uv', currentControls.uv, "24.5 Watt", "Lampu Grow UV menyala untuk membantu fotosintesis.", "Lampu padam. Tanaman mengandalkan cahaya alami lingkungan.", "bg-amber-100 text-amber-500 border border-amber-200 shadow-[0_0_15px_rgba(251,191,36,0.3)]", "bg-slate-100/80 text-slate-400 border border-slate-200/60");
+   updateToggle('feeder', currentControls.pakan, "-", "Servo membuka katup pakan untuk ikan saat ini.", "Jadwal pakan otomatis nonaktif. Berikan pakan ikan secara manual.", "bg-orange-100 text-orange-500 border border-orange-200", "bg-slate-100/80 text-slate-400 border border-slate-200/60");
+   
+   lucide.createIcons();
+ }
+
+ window.toggleControl = async (type) => {
+   if (!activeMachineCode) return;
+   const newValue = !currentControls[type];
+   
+   // Pembaruan UI Secara Optimis
+   currentControls[type] = newValue;
+   updateControlUI();
+
+   try {
+     // Jalur pengiriman perintah diubah dari 'kontrol' menjadi 'control'
+     await update(ref(db, `machines/${activeMachineCode}/control`), {
+       [type]: newValue
+     });
+   } catch (error) {
+     console.error("Gagal mengupdate kontrol:", error);
+     // Revert UI Update jika gagal
+     currentControls[type] = !newValue;
+     updateControlUI();
+     alert("Gagal mengirim perintah ke perangkat.");
+   }
+ };
+
  </script>
 </body>
 </html>
