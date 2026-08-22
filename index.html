@@ -1278,60 +1278,377 @@
  }
  };
 
- // =====================================
- // STATE: AI CHAT
- // =====================================
- let chatHistory = [
- { role: 'model', text: 'Halo! Saya **Agronomist AI** 🌿\n\nSaya sedang memonitor data sensor aquaponics Anda. Ada hal yang ingin didiskusikan mengenai nutrisi atau pencegahan hama hari ini?' }
- ];
+// =====================================
+// AI ASSISTANT - KIMI AI
+// =====================================
 
- function renderChat() {
- const container = document.getElementById('chat-container');
- container.innerHTML = '';
- chatHistory.forEach(msg => {
- const isUser = msg.role === 'user';
- const alignWrap = isUser ? 'justify-end' : 'justify-start';
- const bgClass = isUser ? 'bg-indigo-600 text-white rounded-br-sm shadow-sm' : 'bg-white border border-slate-200/70 text-slate-700 rounded-bl-sm shadow-xs';
- const iconHtml = !isUser ? `<div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100 mt-0.5"><i data-lucide="sparkles" class="h-3.5 w-3.5"></i></div>` : '';
- const formattedText = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
+// API KEY KIMI AI
+const kimiApiKey = "knkt-T-utwQ2S1s7h5_9XhDzI5vpN";
 
- const msgHtml = `
- <div class="flex gap-2.5 w-full ${alignWrap}">
- ${iconHtml}
- <div class="max-w-[85%] md:max-w-[75%] p-3.5 rounded-[1.25rem] text-xs md:text-sm font-normal leading-relaxed ${bgClass}">
- ${formattedText}
- </div>
- </div>`;
- container.innerHTML += msgHtml;
- });
- container.scrollTop = container.scrollHeight;
- lucide.createIcons();
- }
+// Endpoint Kimi AI
+const kimiApiUrl = "https://konektikacloud.web.id/v1";
 
- document.getElementById('ai-form').addEventListener('submit', (e) => {
- e.preventDefault();
- const input = document.getElementById('ai-input');
- const text = input.value.trim();
- if(!text) return;
+// Riwayat percakapan AI
+let chatHistory = [
+    {
+        role: "assistant",
+        text: "Halo! Saya **Agronomist AI** 🌿\n\nSaya siap membantu menganalisis kondisi aquaponics, pH air, nutrisi, suhu, kelembapan, TDS, dan masalah tanaman Anda. Ada yang ingin ditanyakan?"
+    }
+];
 
- chatHistory.push({ role: 'user', text });
- input.value = '';
- renderChat();
 
- const container = document.getElementById('chat-container');
- container.innerHTML += `<div id="ai-typing" class="flex gap-2.5 w-full justify-start"><div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100"><i data-lucide="loader-2" class="h-3.5 w-3.5 animate-spin"></i></div><div class="p-3.5 rounded-[1.25rem] rounded-bl-sm text-xs text-slate-400 bg-white border border-slate-200">Menganalisis data...</div></div>`;
- container.scrollTop = container.scrollHeight;
+// =====================================
+// FORMAT RESPONSE AI
+// =====================================
+function formatAIResponse(text) {
+    if (!text) return "Maaf, AI tidak memberikan jawaban.";
 
- setTimeout(() => {
- document.getElementById('ai-typing')?.remove();
- let reply = "Semua parameter ekosistem terpantau sangat baik. Pertahankan jadwal sirkulasi air dan pemberian pakar secara teratur.";
- if(text.toLowerCase().includes('ph') || text.toLowerCase().includes('asam')) {
- reply = "**Analisis AI:** Penurunan pH biasanya disebabkan penumpukan limbah organik atau sisa pakan. Kurangi takaran pakan sementara dan pastikan biofilter bekerja optimal.";
- }
- chatHistory.push({ role: 'model', text: reply });
- renderChat();
- }, 1200);
- });
+    return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/\n/g, "<br>");
+}
+
+
+// =====================================
+// RENDER CHAT
+// =====================================
+function renderChat() {
+
+    const container = document.getElementById("chat-container");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    chatHistory.forEach(msg => {
+
+        const isUser = msg.role === "user";
+
+        const alignWrap = isUser
+            ? "justify-end"
+            : "justify-start";
+
+        const bgClass = isUser
+            ? "bg-indigo-600 text-white rounded-br-sm shadow-sm"
+            : "bg-white border border-slate-200/70 text-slate-700 rounded-bl-sm shadow-xs";
+
+        const iconHtml = !isUser
+            ? `
+                <div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-500
+                    flex items-center justify-center shrink-0
+                    border border-indigo-100 mt-0.5">
+
+                    <i data-lucide="sparkles"
+                       class="h-3.5 w-3.5"></i>
+
+                </div>
+            `
+            : "";
+
+        const formattedText = formatAIResponse(msg.text);
+
+        container.innerHTML += `
+            <div class="flex gap-2.5 w-full ${alignWrap}">
+
+                ${iconHtml}
+
+                <div class="
+                    max-w-[85%] md:max-w-[75%]
+                    p-3.5
+                    rounded-[1.25rem]
+                    text-xs md:text-sm
+                    font-normal
+                    leading-relaxed
+                    ${bgClass}
+                ">
+                    ${formattedText}
+                </div>
+
+            </div>
+        `;
+    });
+
+    container.scrollTop = container.scrollHeight;
+
+    if (typeof lucide !== "undefined") {
+        lucide.createIcons();
+    }
+}
+
+
+// =====================================
+// REQUEST KE KIMI AI
+// =====================================
+async function fetchKimiAI(userMessage) {
+
+    const messages = [
+        {
+            role: "system",
+            content: `
+Kamu adalah Agronomist AI untuk aplikasi LihatKebunku.
+
+Tugas kamu adalah membantu pengguna mengenai:
+- aquaponics
+- kesehatan tanaman
+- pH air
+- TDS
+- suhu air
+- suhu lingkungan
+- kelembapan
+- nutrisi tanaman
+- pemberian pakan ikan
+- kualitas air
+- masalah pertumbuhan tanaman
+- perawatan sistem aquaponics
+
+Jawab dalam Bahasa Indonesia.
+
+Gunakan bahasa yang mudah dipahami, ramah, dan praktis.
+
+Jika pengguna memberikan pertanyaan mengenai kondisi aquaponics,
+berikan analisis dan langkah yang bisa dilakukan.
+
+Jangan mengarang data sensor.
+Jika data sensor tidak diberikan oleh pengguna,
+katakan bahwa data tersebut belum tersedia.
+
+Jangan mengaku sebagai manusia.
+Kamu adalah AI Assistant dari LihatKebunku.
+            `
+        }
+    ];
+
+    // Tambahkan percakapan sebelumnya
+    chatHistory.forEach(msg => {
+
+        if (msg.role === "user") {
+
+            messages.push({
+                role: "user",
+                content: msg.text
+            });
+
+        } else if (msg.role === "assistant") {
+
+            messages.push({
+                role: "assistant",
+                content: msg.text
+            });
+
+        }
+
+    });
+
+    // Tambahkan pertanyaan terbaru
+    messages.push({
+        role: "user",
+        content: userMessage
+    });
+
+
+    const payload = {
+        model: "kimi-pro",
+        messages: messages,
+        stream: false
+    };
+
+
+    try {
+
+        const response = await fetch(kimiApiUrl, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${kimiApiKey}`
+            },
+
+            body: JSON.stringify(payload)
+
+        });
+
+
+        if (!response.ok) {
+
+            const errorText = await response.text();
+
+            console.error(
+                "Kimi API Error:",
+                response.status,
+                errorText
+            );
+
+            throw new Error(
+                `API Error ${response.status}`
+            );
+        }
+
+
+        const result = await response.json();
+
+        console.log("Kimi API Response:", result);
+
+
+        const aiResponse =
+            result?.choices?.[0]?.message?.content;
+
+
+        if (!aiResponse) {
+
+            throw new Error(
+                "Response AI kosong."
+            );
+        }
+
+
+        return aiResponse;
+
+
+    } catch (error) {
+
+        console.error(
+            "Gagal menghubungi Kimi AI:",
+            error
+        );
+
+        return "Maaf, koneksi ke Agronomist AI sedang terganggu 📡. Silakan coba lagi beberapa saat.";
+    }
+}
+
+
+// =====================================
+// SUBMIT CHAT
+// =====================================
+document.getElementById("ai-form").addEventListener(
+    "submit",
+    async function(e) {
+
+        e.preventDefault();
+
+
+        const input =
+            document.getElementById("ai-input");
+
+        const text =
+            input.value.trim();
+
+
+        if (!text) return;
+
+
+        // =================================
+        // TAMPILKAN PESAN USER
+        // =================================
+
+        chatHistory.push({
+            role: "user",
+            text: text
+        });
+
+
+        input.value = "";
+
+
+        renderChat();
+
+
+        // =================================
+        // TAMPILKAN TYPING INDICATOR
+        // =================================
+
+        const container =
+            document.getElementById("chat-container");
+
+
+        container.innerHTML += `
+
+            <div id="ai-typing"
+                 class="flex gap-2.5 w-full justify-start">
+
+                <div class="
+                    w-7 h-7 rounded-xl
+                    bg-indigo-50 text-indigo-500
+                    flex items-center justify-center
+                    shrink-0 border border-indigo-100
+                ">
+
+                    <i data-lucide="loader-2"
+                       class="h-3.5 w-3.5 animate-spin">
+                    </i>
+
+                </div>
+
+
+                <div class="
+                    p-3.5
+                    rounded-[1.25rem]
+                    rounded-bl-sm
+                    text-xs
+                    text-slate-400
+                    bg-white
+                    border border-slate-200
+                ">
+
+                    Agronomist AI sedang berpikir...
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.scrollTop =
+            container.scrollHeight;
+
+
+        if (typeof lucide !== "undefined") {
+            lucide.createIcons();
+        }
+
+
+        // =================================
+        // REQUEST KE KIMI
+        // =================================
+
+        const response =
+            await fetchKimiAI(text);
+
+
+        // =================================
+        // HAPUS TYPING
+        // =================================
+
+        document
+            .getElementById("ai-typing")
+            ?.remove();
+
+
+        // =================================
+        // SIMPAN RESPONSE AI
+        // =================================
+
+        chatHistory.push({
+
+            role: "assistant",
+
+            text: response
+
+        });
+
+
+        // =================================
+        // RENDER ULANG
+        // =================================
+
+        renderChat();
+
+    }
+);
 
  // =====================================
  // NAVIGATION LOGIC
