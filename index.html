@@ -19,6 +19,89 @@
  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
  <style>
+  /* Perspektif 3D untuk interaksi kartu */
+  .weather-card-3d {
+    transform-style: preserve-3d;
+    transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease, background 0.8s ease;
+  }
+
+  /* Kilau cahaya kaca melintas */
+  @keyframes weatherGlassSheen {
+    0% { transform: translateX(-160%) skewX(-22deg); }
+    45%, 100% { transform: translateX(280%) skewX(-22deg); }
+  }
+  .animate-glass-sheen {
+    animation: weatherGlassSheen 5.5s infinite ease-in-out;
+  }
+
+  /* Animasi Ikon Cuaca SVG */
+  @keyframes sunSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .svg-sun-rays {
+    transform-origin: 32px 32px;
+    animation: sunSpin 16s linear infinite;
+  }
+
+  @keyframes sunPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  .svg-sun-core {
+    transform-origin: 32px 32px;
+    animation: sunPulse 2.8s ease-in-out infinite;
+  }
+
+  @keyframes cloudDrift {
+    0%, 100% { transform: translate(0px, 0px); }
+    50% { transform: translate(4px, -2px); }
+  }
+  .svg-cloud-front {
+    animation: cloudDrift 3.8s ease-in-out infinite;
+  }
+
+  @keyframes cloudDriftReverse {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(-4px); }
+  }
+  .svg-cloud-back {
+    animation: cloudDriftReverse 5s ease-in-out infinite;
+  }
+
+  @keyframes svgDropFall {
+    0% { transform: translate(0, -3px); opacity: 0; }
+    30% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translate(-3px, 11px); opacity: 0; }
+  }
+  .svg-drop-1 { animation: svgDropFall 0.95s linear infinite; }
+  .svg-drop-2 { animation: svgDropFall 0.95s linear infinite 0.3s; }
+  .svg-drop-3 { animation: svgDropFall 0.95s linear infinite 0.6s; }
+
+  @keyframes svgBoltFlash {
+    0%, 78%, 100% { opacity: 0.25; transform: scale(0.95); }
+    81%, 88% { opacity: 1; transform: scale(1.08); filter: drop-shadow(0 0 6px #fde047); }
+    84% { opacity: 0.35; }
+  }
+  .svg-bolt {
+    transform-origin: 32px 46px;
+    animation: svgBoltFlash 3.2s infinite;
+  }
+
+  /* Efek getar singkat saat ikon diklik */
+  @keyframes widgetBouncePop {
+    0% { transform: scale(1); }
+    35% { transform: scale(0.92) rotate(-4deg); }
+    70% { transform: scale(1.08) rotate(3deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+  .animate-pop-react {
+    animation: widgetBouncePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+</style>
+ 
+ <style>
   /* Kilau cahaya melintas pada kartu kaca */
   @keyframes weatherShimmer {
     0% { transform: translateX(-150%) skewX(-20deg); }
@@ -372,111 +455,130 @@
      Tempelkan di dalam kontainer hero banner halaman Ringkasan
      ===================================================================== -->
 <div id="today-weather-widget"
-  class="relative overflow-hidden group w-full lg:w-auto lg:min-w-[375px] rounded-2xl border border-white/30 bg-white/15 dark:bg-slate-900/40 backdrop-blur-xl p-4 text-white shadow-[0_8px_32px_rgba(0,0,0,0.16)] transition-all duration-500 hover:-translate-y-0.5 hover:shadow-[0_12px_36px_rgba(16,185,129,0.28)]">
+  class="weather-card-3d relative overflow-hidden select-none w-full lg:w-auto lg:min-w-[395px] rounded-2xl border border-white/35 bg-gradient-to-br from-emerald-500/85 via-teal-500/80 to-cyan-600/85 backdrop-blur-xl p-4 text-white shadow-[0_12px_35px_rgba(0,0,0,0.2)]">
 
-  <!-- Lapisan Gradien Dinamis Sesuai Cuaca -->
-  <div id="weather-ambient-bg"
-    class="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-400/20 via-teal-300/10 to-sky-400/20 animate-gradient-flow transition-colors duration-1000">
+  <!-- Kanvas Partikel Atmosfer Cuaca Full-Card (Hujan, Sinar Matahari, Petir, Kabut) -->
+  <canvas id="weather-fx-canvas" class="pointer-events-none absolute inset-0 w-full h-full z-0"></canvas>
+
+  <!-- Kilatan Petir Layar Penuh (Aktif saat Badai Petir / Tap) -->
+  <div id="weather-flash-overlay" class="pointer-events-none absolute inset-0 bg-white/0 transition-opacity duration-150 z-0"></div>
+
+  <!-- Efek Kilau Kaca -->
+  <div class="pointer-events-none absolute inset-0 overflow-hidden z-0">
+    <div class="animate-glass-sheen h-full w-1/3 bg-gradient-to-r from-transparent via-white/25 to-transparent"></div>
   </div>
 
-  <!-- Efek Kilau Kaca Bergerak -->
-  <div class="pointer-events-none absolute inset-0 overflow-hidden">
-    <div class="animate-weather-shimmer h-full w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
-  </div>
-
-  <!-- Dekorasi Cahaya Halus di Sudut -->
-  <div id="weather-glow-orb"
-    class="pointer-events-none -right-8 -top-8 absolute h-28 w-28 rounded-full bg-amber-300/25 blur-2xl transition-colors duration-1000">
-  </div>
-
-  <!-- Konten Utama Widget -->
+  <!-- Konten Utama -->
   <div class="relative z-10">
-    <!-- Baris Atas: Label & Lokasi GPS -->
+    <!-- Baris Atas: Judul, Tombol Preview Interaktif, & Lokasi GPS -->
     <div class="flex items-center justify-between gap-2 mb-3">
       <div class="flex items-center gap-2 shrink-0">
         <span class="relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-300"></span>
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-80"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
         </span>
-        <span class="text-[11px] font-bold uppercase tracking-widest text-emerald-100">Today Weather</span>
+        <span class="text-[11px] font-extrabold uppercase tracking-widest text-white drop-shadow-sm">Today Weather</span>
+
+        <!-- Tombol Siklus Mode untuk Mencoba Animasi Cuaca -->
+        <button id="weather-demo-btn" type="button" title="Ketuk untuk mencoba simulasi animasi cuaca"
+          class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-black/25 hover:bg-black/40 border border-white/25 text-white/95 transition active:scale-95 cursor-pointer">
+          Live GPS
+        </button>
       </div>
 
       <div class="flex items-center gap-1.5 min-w-0">
         <div id="weather-location-pill"
-          class="flex items-center gap-1.5 bg-black/15 hover:bg-black/25 border border-white/20 rounded-full px-3 py-1 text-xs font-medium text-white transition truncate max-w-[195px]"
-          title="Lokasi berdasarkan GPS perangkat">
-          <svg class="w-3.5 h-3.5 text-emerald-300 shrink-0 animate-bounce" style="animation-duration: 2.5s;" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+          class="flex items-center gap-1.5 bg-black/25 border border-white/25 rounded-full px-2.5 py-1 text-xs font-semibold text-white truncate max-w-[175px] shadow-sm"
+          title="Lokasi berdasarkan GPS HP">
+          <svg class="w-3.5 h-3.5 text-amber-300 shrink-0 animate-bounce" style="animation-duration: 2.4s;" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>
           <span id="weather-location" class="truncate">Mendeteksi GPS...</span>
         </div>
 
-        <button id="weather-refresh-btn" type="button" title="Perbarui Lokasi & Cuaca"
-          class="p-1.5 rounded-full bg-black/15 hover:bg-white/25 border border-white/20 transition active:scale-90 shrink-0 cursor-pointer">
-          <svg id="weather-refresh-icon" class="w-3.5 h-3.5 text-emerald-100" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <button id="weather-refresh-btn" type="button" title="Perbarui Lokasi GPS"
+          class="p-1.5 rounded-full bg-black/25 hover:bg-white/25 border border-white/25 transition active:scale-90 shrink-0 cursor-pointer">
+          <svg id="weather-refresh-icon" class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2.3" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
           </svg>
         </button>
       </div>
     </div>
 
-    <!-- Baris Tengah: Animasi SVG Cuaca, Suhu, & Indikator Mikro -->
-    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-      <!-- Kiri: Ikon SVG Bergerak + Suhu -->
-      <div class="flex items-center gap-3">
-        <div id="weather-svg-stage"
-          class="w-16 h-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0 shadow-inner">
-          <!-- Default SVG saat memuat -->
-          <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none">
-            <circle class="svg-sun-core" cx="32" cy="32" r="12" fill="#FBBF24"/>
-            <g class="svg-sun-rays" stroke="#FDE68A" stroke-width="3" stroke-linecap="round">
-              <line x1="32" y1="8" x2="32" y2="14"/>
-              <line x1="32" y1="50" x2="32" y2="56"/>
-              <line x1="8" y1="32" x2="14" y2="32"/>
-              <line x1="50" y1="32" x2="56" y2="32"/>
-              <line x1="15" y1="15" x2="19.5" y2="19.5"/>
-              <line x1="44.5" y1="44.5" x2="49" y2="49"/>
-              <line x1="49" y1="15" x2="44.5" y2="19.5"/>
-              <line x1="19.5" y1="44.5" x2="15" y2="49"/>
-            </g>
-          </svg>
-        </div>
+    <!-- Baris Tengah: Ikon Animasi Interaktif, Suhu, & Metrik Warna -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <!-- Kiri: Stage Ikon Cuaca (Bisa diklik untuk memicu efek) -->
+      <div class="flex items-center gap-3.5">
+        <button id="weather-svg-stage" type="button" title="Ketuk untuk memicu efek cuaca!"
+          class="relative w-16 h-16 rounded-2xl bg-black/20 hover:bg-black/30 border border-white/30 flex items-center justify-center shrink-0 shadow-inner transition cursor-pointer active:scale-95">
+          <!-- Ikon SVG akan diisi otomatis sesuai cuaca -->
+        </button>
 
         <div>
           <div class="flex items-baseline gap-1">
-            <span id="weather-temp" class="text-4xl font-extrabold font-mono tracking-tight tabular-nums">--</span>
-            <span class="text-lg font-semibold text-emerald-200">°C</span>
+            <span id="weather-temp" class="text-4xl font-black font-mono tracking-tight tabular-nums drop-shadow">--</span>
+            <span class="text-lg font-bold text-white/90">°C</span>
           </div>
-          <p id="weather-desc" class="text-xs font-medium text-emerald-50/95 tracking-wide">Menunggu akses GPS...</p>
+          <p id="weather-desc" class="text-xs font-semibold text-white/95 drop-shadow-sm">Menunggu sinyal GPS...</p>
         </div>
       </div>
 
-      <!-- Kanan: Peluang Hujan & Kelembaban dengan Bar Animasi -->
-      <div class="grid grid-cols-2 sm:grid-cols-1 gap-2 min-w-[132px]">
-        <!-- Peluang Hujan -->
-        <div class="bg-black/15 border border-white/15 rounded-xl px-3 py-1.5">
+      <!-- Kanan: Kapsul Peluang Hujan & Kelembaban Berwarna -->
+      <div class="grid grid-cols-2 sm:grid-cols-1 gap-2 min-w-[138px]">
+        <div class="bg-black/25 border border-white/20 rounded-xl px-3 py-1.5 backdrop-blur-sm">
           <div class="flex items-center justify-between gap-2 text-[11px]">
-            <span class="text-emerald-100/85 flex items-center gap-1">
-              <span>💧</span> Hujan
-            </span>
+            <span class="text-sky-200 font-semibold flex items-center gap-1">💧 Hujan</span>
             <span id="weather-rain" class="font-mono font-bold text-white tabular-nums">--%</span>
           </div>
-          <div class="w-full h-1 bg-white/15 rounded-full overflow-hidden mt-1">
-            <div id="weather-rain-bar" class="h-full bg-sky-300 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+          <div class="w-full h-1.5 bg-white/20 rounded-full overflow-hidden mt-1">
+            <div id="weather-rain-bar" class="h-full bg-gradient-to-r from-sky-300 to-cyan-200 rounded-full transition-all duration-700" style="width: 0%"></div>
           </div>
         </div>
 
-        <!-- Kelembaban Udara -->
-        <div class="bg-black/15 border border-white/15 rounded-xl px-3 py-1.5">
+        <div class="bg-black/25 border border-white/20 rounded-xl px-3 py-1.5 backdrop-blur-sm">
           <div class="flex items-center justify-between gap-2 text-[11px]">
-            <span class="text-emerald-100/85 flex items-center gap-1">
-              <span>🌿</span> Lembab
-            </span>
+            <span class="text-emerald-200 font-semibold flex items-center gap-1">🌿 Lembab</span>
             <span id="weather-humidity" class="font-mono font-bold text-white tabular-nums">--%</span>
           </div>
-          <div class="w-full h-1 bg-white/15 rounded-full overflow-hidden mt-1">
-            <div id="weather-humidity-bar" class="h-full bg-emerald-300 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
+          <div class="w-full h-1.5 bg-white/20 rounded-full overflow-hidden mt-1">
+            <div id="weather-humidity-bar" class="h-full bg-gradient-to-r from-emerald-300 to-lime-200 rounded-full transition-all duration-700" style="width: 0%"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Baris Bawah Interaktif: Klik untuk Buka/Tutup Info Angin, UV & Saran Penyiraman -->
+    <div class="mt-3 pt-2.5 border-t border-white/20">
+      <button id="weather-expand-btn" type="button"
+        class="w-full flex items-center justify-between text-[11px] font-semibold text-white/95 hover:text-white cursor-pointer">
+        <span id="weather-advice-badge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/25 border border-white/20">
+          🌱 Memuat rekomendasi kebun...
+        </span>
+        <span class="inline-flex items-center gap-1 text-white/85">
+          <span id="weather-expand-label">Detail</span>
+          <svg id="weather-chevron" class="w-3.5 h-3.5 transition-transform duration-300" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+          </svg>
+        </span>
+      </button>
+
+      <!-- Drawer Detail Tambahan (Terbuka saat diklik) -->
+      <div id="weather-extra-drawer" class="grid grid-rows-[0fr] transition-all duration-300 ease-out">
+        <div class="overflow-hidden">
+          <div class="grid grid-cols-3 gap-2 pt-2.5 text-center text-[11px]">
+            <div class="rounded-xl bg-black/25 border border-white/15 py-1.5 px-2">
+              <span class="block text-[10px] text-white/75">Angin</span>
+              <span id="weather-wind" class="font-mono font-bold text-white">-- km/j</span>
+            </div>
+            <div class="rounded-xl bg-black/25 border border-white/15 py-1.5 px-2">
+              <span class="block text-[10px] text-white/75">Indeks UV</span>
+              <span id="weather-uv" class="font-mono font-bold text-amber-200">--</span>
+            </div>
+            <div class="rounded-xl bg-black/25 border border-white/15 py-1.5 px-2">
+              <span class="block text-[10px] text-white/75">Status Siram</span>
+              <span id="weather-irrigation-status" class="font-bold text-emerald-200">--</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1238,6 +1340,486 @@
  notifications.unshift({ id: Date.now(), title, message, type, read: false });
  renderNotifications();
  };
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    const card = document.getElementById('today-weather-widget');
+    const canvas = document.getElementById('weather-fx-canvas');
+    const flashOverlay = document.getElementById('weather-flash-overlay');
+    const locationEl = document.getElementById('weather-location');
+    const locationPill = document.getElementById('weather-location-pill');
+    const tempEl = document.getElementById('weather-temp');
+    const descEl = document.getElementById('weather-desc');
+    const svgStage = document.getElementById('weather-svg-stage');
+    const rainEl = document.getElementById('weather-rain');
+    const rainBar = document.getElementById('weather-rain-bar');
+    const humidityEl = document.getElementById('weather-humidity');
+    const humidityBar = document.getElementById('weather-humidity-bar');
+    const adviceBadge = document.getElementById('weather-advice-badge');
+    const windEl = document.getElementById('weather-wind');
+    const uvEl = document.getElementById('weather-uv');
+    const irrigationEl = document.getElementById('weather-irrigation-status');
+    const refreshBtn = document.getElementById('weather-refresh-btn');
+    const refreshIcon = document.getElementById('weather-refresh-icon');
+    const demoBtn = document.getElementById('weather-demo-btn');
+    const expandBtn = document.getElementById('weather-expand-btn');
+    const extraDrawer = document.getElementById('weather-extra-drawer');
+    const chevron = document.getElementById('weather-chevron');
+
+    if (!card || !canvas || !locationEl) return;
+
+    const ctx = canvas.getContext('2d');
+    let width = 0;
+    let height = 0;
+    let particles = [];
+    let currentFxMode = 'partly-cloudy'; // 'sunny' | 'partly-cloudy' | 'cloudy' | 'rain' | 'storm'
+    let pointer = { x: -999, y: -999, active: false };
+    let liveWeatherCache = null;
+    let demoIndex = 0;
+
+    // 1. Konfigurasi Tema Warna & Animasi per Jenis Cuaca
+    function getWeatherConfig(code) {
+      // Cerah (0)
+      if (code === 0) {
+        return {
+          mode: 'sunny',
+          label: 'Cerah Terik',
+          gradient: 'from-amber-500/90 via-orange-500/85 to-rose-500/85',
+          border: 'border-amber-200/60',
+          advice: '☀️ Cahaya optimal · Cek kelembaban tanah',
+          siram: 'Pantau Tanah',
+          svg: `
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none">
+              <circle class="svg-sun-core" cx="32" cy="32" r="13" fill="#FDE047"/>
+              <g class="svg-sun-rays" stroke="#FEF08A" stroke-width="3.2" stroke-linecap="round">
+                <line x1="32" y1="6" x2="32" y2="13"/>
+                <line x1="32" y1="51" x2="32" y2="58"/>
+                <line x1="6" y1="32" x2="13" y2="32"/>
+                <line x1="51" y1="32" x2="58" y2="32"/>
+                <line x1="13.6" y1="13.6" x2="18.5" y2="18.5"/>
+                <line x1="45.5" y1="45.5" x2="50.4" y2="50.4"/>
+                <line x1="50.4" y1="13.6" x2="45.5" y2="18.5"/>
+                <line x1="18.5" y1="45.5" x2="13.6" y2="50.4"/>
+              </g>
+            </svg>`
+        };
+      }
+
+      // Cerah Berawan (1, 2)
+      if ([1, 2].includes(code)) {
+        return {
+          mode: 'partly-cloudy',
+          label: 'Cerah Berawan',
+          gradient: 'from-emerald-500/90 via-teal-500/85 to-sky-500/85',
+          border: 'border-emerald-200/60',
+          advice: '🌿 Cuaca ideal untuk fotosintesis tanaman',
+          siram: 'Normal',
+          svg: `
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none">
+              <g style="transform: translate(-6px, -5px);">
+                <circle class="svg-sun-core" cx="32" cy="32" r="10.5" fill="#FDE047"/>
+                <g class="svg-sun-rays" stroke="#FEF08A" stroke-width="2.6" stroke-linecap="round">
+                  <line x1="32" y1="12" x2="32" y2="17"/>
+                  <line x1="32" y1="47" x2="32" y2="52"/>
+                  <line x1="12" y1="32" x2="17" y2="32"/>
+                  <line x1="47" y1="32" x2="52" y2="32"/>
+                  <line x1="18" y1="18" x2="21.5" y2="21.5"/>
+                  <line x1="42.5" y1="42.5" x2="46" y2="46"/>
+                  <line x1="46" y1="18" x2="42.5" y2="21.5"/>
+                  <line x1="21.5" y1="42.5" x2="18" y2="46"/>
+                </g>
+              </g>
+              <path class="svg-cloud-front" d="M23 48H47C51.4 48 55 44.4 55 40C55 35.9 51.9 32.5 47.9 32.1C46.5 26.3 41.3 22 35 22C28.4 22 23 26.8 22.1 33.1C18.6 33.9 16 37 16 40.8C16 44.8 19.6 48 23 48Z" fill="white"/>
+            </svg>`
+        };
+      }
+
+      // Berawan / Berkabut (3, 45, 48)
+      if ([3, 45, 48].includes(code)) {
+        return {
+          mode: 'cloudy',
+          label: code === 3 ? 'Berawan Sejuk' : 'Berkabut',
+          gradient: 'from-cyan-600/90 via-slate-600/85 to-teal-700/90',
+          border: 'border-cyan-200/50',
+          advice: '☁️ Penguapan rendah · Hemat air penyiraman',
+          siram: 'Hemat Air',
+          svg: `
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none">
+              <path class="svg-cloud-back" d="M20 35H41C44.9 35 48 31.9 48 28C48 24.4 45.3 21.4 41.8 21C40.6 16 36.1 12.3 30.7 12.3C25 12.3 20.3 16.5 19.5 21.9C16.5 22.6 14.3 25.3 14.3 28.5C14.3 32.1 16.9 35 20 35Z" fill="#BAE6FD" fill-opacity="0.65"/>
+              <path class="svg-cloud-front" d="M21 48H46C50.4 48 54 44.4 54 40C54 35.9 50.9 32.5 46.9 32.1C45.5 26.3 40.3 22 34 22C27.4 22 22 26.8 21.1 33.1C17.6 33.9 15 37 15 40.8C15 44.8 17.6 48 21 48Z" fill="white"/>
+            </svg>`
+        };
+      }
+
+      // Badai Petir (95, 96, 99)
+      if ([95, 96, 99].includes(code)) {
+        return {
+          mode: 'storm',
+          label: 'Hujan Petir',
+          gradient: 'from-indigo-800/95 via-purple-800/90 to-slate-900/95',
+          border: 'border-violet-300/60',
+          advice: '⛈️ Hujan lebat · Pompa irigasi otomatis ditunda',
+          siram: 'Tunda (Badai)',
+          svg: `
+            <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none">
+              <path class="svg-cloud-front" d="M20 38H46C50.4 38 54 34.4 54 30C54 25.9 50.9 22.5 46.9 22.1C45.5 16.3 40.3 12 34 12C27.4 12 22 16.8 21.1 23.1C17.6 23.9 15 27 15 30.8C15 34.8 17.6 38 20 38Z" fill="#E0E7FF"/>
+              <polygon class="svg-bolt" points="34,33 25,46 32,46 28,58 42,43 34,43" fill="#FDE047"/>
+              <line class="svg-drop-1" x1="20" y1="41" x2="18" y2="50" stroke="#7DD3FC" stroke-width="2.5" stroke-linecap="round"/>
+              <line class="svg-drop-3" x1="45" y1="41" x2="43" y2="50" stroke="#7DD3FC" stroke-width="2.5" stroke-linecap="round"/>
+            </svg>`
+        };
+      }
+
+      // Hujan Ringan / Lebat (51..82)
+      return {
+        mode: 'rain',
+        label: [63, 65, 81, 82].includes(code) ? 'Hujan Lebat' : 'Hujan Ringan',
+        gradient: 'from-blue-600/90 via-cyan-600/85 to-indigo-700/90',
+        border: 'border-sky-300/60',
+        advice: '🌧️ Curah hujan alami · Penyiraman otomatis ditunda',
+        siram: 'Tunda (Hujan)',
+        svg: `
+          <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none">
+            <path class="svg-cloud-front" d="M20 38H46C50.4 38 54 34.4 54 30C54 25.9 50.9 22.5 46.9 22.1C45.5 16.3 40.3 12 34 12C27.4 12 22 16.8 21.1 23.1C17.6 23.9 15 27 15 30.8C15 34.8 17.6 38 20 38Z" fill="white"/>
+            <line class="svg-drop-1" x1="22" y1="41" x2="19" y2="51" stroke="#7DD3FC" stroke-width="2.8" stroke-linecap="round"/>
+            <line class="svg-drop-2" x1="33" y1="41" x2="30" y2="51" stroke="#BAE6FD" stroke-width="2.8" stroke-linecap="round"/>
+            <line class="svg-drop-3" x1="44" y1="41" x2="41" y2="51" stroke="#7DD3FC" stroke-width="2.8" stroke-linecap="round"/>
+          </svg>`
+      };
+    }
+
+    // 2. Sistem Partikel Kanvas Full-Card sesuai Cuaca
+    function resizeCanvas() {
+      const rect = card.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      width = rect.width;
+      height = rect.height;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function spawnParticles(mode) {
+      currentFxMode = mode;
+      particles = [];
+
+      if (mode === 'sunny') {
+        for (let i = 0; i < 24; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 2.5 + 1,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: -Math.random() * 0.45 - 0.15,
+            alpha: Math.random() * 0.6 + 0.25
+          });
+        }
+      } else if (mode === 'partly-cloudy' || mode === 'cloudy') {
+        const count = mode === 'cloudy' ? 8 : 5;
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * (height * 0.75) + 10,
+            r: Math.random() * 32 + 24,
+            vx: Math.random() * 0.35 + 0.15,
+            alpha: mode === 'cloudy' ? 0.14 : 0.09
+          });
+        }
+      } else if (mode === 'rain' || mode === 'storm') {
+        const count = mode === 'storm' ? 55 : 38;
+        for (let i = 0; i < count; i++) {
+          particles.push({
+            x: Math.random() * (width + 40),
+            y: Math.random() * height,
+            len: Math.random() * 12 + 10,
+            vx: -1.8,
+            vy: Math.random() * 4 + 6,
+            alpha: Math.random() * 0.45 + 0.25
+          });
+        }
+      }
+    }
+
+    function triggerLightningFlash() {
+      if (!flashOverlay) return;
+      flashOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0.45)';
+      setTimeout(() => { flashOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0)'; }, 90);
+      setTimeout(() => { flashOverlay.style.backgroundColor = 'rgba(254, 240, 138, 0.35)'; }, 160);
+      setTimeout(() => { flashOverlay.style.backgroundColor = 'rgba(255, 255, 255, 0)'; }, 260);
+    }
+
+    function renderLoop() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Efek sinar matahari berputar di sudut kiri atas saat cerah
+      if (currentFxMode === 'sunny' || currentFxMode === 'partly-cloudy') {
+        const time = performance.now() * 0.0004;
+        const grad = ctx.createRadialGradient(35, 35, 5, 35, 35, 160);
+        grad.addColorStop(0, 'rgba(254, 240, 138, 0.35)');
+        grad.addColorStop(1, 'rgba(254, 240, 138, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, width, height);
+
+        // Berkas cahaya halus
+        ctx.save();
+        ctx.translate(36, 36);
+        ctx.rotate(time);
+        for (let r = 0; r < 6; r++) {
+          ctx.rotate(Math.PI / 3);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(180, -14);
+          ctx.lineTo(180, 14);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // Render partikel aktif
+      for (const p of particles) {
+        if (currentFxMode === 'sunny') {
+          // Interaksi menghindar dari kursor/jari
+          if (pointer.active) {
+            const dx = p.x - pointer.x;
+            const dy = p.y - pointer.y;
+            const dist = Math.hypot(dx, dy);
+            if (dist < 60 && dist > 0) {
+              p.x += (dx / dist) * 1.8;
+              p.y += (dy / dist) * 1.8;
+            }
+          }
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.y < -5) { p.y = height + 5; p.x = Math.random() * width; }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(254, 249, 195, ${p.alpha})`;
+          ctx.fill();
+        } else if (currentFxMode === 'partly-cloudy' || currentFxMode === 'cloudy') {
+          p.x += p.vx;
+          if (p.x - p.r > width) p.x = -p.r;
+
+          const mist = ctx.createRadialGradient(p.x, p.y, 4, p.x, p.y, p.r);
+          mist.addColorStop(0, `rgba(255, 255, 255, ${p.alpha})`);
+          mist.addColorStop(1, 'rgba(255, 255, 255, 0)');
+          ctx.fillStyle = mist;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (currentFxMode === 'rain' || currentFxMode === 'storm') {
+          let windShift = p.vx;
+          if (pointer.active) {
+            const dx = p.x - pointer.x;
+            const dy = p.y - pointer.y;
+            if (Math.hypot(dx, dy) < 55) windShift += dx > 0 ? 2.2 : -2.2;
+          }
+          p.x += windShift;
+          p.y += p.vy;
+
+          if (p.y > height) {
+            // Percikan air kecil di bagian bawah kartu
+            ctx.beginPath();
+            ctx.arc(p.x, height - 2, 2.2, 0, Math.PI, true);
+            ctx.strokeStyle = 'rgba(186, 230, 253, 0.5)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            p.y = -15;
+            p.x = Math.random() * (width + 40);
+          }
+
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x - 2.5, p.y + p.len);
+          ctx.strokeStyle = `rgba(186, 230, 253, ${p.alpha})`;
+          ctx.lineWidth = 1.4;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+        }
+      }
+
+      // Kilatan petir acak pada mode badai
+      if (currentFxMode === 'storm' && Math.random() < 0.006) {
+        triggerLightningFlash();
+      }
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    // 3. Terapkan Data Cuaca ke Tampilan
+    function applyWeatherToUI(data) {
+      const cfg = getWeatherConfig(data.code);
+
+      // Update kelas gradien & border berwarna
+      card.className = `weather-card-3d relative overflow-hidden select-none w-full lg:w-auto lg:min-w-[395px] rounded-2xl border ${cfg.border} bg-gradient-to-br ${cfg.gradient} backdrop-blur-xl p-4 text-white shadow-[0_12px_35px_rgba(0,0,0,0.22)]`;
+
+      locationEl.textContent = data.location;
+      if (locationPill) locationPill.title = data.location;
+      svgStage.innerHTML = cfg.svg;
+      tempEl.textContent = Math.round(data.temp);
+      descEl.textContent = cfg.label;
+      rainEl.textContent = `${data.rainProbability}%`;
+      humidityEl.textContent = `${data.humidity}%`;
+      rainBar.style.width = `${data.rainProbability}%`;
+      humidityBar.style.width = `${data.humidity}%`;
+
+      adviceBadge.textContent = cfg.advice;
+      windEl.textContent = `${Math.round(data.windSpeed)} km/j`;
+      uvEl.textContent = data.uvIndex ?? '-';
+      irrigationEl.textContent = cfg.siram;
+
+      spawnParticles(cfg.mode);
+      if (cfg.mode === 'storm') triggerLightningFlash();
+
+      window.LihatKebunkuWeather = data;
+    }
+
+    // 4. Reverse Geocoding & Fetch API Open-Meteo dari GPS HP
+    async function getPlaceName(lat, lon) {
+      try {
+        const res = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=id`);
+        const geo = await res.json();
+        const area = geo.locality || geo.suburb || '';
+        const city = geo.city || geo.principalSubdivision || '';
+        if (area && city && area !== city) return `${area}, ${city}`;
+        return area || city || `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+      } catch {
+        return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+      }
+    }
+
+    async function fetchGpsWeather(lat, lon) {
+      try {
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=precipitation_probability_max,uv_index_max&timezone=auto&forecast_days=1`;
+        const [res, placeName] = await Promise.all([fetch(url), getPlaceName(lat, lon)]);
+        const json = await res.json();
+
+        liveWeatherCache = {
+          location: placeName,
+          lat,
+          lon,
+          code: json.current.weather_code,
+          temp: json.current.temperature_2m,
+          humidity: Math.round(json.current.relative_humidity_2m),
+          windSpeed: json.current.wind_speed_10m,
+          rainProbability: json.daily?.precipitation_probability_max?.[0] ?? 0,
+          uvIndex: json.daily?.uv_index_max?.[0] ?? 0
+        };
+
+        demoIndex = 0;
+        demoBtn.textContent = 'Live GPS';
+        applyWeatherToUI(liveWeatherCache);
+      } catch (err) {
+        descEl.textContent = 'Gagal memuat cuaca';
+        console.error(err);
+      }
+    }
+
+    function detectLocation() {
+      if (!navigator.geolocation) {
+        locationEl.textContent = 'GPS tidak didukung';
+        return;
+      }
+      refreshIcon.classList.add('animate-spin');
+      locationEl.textContent = 'Mendeteksi GPS...';
+
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          await fetchGpsWeather(pos.coords.latitude, pos.coords.longitude);
+          refreshIcon.classList.remove('animate-spin');
+        },
+        () => {
+          refreshIcon.classList.remove('animate-spin');
+          locationEl.textContent = 'Izin GPS nonaktif';
+          descEl.textContent = 'Ketuk "Live GPS" untuk demo';
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 300000 }
+      );
+    }
+
+    // 5. Event Interaktif (3D Tilt, Sentuh Partikel, Simulasi Cuaca, Buka Detail)
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      pointer.x = e.clientX - rect.left;
+      pointer.y = e.clientY - rect.top;
+      pointer.active = true;
+
+      const rotateY = ((pointer.x / rect.width) - 0.5) * 8;
+      const rotateX = ((pointer.y / rect.height) - 0.5) * -8;
+      card.style.transform = `perspective(900px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      pointer.active = false;
+      card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg)';
+    });
+
+    card.addEventListener('touchmove', (e) => {
+      if (!e.touches[0]) return;
+      const rect = card.getBoundingClientRect();
+      pointer.x = e.touches[0].clientX - rect.left;
+      pointer.y = e.touches[0].clientY - rect.top;
+      pointer.active = true;
+    }, { passive: true });
+
+    card.addEventListener('touchend', () => { pointer.active = false; });
+
+    // Ketuk kotak ikon untuk memicu reaksi animasi cuaca
+    svgStage.addEventListener('click', () => {
+      svgStage.classList.remove('animate-pop-react');
+      void svgStage.offsetWidth;
+      svgStage.classList.add('animate-pop-react');
+      if (currentFxMode === 'storm' || currentFxMode === 'rain') {
+        triggerLightningFlash();
+      }
+      spawnParticles(currentFxMode);
+    });
+
+    // Tombol siklus simulasi untuk menguji semua animasi cuaca secara langsung
+    const demoPresets = [
+      { label: 'Live GPS', code: null },
+      { label: 'Demo: Cerah', code: 0, temp: 33, humidity: 58, rainProbability: 10, windSpeed: 12, uvIndex: 8.5 },
+      { label: 'Demo: Hujan', code: 63, temp: 24, humidity: 89, rainProbability: 85, windSpeed: 19, uvIndex: 2.0 },
+      { label: 'Demo: Badai', code: 95, temp: 22, humidity: 94, rainProbability: 95, windSpeed: 28, uvIndex: 1.0 },
+      { label: 'Demo: Berawan', code: 3, temp: 27, humidity: 74, rainProbability: 30, windSpeed: 14, uvIndex: 4.5 }
+    ];
+
+    demoBtn.addEventListener('click', () => {
+      demoIndex = (demoIndex + 1) % demoPresets.length;
+      const preset = demoPresets[demoIndex];
+      demoBtn.textContent = preset.label;
+
+      if (preset.code === null && liveWeatherCache) {
+        applyWeatherToUI(liveWeatherCache);
+      } else if (preset.code !== null) {
+        applyWeatherToUI({
+          location: liveWeatherCache?.location || 'Lokasi GPS Anda',
+          ...preset
+        });
+      }
+    });
+
+    // Buka/Tutup panel detail angin, UV, dan status irigasi
+    let isExpanded = false;
+    expandBtn.addEventListener('click', () => {
+      isExpanded = !isExpanded;
+      extraDrawer.style.gridTemplateRows = isExpanded ? '1fr' : '0fr';
+      chevron.style.transform = isExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+    });
+
+    refreshBtn.addEventListener('click', detectLocation);
+
+    // Inisialisasi
+    const resizeObserver = new ResizeObserver(resizeCanvas);
+    resizeObserver.observe(card);
+    resizeCanvas();
+    spawnParticles('partly-cloudy');
+    renderLoop();
+    detectLocation();
+    setInterval(detectLocation, 15 * 60 * 1000);
+  });
 
  // =====================================
  // STATE & LOGIC: KOMUNITAS FIREBASE
