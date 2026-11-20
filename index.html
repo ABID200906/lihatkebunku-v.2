@@ -193,6 +193,61 @@
     animation: svgBoltFlash 3.2s infinite;
   }
 
+  /* =========================================
+   COMMUNITY HUB ANIMATIONS & MICRO-UI
+   ========================================= */
+@keyframes postCardReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.community-post-card {
+  opacity: 0;
+  animation: postCardReveal 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes heartPop {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.38) rotate(-8deg); }
+  70% { transform: scale(0.9) rotate(4deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.animate-heart-pop {
+  animation: heartPop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes composerExpand {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-composer-open {
+  animation: composerExpand 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Sembunyikan scrollbar horizontal pada filter pill */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Ring avatar gradien */
+.avatar-ring-emerald {
+  background: linear-gradient(135deg, #10b981 0%, #0d9488 50%, #34d399 100%);
+  padding: 2px;
+}
+
 /* =========================================
    SLIM FLOATING DESKTOP SIDEBAR (LIGHT EMERALD GLASS)
    ========================================= */
@@ -1025,107 +1080,300 @@
  </div>
  </div>
 
- <!-- ========================================== -->
- <!-- VIEW: KOMUNITAS PETANI -->
- <!-- ========================================== -->
- <div id="view-komunitas" class="space-y-6 hidden view-section animate-fade-in-up">
- <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-slate-200/80 shadow-sm relative overflow-hidden">
- <div class="absolute -right-6 -bottom-6 text-emerald-100/50 pointer-events-none"><i data-lucide="users" class="w-48 h-48"></i></div>
- <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
- <div>
- <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100/80 mb-2.5">
- <i data-lucide="globe" class="w-3.5 h-3.5"></i>
- <span class="text-[10px] font-semibold uppercase tracking-wider">Komunitas Firebase Terhubung</span>
- </div>
- <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Forum Komunitas Petani 🌾</h1>
- <p class="text-xs md:text-sm text-slate-500 font-normal mt-1 max-w-xl leading-relaxed">
- Tempat berbagi pengalaman, foto tanaman, tips nutrisi, kendala sensor, dan diskusi sesama pemilik mesin aquaponics.
- </p>
- </div>
- <button onclick="toggleCommunityPostForm()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold text-xs px-5 py-3.5 rounded-2xl flex items-center gap-2 shadow-lg shadow-emerald-600/20 active:scale-95 transition-all shrink-0 cursor-pointer">
- <i data-lucide="plus-circle" class="w-4 h-4"></i>
- <span>Tulis Diskusi Baru</span>
- </button>
- </div>
- </div>
+<!-- ========================================== -->
+<!-- VIEW: KOMUNITAS PETANI (MATURE APP UI/UX)  -->
+<!-- ========================================== -->
+<div id="view-komunitas" class="space-y-6 hidden view-section animate-fade-in-up">
 
- <!-- Form Tulis Postingan Baru -->
- <div id="community-post-form" class="hidden glass-card p-5 md:p-6 rounded-[2rem] border border-emerald-200 shadow-md transition-all animate-fade-in-up">
- <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
- <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
- <i data-lucide="message-square-plus" class="w-4 h-4 text-emerald-600"></i> Buat Postingan Komunitas
- </h3>
- <button onclick="toggleCommunityPostForm()" class="text-slate-400 hover:text-slate-600 text-xs">Batal</button>
- </div>
+  <!-- 1. Hero Header Komunitas -->
+  <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-slate-200/80 shadow-sm relative overflow-hidden">
+    <div class="absolute -right-8 -top-8 w-56 h-56 bg-emerald-400/15 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute right-6 bottom-[-18px] text-emerald-500/10 pointer-events-none">
+      <i data-lucide="sprout" class="w-40 h-40"></i>
+    </div>
 
- <form id="form-new-post" class="space-y-4">
- <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
- <div>
- <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nama Pengirim</label>
- <input type="text" id="post-author" placeholder="Contoh: Pak Budi" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-700 focus:outline-none focus:border-emerald-500">
- </div>
- <div>
- <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Kategori Diskusi</label>
- <select id="post-category" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-medium text-slate-700 focus:outline-none focus:border-emerald-500">
- <option value="Tips & Trik">💡 Tips & Trik</option>
- <option value="Kendala Sensor">⚠️ Kendala Sensor & Air</option>
- <option value="Nutrisi & Pakan">🌱 Nutrisi & Pakan</option>
- <option value="Hasil Panen">🥬 Hasil Panen</option>
- <option value="Diskusi Umum">💬 Diskusi Umum</option>
- </select>
- </div>
- </div>
+    <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+      <div class="space-y-2">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span class="text-[10px] font-bold uppercase tracking-wider">Komunitas Aktif • Firebase Live</span>
+        </div>
+        <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Forum Komunitas Petani LihatKebunku</h1>
+        <p class="text-xs md:text-sm text-slate-500 max-w-2xl leading-relaxed">
+          Ruang kolaborasi sesama penggiat aquaponics untuk berbagi hasil panen, diagnosa kualitas air, serta berdiskusi langsung dengan melampirkan data sensor IoT.
+        </p>
+      </div>
 
- <div>
- <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Isi Pesan / Pertanyaan</label>
- <textarea id="post-message" rows="3" placeholder="Tuliskan pengalaman, pertanyaan pH air, atau saran perbaikan mesin..." required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3.5 text-xs font-medium text-slate-700 focus:outline-none focus:border-emerald-500 leading-relaxed"></textarea>
- </div>
+      <!-- Statistik Ringkas Header -->
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="bg-white/90 border border-slate-200/80 rounded-2xl px-4 py-2.5 text-center shadow-2xs">
+          <span id="stat-total-posts" class="block text-lg font-extrabold text-slate-800 font-mono">0</span>
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Diskusi</span>
+        </div>
+        <div class="bg-white/90 border border-slate-200/80 rounded-2xl px-4 py-2.5 text-center shadow-2xs">
+          <span id="stat-total-replies" class="block text-lg font-extrabold text-emerald-600 font-mono">0</span>
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Balasan</span>
+        </div>
+        <div class="bg-white/90 border border-slate-200/80 rounded-2xl px-4 py-2.5 text-center shadow-2xs">
+          <span id="stat-total-members" class="block text-lg font-extrabold text-teal-600 font-mono">0</span>
+          <span class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Petani</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
- <div>
- <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Lampirkan Foto (Opsional)</label>
- <div class="flex items-center gap-3">
- <label for="post-image-input" class="cursor-pointer bg-slate-100 hover:bg-slate-200/80 text-slate-600 text-xs font-semibold px-3.5 py-2.5 rounded-xl border border-slate-200 transition-colors flex items-center gap-2">
- <i data-lucide="image" class="w-4 h-4 text-emerald-600"></i>
- <span>Pilih Foto</span>
- </label>
- <input type="file" id="post-image-input" accept="image/*" onchange="handleImageSelect(event)" class="hidden">
- <span id="post-image-name" class="text-xs text-slate-400 italic">Belum ada foto dipilih</span>
- </div>
- <div id="preview-container" class="hidden mt-3 relative inline-block rounded-2xl overflow-hidden border border-slate-200 max-w-xs bg-slate-100">
- <img id="img-preview" src="" alt="Preview Foto" class="max-h-48 w-auto object-cover rounded-2xl">
- <button type="button" onclick="removeSelectedImage()" class="absolute top-2 right-2 bg-slate-900/70 hover:bg-slate-900 text-white p-1.5 rounded-full backdrop-blur-sm transition-colors cursor-pointer">
- <i data-lucide="x" class="w-3.5 h-3.5"></i>
- </button>
- </div>
- </div>
+  <!-- 2. Layout Utama 2 Kolom (Feed Kiri + Widget Komunitas Kanan) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
- <div class="flex justify-end gap-2.5 pt-2 border-t border-slate-100">
- <button type="button" onclick="toggleCommunityPostForm()" class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-500 hover:bg-slate-50">Batal</button>
- <button type="submit" id="btn-submit-post" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 flex items-center gap-2">
- <i data-lucide="send" class="w-3.5 h-3.5"></i> Kirim Pesan
- </button>
- </div>
- </form>
- </div>
+    <!-- KOLOM KIRI (8 Kolom): Quick Composer, Filter & Feed -->
+    <div class="lg:col-span-8 space-y-5">
 
- <!-- Filter Kategori Diskusi -->
- <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
- <button onclick="filterCommunityCategory('Semua')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-emerald-600 text-white shadow-xs">Semua Diskusi</button>
- <button onclick="filterCommunityCategory('Tips & Trik')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">💡 Tips & Trik</button>
- <button onclick="filterCommunityCategory('Kendala Sensor')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">⚠️ Kendala Sensor</button>
- <button onclick="filterCommunityCategory('Nutrisi & Pakan')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">🌱 Nutrisi & Pakan</button>
- <button onclick="filterCommunityCategory('Hasil Panen')" class="cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300">🥬 Hasil Panen</button>
- </div>
+      <!-- Quick Composer Trigger Bar (Selalu Tampil Seperti Aplikasi Sosial Modern) -->
+      <div id="quick-composer-bar" class="glass-card p-4 md:p-5 rounded-[1.75rem] border border-slate-200/80 shadow-xs hover:border-emerald-300/80 transition-all">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
+            <i data-lucide="user" class="w-4 h-4"></i>
+          </div>
+          <button type="button" onclick="openCommunityComposer('Diskusi Umum')" class="flex-grow text-left bg-slate-100/80 hover:bg-slate-100 text-slate-400 hover:text-slate-600 text-xs md:text-sm px-4 py-3 rounded-2xl border border-slate-200/60 transition-all cursor-pointer">
+            Bagikan perkembangan kebun, hasil panen, atau tanyakan kendala air...
+          </button>
+        </div>
 
- <!-- Feed Komunitas -->
- <div id="community-feed" class="space-y-4">
- <div class="text-center p-10 glass-card rounded-[2rem]">
- <i data-lucide="loader-2" class="w-6 h-6 animate-spin mx-auto text-emerald-600 mb-2"></i>
- <p class="text-xs text-slate-400 font-medium">Memuat pesan komunitas dari Firebase...</p>
- </div>
- </div>
- </div>
+        <!-- Shortcut Aksi Cepat -->
+        <div class="flex flex-wrap items-center justify-between gap-2 mt-3.5 pt-3 border-t border-slate-100">
+          <div class="flex flex-wrap items-center gap-1.5">
+            <button type="button" onclick="openCommunityComposer('Hasil Panen', true)" class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 hover:text-emerald-700 bg-slate-50 hover:bg-emerald-50 px-3 py-1.5 rounded-xl border border-slate-200/70 transition-all cursor-pointer">
+              <i data-lucide="image-plus" class="w-3.5 h-3.5 text-emerald-500"></i> Foto Panen
+            </button>
+            <button type="button" onclick="openCommunityComposer('Kendala Sensor', false, true)" class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 hover:text-indigo-700 bg-slate-50 hover:bg-indigo-50 px-3 py-1.5 rounded-xl border border-slate-200/70 transition-all cursor-pointer">
+              <i data-lucide="activity" class="w-3.5 h-3.5 text-indigo-500"></i> Lampirkan Sensor IoT
+            </button>
+            <button type="button" onclick="openCommunityComposer('Tips & Trik')" class="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-600 hover:text-amber-700 bg-slate-50 hover:bg-amber-50 px-3 py-1.5 rounded-xl border border-slate-200/70 transition-all cursor-pointer">
+              <i data-lucide="lightbulb" class="w-3.5 h-3.5 text-amber-500"></i> Bagikan Tips
+            </button>
+          </div>
+          <button type="button" onclick="openCommunityComposer('Diskusi Umum')" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow-sm shadow-emerald-600/20 active:scale-95 transition-all cursor-pointer">
+            Buat Utas
+          </button>
+        </div>
+      </div>
 
+      <!-- Form Tulis Postingan Lengkap (Muncul dengan animasi saat dibuka) -->
+      <div id="community-post-form" class="hidden glass-card p-5 md:p-6 rounded-[2rem] border-2 border-emerald-200/90 shadow-lg shadow-emerald-900/5 animate-composer-open">
+        <div class="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-100">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center">
+              <i data-lucide="pen-square" class="w-4 h-4"></i>
+            </div>
+            <div>
+              <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">Buat Diskusi Baru</h3>
+              <p class="text-[10px] text-slate-400">Terhubung langsung ke jaringan petani LihatKebunku</p>
+            </div>
+          </div>
+          <button type="button" onclick="toggleCommunityPostForm(false)" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-rose-50 text-slate-400 hover:text-rose-500 flex items-center justify-center transition-colors cursor-pointer">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <form id="form-new-post" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Nama Pengirim</label>
+              <input type="text" id="post-author" placeholder="Contoh: Pak Budi" required class="w-full bg-slate-50/90 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Kategori Topik</label>
+              <select id="post-category" class="w-full bg-slate-50/90 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all">
+                <option value="Tips & Trik">💡 Tips & Trik</option>
+                <option value="Kendala Sensor">⚠️ Kendala Sensor & Air</option>
+                <option value="Nutrisi & Pakan">🌱 Nutrisi & Pakan</option>
+                <option value="Hasil Panen">🥬 Hasil Panen</option>
+                <option value="Diskusi Umum">💬 Diskusi Umum</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Isi Pesan / Pertanyaan</label>
+            <textarea id="post-message" rows="3" maxlength="600" oninput="updatePostCharCount(this)" placeholder="Tuliskan pengalaman, pertanyaan pH air, atau saran perawatan sistem..." required class="w-full bg-slate-50/90 border border-slate-200 rounded-xl p-3.5 text-xs font-medium text-slate-700 focus:outline-none focus:border-emerald-500 focus:bg-white leading-relaxed transition-all"></textarea>
+            <div class="flex justify-end mt-1">
+              <span id="post-char-count" class="text-[10px] font-mono text-slate-400">0 / 600</span>
+            </div>
+          </div>
+
+          <!-- Preview Lampiran Data Sensor Live (Fitur Khusus Aquaponics) -->
+          <div id="sensor-attach-preview" class="hidden p-3.5 rounded-2xl bg-gradient-to-r from-indigo-50/80 via-emerald-50/60 to-teal-50/80 border border-indigo-200/70">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-[10px] font-bold text-indigo-700 uppercase tracking-wider flex items-center gap-1.5">
+                <i data-lucide="cpu" class="w-3.5 h-3.5"></i> Snapshot Sensor Kolam Saat Ini Akan Dilampirkan
+              </span>
+              <button type="button" onclick="toggleAttachSensor(false)" class="text-[10px] font-semibold text-rose-500 hover:underline cursor-pointer">Hapus</button>
+            </div>
+            <div id="sensor-attach-values" class="grid grid-cols-4 gap-2 text-center">
+              <!-- Diisi otomatis oleh JS -->
+            </div>
+          </div>
+
+          <!-- Preview Foto -->
+          <div id="preview-container" class="hidden relative inline-block rounded-2xl overflow-hidden border border-slate-200 max-w-xs bg-slate-100 shadow-xs">
+            <img id="img-preview" src="" alt="Preview Foto" class="max-h-48 w-auto object-cover rounded-2xl">
+            <button type="button" onclick="removeSelectedImage()" class="absolute top-2 right-2 bg-slate-900/75 hover:bg-rose-600 text-white p-1.5 rounded-full backdrop-blur-sm transition-colors cursor-pointer">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
+
+          <!-- Toolbar Lampiran & Tombol Kirim -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+            <div class="flex items-center gap-2">
+              <label for="post-image-input" class="cursor-pointer bg-slate-100 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 text-[11px] font-semibold px-3 py-2 rounded-xl border border-slate-200/80 transition-colors flex items-center gap-1.5">
+                <i data-lucide="image" class="w-3.5 h-3.5 text-emerald-600"></i>
+                <span id="post-image-name">Tambah Foto</span>
+              </label>
+              <input type="file" id="post-image-input" accept="image/*" onchange="handleImageSelect(event)" class="hidden">
+
+              <button type="button" id="btn-toggle-sensor-attach" onclick="toggleAttachSensor()" class="cursor-pointer bg-slate-100 hover:bg-indigo-50 text-slate-600 hover:text-indigo-700 text-[11px] font-semibold px-3 py-2 rounded-xl border border-slate-200/80 transition-colors flex items-center gap-1.5">
+                <i data-lucide="activity" class="w-3.5 h-3.5 text-indigo-600"></i>
+                <span>Data Sensor</span>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-2 ml-auto">
+              <button type="button" onclick="toggleCommunityPostForm(false)" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-semibold text-slate-500 hover:bg-slate-50 cursor-pointer">Batal</button>
+              <button type="submit" id="btn-submit-post" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 flex items-center gap-2 cursor-pointer active:scale-95 transition-all">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i> Publikasikan
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Bar Pencarian & Pengurutan -->
+      <div class="glass-card p-3 rounded-[1.5rem] border border-slate-200/80 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+        <div class="relative flex-grow">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="community-search-input" oninput="handleCommunitySearch(this.value)" placeholder="Cari topik diskusi, kendala pH, atau nama petani..." class="w-full bg-slate-50/80 border border-slate-200/70 rounded-xl pl-10 pr-4 py-2 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all">
+        </div>
+
+        <div class="flex items-center gap-1 bg-slate-100/90 p-1 rounded-xl shrink-0">
+          <button type="button" onclick="setCommunitySort('newest')" id="sort-newest" class="sort-pill-btn px-3 py-1.5 rounded-lg text-[11px] font-bold bg-white text-emerald-700 shadow-2xs transition-all cursor-pointer">Terbaru</button>
+          <button type="button" onclick="setCommunitySort('popular')" id="sort-popular" class="sort-pill-btn px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-500 hover:text-slate-700 transition-all cursor-pointer">Populer</button>
+          <button type="button" onclick="setCommunitySort('saved')" id="sort-saved" class="sort-pill-btn px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-500 hover:text-slate-700 transition-all cursor-pointer flex items-center gap-1">
+            <i data-lucide="bookmark" class="w-3 h-3"></i> Tersimpan
+          </button>
+        </div>
+      </div>
+
+      <!-- Filter Kategori Pill -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+        <button type="button" onclick="filterCommunityCategory('Semua')" data-cat="Semua" class="cat-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-emerald-600 text-white shadow-xs cursor-pointer">Semua</button>
+        <button type="button" onclick="filterCommunityCategory('Tips & Trik')" data-cat="Tips & Trik" class="cat-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 cursor-pointer">💡 Tips & Trik</button>
+        <button type="button" onclick="filterCommunityCategory('Kendala Sensor')" data-cat="Kendala Sensor" class="cat-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 cursor-pointer">⚠️ Kendala Sensor</button>
+        <button type="button" onclick="filterCommunityCategory('Nutrisi & Pakan')" data-cat="Nutrisi & Pakan" class="cat-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 cursor-pointer">🌱 Nutrisi & Pakan</button>
+        <button type="button" onclick="filterCommunityCategory('Hasil Panen')" data-cat="Hasil Panen" class="cat-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 cursor-pointer">🥬 Hasil Panen</button>
+        <button type="button" onclick="filterCommunityCategory('Diskusi Umum')" data-cat="Diskusi Umum" class="cat-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 cursor-pointer">💬 Diskusi Umum</button>
+      </div>
+
+      <!-- Feed Daftar Diskusi -->
+      <div id="community-feed" class="space-y-4">
+        <!-- Skeleton Loader saat memuat -->
+        <div class="glass-card p-6 rounded-[1.75rem] border border-slate-200/80 space-y-3 animate-pulse">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-slate-200"></div>
+            <div class="space-y-1.5 flex-grow">
+              <div class="h-3 w-32 bg-slate-200 rounded"></div>
+              <div class="h-2.5 w-20 bg-slate-100 rounded"></div>
+            </div>
+          </div>
+          <div class="h-14 w-full bg-slate-100 rounded-xl"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KOLOM KANAN (4 Kolom): Sidebar Informasi Komunitas -->
+    <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-6">
+
+      <!-- Widget 1: Kontributor Teraktif -->
+      <div class="glass-card p-5 rounded-[1.75rem] border border-slate-200/80 shadow-xs">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="award" class="w-4 h-4 text-amber-500"></i> Petani Teraktif
+          </h3>
+          <span class="text-[10px] font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">Minggu Ini</span>
+        </div>
+        <div id="community-leaderboard" class="space-y-2.5">
+          <p class="text-xs text-slate-400">Menghitung kontribusi...</p>
+        </div>
+      </div>
+
+      <!-- Widget 2: Acuan Parameter Sehat (Untuk Diskusi Diagnosa) -->
+      <div class="glass-card p-5 rounded-[1.75rem] border border-emerald-200/70 bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/40 shadow-xs">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 mb-3">
+          <i data-lucide="book-open-check" class="w-4 h-4 text-emerald-600"></i> Standar Ekosistem Ideal
+        </h3>
+        <p class="text-[11px] text-slate-500 leading-relaxed mb-3.5">
+          Gunakan acuan cepat ini saat membandingkan data sensor kolam milik sesama anggota komunitas:
+        </p>
+        <div class="space-y-2 text-xs">
+          <div class="flex items-center justify-between bg-white/80 px-3 py-2 rounded-xl border border-slate-200/60">
+            <span class="text-slate-500 font-medium">Kadar pH Air</span>
+            <span class="font-mono font-bold text-purple-600">6.5 – 7.5 pH</span>
+          </div>
+          <div class="flex items-center justify-between bg-white/80 px-3 py-2 rounded-xl border border-slate-200/60">
+            <span class="text-slate-500 font-medium">Suhu Air Kolam</span>
+            <span class="font-mono font-bold text-orange-600">24 – 30 °C</span>
+          </div>
+          <div class="flex items-center justify-between bg-white/80 px-3 py-2 rounded-xl border border-slate-200/60">
+            <span class="text-slate-500 font-medium">Nutrisi (TDS)</span>
+            <span class="font-mono font-bold text-indigo-600">&lt; 500 ppm</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Widget 3: Etika Komunitas -->
+      <div class="glass-card p-5 rounded-[1.75rem] border border-slate-200/80 shadow-xs">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2 mb-3">
+          <i data-lucide="shield-check" class="w-4 h-4 text-teal-600"></i> Panduan Berdiskusi
+        </h3>
+        <ul class="space-y-2 text-[11px] text-slate-500 leading-relaxed">
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-500 font-bold mt-0.5">✓</span>
+            <span>Lampirkan <strong>Data Sensor</strong> atau foto tanaman agar diagnosa lebih akurat.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-500 font-bold mt-0.5">✓</span>
+            <span>Gunakan kategori yang sesuai agar mudah dicari anggota lain.</span>
+          </li>
+          <li class="flex items-start gap-2">
+            <span class="text-emerald-500 font-bold mt-0.5">✓</span>
+            <span>Berikan apresiasi <strong>Suka</strong> pada jawaban yang membantu.</span>
+          </li>
+        </ul>
+      </div>
+
+    </aside>
+  </div>
+</div>
+
+<!-- Lightbox Preview Foto Komunitas -->
+<div id="community-lightbox" onclick="closeImageLightbox()" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 transition-opacity">
+  <div onclick="event.stopPropagation()" class="relative max-w-3xl w-full bg-white/10 p-2 rounded-3xl border border-white/20 shadow-2xl">
+    <button type="button" onclick="closeImageLightbox()" class="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-white text-slate-800 hover:bg-rose-500 hover:text-white flex items-center justify-center shadow-lg transition-colors cursor-pointer">
+      <i data-lucide="x" class="w-4 h-4"></i>
+    </button>
+    <img id="lightbox-img" src="" alt="Preview Besar" class="w-full max-h-[82vh] object-contain rounded-2xl">
+  </div>
+</div>
+
+<!-- Toast Notifikasi Halus Komunitas -->
+<div id="community-toast" class="pointer-events-none fixed bottom-24 md:bottom-8 right-4 md:right-8 z-50 opacity-0 translate-y-3 transition-all duration-300">
+  <div class="bg-slate-900/95 text-white backdrop-blur-md px-4 py-3 rounded-2xl shadow-xl border border-white/10 flex items-center gap-2.5 text-xs font-semibold">
+    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+    <span id="community-toast-text">Notifikasi</span>
+  </div>
+</div>
  <!-- ========================================== -->
  <!-- VIEW: AI ASSISTANT -->
  <!-- ========================================== -->
@@ -2010,345 +2258,675 @@
     setInterval(detectLocation, 15 * 60 * 1000);
   });
 
- // =====================================
- // STATE & LOGIC: KOMUNITAS FIREBASE
+// =====================================
+ // STATE & LOGIC: KOMUNITAS FIREBASE (MATURE UI/UX)
  // =====================================
  let communityPostsList = [];
  let activeCategoryFilter = "Semua";
+ let activeSortMode = "newest"; // 'newest' | 'popular' | 'saved'
+ let communitySearchQuery = "";
+ let attachLiveSensor = false;
+ let likedPostsSet = new Set(JSON.parse(localStorage.getItem('lkb_liked_posts') || '[]'));
+ let savedPostsSet = new Set(JSON.parse(localStorage.getItem('lkb_saved_posts') || '[]'));
+
+ function showCommunityToast(message) {
+   const toast = document.getElementById('community-toast');
+   const textEl = document.getElementById('community-toast-text');
+   if (!toast || !textEl) return;
+   textEl.textContent = message;
+   toast.classList.remove('opacity-0', 'translate-y-3');
+   toast.classList.add('opacity-100', 'translate-y-0');
+   clearTimeout(window._lkbToastTimer);
+   window._lkbToastTimer = setTimeout(() => {
+     toast.classList.remove('opacity-100', 'translate-y-0');
+     toast.classList.add('opacity-0', 'translate-y-3');
+   }, 2600);
+ }
+
+ function formatRelativeTime(timestamp) {
+   const diffSec = Math.floor((Date.now() - timestamp) / 1000);
+   if (diffSec < 60) return 'Baru saja';
+   const diffMin = Math.floor(diffSec / 60);
+   if (diffMin < 60) return `${diffMin} mnt lalu`;
+   const diffHour = Math.floor(diffMin / 60);
+   if (diffHour < 24) return `${diffHour} jam lalu`;
+   const diffDay = Math.floor(diffHour / 24);
+   if (diffDay < 7) return `${diffDay} hari lalu`;
+   return new Date(timestamp).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+ }
+
+ function getCurrentSensorSnapshot() {
+   return {
+     ph: document.getElementById('val-ph')?.innerText || '7.0',
+     suhuAir: document.getElementById('val-suhuAir')?.innerText || '27',
+     tds: document.getElementById('val-tds')?.innerText || '320',
+     kelembapan: document.getElementById('val-kelembapan')?.innerText || '68'
+   };
+ }
+
+ window.updatePostCharCount = (textarea) => {
+   const countEl = document.getElementById('post-char-count');
+   if (countEl) countEl.textContent = `${textarea.value.length} / 600`;
+ };
+
+ window.toggleAttachSensor = (forceState) => {
+   attachLiveSensor = typeof forceState === 'boolean' ? forceState : !attachLiveSensor;
+   const previewBox = document.getElementById('sensor-attach-preview');
+   const valuesEl = document.getElementById('sensor-attach-values');
+   const toggleBtn = document.getElementById('btn-toggle-sensor-attach');
+
+   if (attachLiveSensor) {
+     const snap = getCurrentSensorSnapshot();
+     valuesEl.innerHTML = `
+       <div class="bg-white/90 rounded-xl py-1.5 px-2 border border-slate-200/70">
+         <span class="block text-[9px] text-slate-400 font-semibold">pH Air</span>
+         <span class="font-mono text-xs font-bold text-purple-600">${snap.ph}</span>
+       </div>
+       <div class="bg-white/90 rounded-xl py-1.5 px-2 border border-slate-200/70">
+         <span class="block text-[9px] text-slate-400 font-semibold">Suhu Air</span>
+         <span class="font-mono text-xs font-bold text-orange-600">${snap.suhuAir}°C</span>
+       </div>
+       <div class="bg-white/90 rounded-xl py-1.5 px-2 border border-slate-200/70">
+         <span class="block text-[9px] text-slate-400 font-semibold">TDS</span>
+         <span class="font-mono text-xs font-bold text-indigo-600">${snap.tds} ppm</span>
+       </div>
+       <div class="bg-white/90 rounded-xl py-1.5 px-2 border border-slate-200/70">
+         <span class="block text-[9px] text-slate-400 font-semibold">Lembab</span>
+         <span class="font-mono text-xs font-bold text-blue-600">${snap.kelembapan}%</span>
+       </div>
+     `;
+     previewBox.classList.remove('hidden');
+     toggleBtn.classList.add('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+   } else {
+     previewBox.classList.add('hidden');
+     toggleBtn.classList.remove('bg-indigo-50', 'text-indigo-700', 'border-indigo-200');
+   }
+   lucide.createIcons();
+ };
 
  window.handleImageSelect = (event) => {
- const file = event.target.files[0];
- if (file) {
- if (file.size > 2 * 1024 * 1024) {
- alert("Ukuran foto maksimal adalah 2MB!");
- event.target.value = "";
- return;
- }
- const reader = new FileReader();
- reader.onload = function(e) {
- selectedImageData = e.target.result;
- document.getElementById('img-preview').src = selectedImageData;
- document.getElementById('preview-container').classList.remove('hidden');
- document.getElementById('post-image-name').innerText = file.name;
- };
- reader.readAsDataURL(file);
- }
+   const file = event.target.files[0];
+   if (file) {
+     if (file.size > 2 * 1024 * 1024) {
+       showCommunityToast("Ukuran foto maksimal 2MB!");
+       event.target.value = "";
+       return;
+     }
+     const reader = new FileReader();
+     reader.onload = function(e) {
+       selectedImageData = e.target.result;
+       document.getElementById('img-preview').src = selectedImageData;
+       document.getElementById('preview-container').classList.remove('hidden');
+       document.getElementById('post-image-name').innerText = file.name.slice(0, 18) + (file.name.length > 18 ? '...' : '');
+     };
+     reader.readAsDataURL(file);
+   }
  };
 
  window.removeSelectedImage = () => {
- selectedImageData = "";
- const input = document.getElementById('post-image-input');
- if(input) input.value = "";
- document.getElementById('preview-container')?.classList.add('hidden');
- const imgPreview = document.getElementById('img-preview');
- if(imgPreview) imgPreview.src = "";
- document.getElementById('post-image-name').innerText = "Belum ada foto dipilih";
+   selectedImageData = "";
+   const input = document.getElementById('post-image-input');
+   if (input) input.value = "";
+   document.getElementById('preview-container')?.classList.add('hidden');
+   const imgPreview = document.getElementById('img-preview');
+   if (imgPreview) imgPreview.src = "";
+   const nameEl = document.getElementById('post-image-name');
+   if (nameEl) nameEl.innerText = "Tambah Foto";
  };
 
- window.toggleCommunityPostForm = () => {
- const form = document.getElementById('community-post-form');
- form.classList.toggle('hidden');
- if(!form.classList.contains('hidden')) {
- document.getElementById('post-author').value = activeMachineCode ? `Petani (${activeMachineCode})` : "Pengguna LihatKebunku";
- } else {
- removeSelectedImage();
- }
+ window.openCommunityComposer = (defaultCategory = 'Diskusi Umum', triggerPhoto = false, triggerSensor = false) => {
+   toggleCommunityPostForm(true);
+   const catSelect = document.getElementById('post-category');
+   if (catSelect) catSelect.value = defaultCategory;
+   if (triggerSensor) toggleAttachSensor(true);
+   if (triggerPhoto) {
+     setTimeout(() => document.getElementById('post-image-input')?.click(), 120);
+   } else {
+     setTimeout(() => document.getElementById('post-message')?.focus(), 120);
+   }
+ };
+
+ window.toggleCommunityPostForm = (forceOpen) => {
+   const form = document.getElementById('community-post-form');
+   const quickBar = document.getElementById('quick-composer-bar');
+   const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : form.classList.contains('hidden');
+
+   if (shouldOpen) {
+     form.classList.remove('hidden');
+     quickBar?.classList.add('hidden');
+     const authorInput = document.getElementById('post-author');
+     if (authorInput && !authorInput.value) {
+       authorInput.value = activeMachineCode ? `Petani (${activeMachineCode})` : "Pengguna LihatKebunku";
+     }
+   } else {
+     form.classList.add('hidden');
+     quickBar?.classList.remove('hidden');
+     removeSelectedImage();
+     toggleAttachSensor(false);
+   }
  };
 
  window.toggleReplySection = (postId) => {
- const replyBox = document.getElementById(`reply-section-${postId}`);
- if(replyBox) {
- replyBox.classList.toggle('hidden');
- }
+   const replyBox = document.getElementById(`reply-section-${postId}`);
+   if (replyBox) {
+     replyBox.classList.toggle('hidden');
+     if (!replyBox.classList.contains('hidden')) {
+       document.getElementById(`reply-input-${postId}`)?.focus();
+     }
+   }
+ };
+
+ window.handleCommunitySearch = (query) => {
+   communitySearchQuery = query.trim().toLowerCase();
+   renderCommunityFeed();
+ };
+
+ window.setCommunitySort = (mode) => {
+   activeSortMode = mode;
+   document.querySelectorAll('.sort-pill-btn').forEach(btn => {
+     if (btn.id === `sort-${mode}`) {
+       btn.className = "sort-pill-btn px-3 py-1.5 rounded-lg text-[11px] font-bold bg-white text-emerald-700 shadow-2xs transition-all cursor-pointer flex items-center gap-1";
+     } else {
+       btn.className = "sort-pill-btn px-3 py-1.5 rounded-lg text-[11px] font-semibold text-slate-500 hover:text-slate-700 transition-all cursor-pointer flex items-center gap-1";
+     }
+   });
+   renderCommunityFeed();
  };
 
  window.filterCommunityCategory = (category) => {
- activeCategoryFilter = category;
- document.querySelectorAll('.cat-filter-btn').forEach(btn => {
- if(btn.innerText.includes(category) || (category === 'Semua' && btn.innerText.includes('Semua'))) {
- btn.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-emerald-600 text-white shadow-xs";
- } else {
- btn.className = "cat-filter-btn px-4 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-slate-300";
- }
- });
- renderCommunityFeed();
+   activeCategoryFilter = category;
+   document.querySelectorAll('.cat-filter-btn').forEach(btn => {
+     if (btn.dataset.cat === category) {
+       btn.className = "cat-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-emerald-600 text-white shadow-xs cursor-pointer";
+     } else {
+       btn.className = "cat-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-white text-slate-600 border border-slate-200 hover:border-emerald-300 cursor-pointer";
+     }
+   });
+   renderCommunityFeed();
  };
 
+ window.toggleBookmarkPost = (postId) => {
+   if (savedPostsSet.has(postId)) {
+     savedPostsSet.delete(postId);
+     showCommunityToast("Dihapus dari daftar tersimpan");
+   } else {
+     savedPostsSet.add(postId);
+     showCommunityToast("Diskusi disimpan ke Bookmark");
+   }
+   localStorage.setItem('lkb_saved_posts', JSON.stringify([...savedPostsSet]));
+   renderCommunityFeed();
+ };
+
+ window.copyPostContent = (postId) => {
+   const post = communityPostsList.find(p => p.id === postId);
+   if (!post) return;
+   const shareText = `[Forum LihatKebunku - ${post.category}] ${post.author}: "${post.message}"`;
+   navigator.clipboard?.writeText(shareText);
+   showCommunityToast("Teks diskusi berhasil disalin!");
+ };
+
+ window.openImageLightbox = (src) => {
+   const modal = document.getElementById('community-lightbox');
+   const img = document.getElementById('lightbox-img');
+   if (!modal || !img) return;
+   img.src = src;
+   modal.classList.remove('hidden');
+   lucide.createIcons();
+ };
+
+ window.closeImageLightbox = () => {
+   document.getElementById('community-lightbox')?.classList.add('hidden');
+ };
+
+ function updateCommunitySidebarWidgets() {
+   const totalPosts = communityPostsList.length;
+   let totalReplies = 0;
+   const memberScores = {};
+
+   communityPostsList.forEach(p => {
+     const authorName = p.author || 'Petani Anonim';
+     memberScores[authorName] = (memberScores[authorName] || 0) + 3;
+
+     const replies = p.replies ? Object.values(p.replies) : [];
+     totalReplies += replies.length;
+     replies.forEach(r => {
+       const rAuthor = r.author || 'Petani';
+       memberScores[rAuthor] = (memberScores[rAuthor] || 0) + 1;
+     });
+   });
+
+   const statPostsEl = document.getElementById('stat-total-posts');
+   const statRepliesEl = document.getElementById('stat-total-replies');
+   const statMembersEl = document.getElementById('stat-total-members');
+   if (statPostsEl) statPostsEl.textContent = totalPosts;
+   if (statRepliesEl) statRepliesEl.textContent = totalReplies;
+   if (statMembersEl) statMembersEl.textContent = Object.keys(memberScores).length;
+
+   const leaderboardEl = document.getElementById('community-leaderboard');
+   if (!leaderboardEl) return;
+
+   const ranked = Object.entries(memberScores)
+     .sort((a, b) => b[1] - a[1])
+     .slice(0, 3);
+
+   if (ranked.length === 0) {
+     leaderboardEl.innerHTML = `<p class="text-xs text-slate-400">Belum ada aktivitas.</p>`;
+     return;
+   }
+
+   const rankBadges = [
+     { bg: 'bg-amber-100 text-amber-700 border-amber-200', icon: '🥇' },
+     { bg: 'bg-slate-100 text-slate-700 border-slate-200', icon: '🥈' },
+     { bg: 'bg-orange-100 text-orange-700 border-orange-200', icon: '🥉' }
+   ];
+
+   leaderboardEl.innerHTML = ranked.map(([name, score], idx) => `
+     <div class="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50/80 border border-slate-200/60">
+       <div class="flex items-center gap-2.5 min-w-0">
+         <span class="w-6 h-6 rounded-lg border ${rankBadges[idx].bg} flex items-center justify-center text-xs shrink-0">${rankBadges[idx].icon}</span>
+         <span class="text-xs font-bold text-slate-700 truncate">${name}</span>
+       </div>
+       <span class="text-[10px] font-mono font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 shrink-0">${score} pts</span>
+     </div>
+   `).join('');
+ }
+
  function startCommunityPostsListener() {
- const postsRef = ref(db, 'community_posts');
- onValue(postsRef, (snapshot) => {
- if (snapshot.exists()) {
- const data = snapshot.val();
- communityPostsList = Object.keys(data).map(key => ({
- id: key,
- ...data[key]
- })).sort((a, b) => b.timestamp - a.timestamp);
- } else {
- communityPostsList = [
- {
- id: 'demo-1',
- author: 'Pak Herman (Petani Hidroponik)',
- machineId: 'lihatkebunku_01',
- category: 'Tips & Trik',
- message: 'Tips menjaga pH air tetap stabil di angka 6.8: selalu cek biofilter setiap 3 hari sekali dan kurangi pakan berlebih di malam hari.',
- image: null,
- timestamp: Date.now() - 3600000,
- likes: 12,
- replies: {
- 'r-1': {
- author: 'Budi Santoso',
- machineId: 'lihatkebunku_03',
- message: 'Terima kasih tipsnya Pak Herman! Sangat membantu sistem aquaponics saya.',
- timestamp: Date.now() - 1800000
- }
- }
- },
- {
- id: 'demo-2',
- author: 'Siti Aminah',
- machineId: 'lihatkebunku_02',
- category: 'Nutrisi & Pakan',
- message: 'Tanaman kangkung dan selada saya tumbuh sangat subur dengan bantuan LED UV otomatis! Hasil panen minggu ini melimpah.',
- image: null,
- timestamp: Date.now() - 86400000,
- likes: 8,
- replies: {}
- }
- ];
- }
- renderCommunityFeed();
- });
+   const postsRef = ref(db, 'community_posts');
+   onValue(postsRef, (snapshot) => {
+     if (snapshot.exists()) {
+       const data = snapshot.val();
+       communityPostsList = Object.keys(data).map(key => ({
+         id: key,
+         ...data[key]
+       })).sort((a, b) => b.timestamp - a.timestamp);
+     } else {
+       communityPostsList = [
+         {
+           id: 'demo-1',
+           author: 'Pak Herman (Petani Hidroponik)',
+           machineId: 'lihatkebunku_01',
+           category: 'Tips & Trik',
+           message: 'Tips menjaga pH air tetap stabil di angka 6.8: selalu cek biofilter setiap 3 hari sekali dan kurangi pakan berlebih di malam hari agar amonia tidak melonjak.',
+           sensorSnapshot: { ph: '6.8', suhuAir: '26.5', tds: '340', kelembapan: '72' },
+           image: null,
+           timestamp: Date.now() - 3600000,
+           likes: 12,
+           replies: {
+             'r-1': {
+               author: 'Budi Santoso',
+               machineId: 'lihatkebunku_03',
+               message: 'Terima kasih tipsnya Pak Herman! Sangat membantu sistem aquaponics saya.',
+               timestamp: Date.now() - 1800000
+             }
+           }
+         },
+         {
+           id: 'demo-2',
+           author: 'Siti Aminah',
+           machineId: 'lihatkebunku_02',
+           category: 'Hasil Panen',
+           message: 'Tanaman kangkung dan selada tumbuh sangat subur dengan bantuan jadwal Lampu Grow UV otomatis! Panen minggu ini lebih cepat 4 hari.',
+           image: null,
+           timestamp: Date.now() - 86400000,
+           likes: 8,
+           replies: {}
+         }
+       ];
+     }
+     updateCommunitySidebarWidgets();
+     renderCommunityFeed();
+   });
  }
 
  function renderCommunityFeed() {
- const feedEl = document.getElementById('community-feed');
- feedEl.innerHTML = '';
+   const feedEl = document.getElementById('community-feed');
+   if (!feedEl) return;
+   feedEl.innerHTML = '';
 
- const filtered = activeCategoryFilter === "Semua" 
- ? communityPostsList 
- : communityPostsList.filter(p => p.category === activeCategoryFilter);
+   let filtered = [...communityPostsList];
 
- if(filtered.length === 0) {
- feedEl.innerHTML = `
- <div class="text-center p-8 glass-card rounded-[2rem] border border-dashed border-slate-200">
- <i data-lucide="messages-square" class="w-10 h-10 text-slate-300 mx-auto mb-2"></i>
- <p class="text-xs font-semibold text-slate-500">Belum ada diskusi untuk kategori "${activeCategoryFilter}"</p>
- <p class="text-[11px] text-slate-400 mt-0.5">Jadilah yang pertama untuk memulai postingan!</p>
- </div>`;
- lucide.createIcons();
- return;
- }
+   // Filter kategori
+   if (activeCategoryFilter !== "Semua") {
+     filtered = filtered.filter(p => p.category === activeCategoryFilter);
+   }
 
- filtered.forEach(post => {
- const dateStr = new Date(post.timestamp).toLocaleDateString('id-ID', {
- day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
- });
+   // Filter tersimpan (bookmark)
+   if (activeSortMode === 'saved') {
+     filtered = filtered.filter(p => savedPostsSet.has(p.id));
+   }
 
- let catBadgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
- if(post.category === 'Kendala Sensor') catBadgeColor = "bg-rose-50 text-rose-700 border-rose-200";
- else if(post.category === 'Tips & Trik') catBadgeColor = "bg-amber-50 text-amber-700 border-amber-200";
- else if(post.category === 'Nutrisi & Pakan') catBadgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
+   // Filter pencarian teks
+   if (communitySearchQuery) {
+     filtered = filtered.filter(p =>
+       (p.message || '').toLowerCase().includes(communitySearchQuery) ||
+       (p.author || '').toLowerCase().includes(communitySearchQuery) ||
+       (p.category || '').toLowerCase().includes(communitySearchQuery)
+     );
+   }
 
- const repliesObj = post.replies || {};
- const repliesArray = Object.keys(repliesObj).map(rKey => ({
- id: rKey,
- ...repliesObj[rKey]
- })).sort((a,b) => a.timestamp - b.timestamp);
+   // Pengurutan
+   if (activeSortMode === 'popular') {
+     filtered.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+   } else {
+     filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+   }
 
- let repliesListHtml = '';
- repliesArray.forEach(reply => {
- const replyDate = new Date(reply.timestamp).toLocaleDateString('id-ID', {
- day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
- });
- repliesListHtml += `
- <div class="flex items-start gap-2.5 bg-slate-50/80 p-3 rounded-xl border border-slate-200/60 text-xs">
- <div class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0">
- ${reply.author ? reply.author.charAt(0).toUpperCase() : 'R'}
- </div>
- <div class="flex-grow">
- <div class="flex items-center justify-between mb-0.5">
- <span class="font-bold text-slate-700 text-[11px]">${reply.author || 'Petani'}</span>
- <span class="text-[9px] text-slate-400">${replyDate}</span>
- </div>
- <p class="text-slate-600 font-normal leading-relaxed text-[11px]">${reply.message}</p>
- </div>
- </div>`;
- });
+   if (filtered.length === 0) {
+     feedEl.innerHTML = `
+       <div class="text-center p-10 glass-card rounded-[2rem] border border-dashed border-slate-200 animate-fade-in-up">
+         <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-3 border border-emerald-100">
+           <i data-lucide="messages-square" class="w-6 h-6"></i>
+         </div>
+         <p class="text-xs font-bold text-slate-600">Tidak ada diskusi yang cocok ditemukan</p>
+         <p class="text-[11px] text-slate-400 mt-1 mb-4">Coba ubah kata kunci pencarian atau mulai topik diskusi baru.</p>
+         <button type="button" onclick="openCommunityComposer('Diskusi Umum')" class="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-semibold shadow-xs cursor-pointer">
+           + Mulai Diskusi Baru
+         </button>
+       </div>`;
+     lucide.createIcons();
+     return;
+   }
 
- const postHtml = `
- <div class="glass-card p-5 md:p-6 rounded-[1.75rem] border border-slate-200/80 shadow-xs hover:border-emerald-200 transition-all">
- <div class="flex items-start justify-between gap-3 mb-3">
- <div class="flex items-center gap-3">
- <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center font-bold text-xs shadow-md shadow-emerald-600/20">
- ${post.author ? post.author.charAt(0).toUpperCase() : 'P'}
- </div>
- <div>
- <h4 class="text-xs font-bold text-slate-800">${post.author || 'Petani Anonim'}</h4>
- <p class="text-[10px] text-slate-400 font-mono mt-0.5">ID Device: ${post.machineId || 'LKB-IOT'}</p>
- </div>
- </div>
- <div class="flex items-center gap-2 shrink-0">
- <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${catBadgeColor}">${post.category}</span>
- <button onclick="deleteCommunityPost('${post.id}')" title="Hapus Utas" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 p-1.5 rounded-lg transition-colors cursor-pointer">
- <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
- </button>
- </div>
- </div>
+   filtered.forEach((post, index) => {
+     const relTime = formatRelativeTime(post.timestamp);
+     const fullDateStr = new Date(post.timestamp).toLocaleDateString('id-ID', {
+       day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+     });
 
- <p class="text-xs text-slate-600 font-normal leading-relaxed mb-3 bg-slate-50/50 p-3.5 rounded-xl border border-slate-100">
- ${post.message}
- </p>
+     let catBadgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+     if (post.category === 'Kendala Sensor') catBadgeColor = "bg-rose-50 text-rose-700 border-rose-200";
+     else if (post.category === 'Tips & Trik') catBadgeColor = "bg-amber-50 text-amber-700 border-amber-200";
+     else if (post.category === 'Nutrisi & Pakan') catBadgeColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
+     else if (post.category === 'Diskusi Umum') catBadgeColor = "bg-sky-50 text-sky-700 border-sky-200";
 
- ${post.image ? `
- <div class="mb-4 rounded-2xl overflow-hidden border border-slate-200/80 max-h-80 bg-slate-900/5">
- <img src="${post.image}" alt="Lampiran Foto" class="w-full h-auto object-cover max-h-80">
- </div>
- ` : ''}
+     const repliesObj = post.replies || {};
+     const repliesArray = Object.keys(repliesObj).map(rKey => ({
+       id: rKey,
+       ...repliesObj[rKey]
+     })).sort((a, b) => a.timestamp - b.timestamp);
 
- <div class="flex items-center justify-between pt-2 border-t border-slate-100">
- <div class="flex items-center gap-2">
- <button onclick="likeCommunityPost('${post.id}', ${post.likes || 0})" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-600 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 cursor-pointer shadow-2xs active:scale-95">
- <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-500"></i>
- <span class="font-semibold text-slate-700">${post.likes || 0}</span> Suka
- </button>
- <button onclick="toggleReplySection('${post.id}')" class="inline-flex items-center gap-1.5 text-xs text-slate-500 hover:text-emerald-600 transition-colors bg-white px-3 py-1.5 rounded-lg border border-slate-200/80 cursor-pointer shadow-2xs active:scale-95">
- <i data-lucide="message-square" class="w-3.5 h-3.5 text-emerald-600"></i>
- <span class="font-semibold text-slate-700">${repliesArray.length}</span> Balas
- </button>
- </div>
- <span class="text-[10px] text-slate-400 font-medium hidden sm:inline">${dateStr}</span>
- </div>
+     const isLiked = likedPostsSet.has(post.id);
+     const isSaved = savedPostsSet.has(post.id);
 
- <div id="reply-section-${post.id}" class="mt-4 pt-3 border-t border-slate-100 space-y-3 ${repliesArray.length > 0 ? '' : 'hidden'}">
- ${repliesArray.length > 0 ? `
- <div class="space-y-2.5 pl-2 border-l-2 border-emerald-200">
- ${repliesListHtml}
- </div>
- ` : ''}
+     const repliesListHtml = repliesArray.map(reply => `
+       <div class="flex items-start gap-2.5 bg-slate-50/90 p-3 rounded-2xl border border-slate-200/60 text-xs transition-all hover:bg-white">
+         <div class="w-7 h-7 rounded-xl bg-gradient-to-br from-emerald-100 to-teal-100 text-emerald-700 flex items-center justify-center font-bold text-[10px] shrink-0 border border-emerald-200/60">
+           ${reply.author ? reply.author.charAt(0).toUpperCase() : 'R'}
+         </div>
+         <div class="flex-grow min-w-0">
+           <div class="flex items-center justify-between gap-2 mb-0.5">
+             <span class="font-bold text-slate-700 text-[11px] truncate">${reply.author || 'Petani'}</span>
+             <span class="text-[9px] text-slate-400 shrink-0">${formatRelativeTime(reply.timestamp)}</span>
+           </div>
+           <p class="text-slate-600 font-normal leading-relaxed text-[11px] break-words">${reply.message}</p>
+         </div>
+       </div>
+     `).join('');
 
- <form onsubmit="submitReply(event, '${post.id}')" class="flex gap-2 items-center mt-2">
- <input type="text" id="reply-author-${post.id}" placeholder="Nama Anda" value="${activeMachineCode ? 'Petani ('+activeMachineCode+')' : ''}" required class="w-28 bg-white border border-slate-200 rounded-xl px-2.5 py-2 text-[11px] font-medium text-slate-700 focus:outline-none focus:border-emerald-500">
- <input type="text" id="reply-input-${post.id}" placeholder="Tulis balasan..." required class="flex-grow bg-white border border-slate-200 rounded-xl px-3 py-2 text-[11px] font-medium text-slate-700 focus:outline-none focus:border-emerald-500">
- <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2 rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1 shrink-0 active:scale-95">
- <i data-lucide="send" class="w-3 h-3"></i>
- </button>
- </form>
- </div>
- </div>`;
- feedEl.innerHTML += postHtml;
- });
+     const sensorCardHtml = post.sensorSnapshot ? `
+       <div class="mb-3.5 p-3 rounded-2xl bg-gradient-to-r from-slate-50 via-emerald-50/40 to-indigo-50/40 border border-slate-200/70">
+         <div class="flex items-center justify-between mb-2">
+           <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+             <i data-lucide="activity" class="w-3 h-3 text-emerald-500"></i> Telemetri Sensor Terlampir
+           </span>
+           <span class="text-[9px] font-mono text-emerald-600 font-semibold">Live Snapshot</span>
+         </div>
+         <div class="grid grid-cols-4 gap-2 text-center">
+           <div class="bg-white/90 rounded-xl py-1.5 px-1 border border-slate-200/60">
+             <span class="block text-[9px] text-slate-400">pH</span>
+             <span class="font-mono text-[11px] font-bold text-purple-600">${post.sensorSnapshot.ph}</span>
+           </div>
+           <div class="bg-white/90 rounded-xl py-1.5 px-1 border border-slate-200/60">
+             <span class="block text-[9px] text-slate-400">Suhu Air</span>
+             <span class="font-mono text-[11px] font-bold text-orange-600">${post.sensorSnapshot.suhuAir}°C</span>
+           </div>
+           <div class="bg-white/90 rounded-xl py-1.5 px-1 border border-slate-200/60">
+             <span class="block text-[9px] text-slate-400">TDS</span>
+             <span class="font-mono text-[11px] font-bold text-indigo-600">${post.sensorSnapshot.tds}</span>
+           </div>
+           <div class="bg-white/90 rounded-xl py-1.5 px-1 border border-slate-200/60">
+             <span class="block text-[9px] text-slate-400">Lembab</span>
+             <span class="font-mono text-[11px] font-bold text-blue-600">${post.sensorSnapshot.kelembapan}%</span>
+           </div>
+         </div>
+       </div>
+     ` : '';
 
- lucide.createIcons();
+     const postHtml = `
+       <article style="animation-delay: ${Math.min(index * 65, 350)}ms" class="community-post-card glass-card p-5 md:p-6 rounded-[1.75rem] border border-slate-200/80 shadow-xs hover:border-emerald-300/80 hover:shadow-md transition-all duration-300">
+         <!-- Header Kartu -->
+         <div class="flex items-start justify-between gap-3 mb-3.5">
+           <div class="flex items-center gap-3 min-w-0">
+             <div class="avatar-ring-emerald rounded-2xl shrink-0 shadow-sm">
+               <div class="w-9 h-9 rounded-[14px] bg-white text-emerald-700 flex items-center justify-center font-extrabold text-xs">
+                 ${post.author ? post.author.charAt(0).toUpperCase() : 'P'}
+               </div>
+             </div>
+             <div class="min-w-0">
+               <div class="flex items-center gap-1.5">
+                 <h4 class="text-xs font-bold text-slate-800 truncate">${post.author || 'Petani Anonim'}</h4>
+                 <span title="Perangkat Terverifikasi" class="text-emerald-500 shrink-0"><i data-lucide="badge-check" class="w-3.5 h-3.5"></i></span>
+               </div>
+               <p class="text-[10px] text-slate-400 font-mono mt-0.5 truncate" title="${fullDateStr}">
+                 ${post.machineId || 'LKB-IOT'} • ${relTime}
+               </p>
+             </div>
+           </div>
+
+           <div class="flex items-center gap-1.5 shrink-0">
+             <span class="text-[10px] font-semibold px-2.5 py-1 rounded-full border ${catBadgeColor}">${post.category}</span>
+             <button type="button" onclick="toggleBookmarkPost('${post.id}')" title="Simpan Diskusi" class="p-1.5 rounded-xl transition-colors cursor-pointer ${isSaved ? 'text-amber-500 bg-amber-50' : 'text-slate-400 hover:text-amber-500 hover:bg-slate-100'}">
+               <i data-lucide="bookmark" class="w-3.5 h-3.5 ${isSaved ? 'fill-current' : ''}"></i>
+             </button>
+             <button type="button" onclick="deleteCommunityPost('${post.id}')" title="Hapus Utas" class="text-slate-400 hover:text-rose-500 hover:bg-rose-50 p-1.5 rounded-xl transition-colors cursor-pointer">
+               <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+             </button>
+           </div>
+         </div>
+
+         <!-- Konten Pesan -->
+         <p class="text-xs md:text-[13px] text-slate-700 font-normal leading-relaxed mb-3.5 whitespace-pre-line break-words">
+           ${post.message}
+         </p>
+
+         <!-- Lampiran Data Sensor (Jika Ada) -->
+         ${sensorCardHtml}
+
+         <!-- Lampiran Foto (Klik untuk Zoom Lightbox) -->
+         ${post.image ? `
+           <div onclick="openImageLightbox('${post.image}')" class="group/img relative mb-4 rounded-2xl overflow-hidden border border-slate-200/80 max-h-80 bg-slate-100 cursor-zoom-in">
+             <img src="${post.image}" alt="Lampiran Foto" class="w-full h-auto object-cover max-h-80 group-hover/img:scale-[1.02] transition-transform duration-500">
+             <div class="absolute bottom-2.5 right-2.5 bg-slate-900/70 text-white text-[10px] font-semibold px-2.5 py-1 rounded-full backdrop-blur-sm opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center gap-1">
+               <i data-lucide="maximize-2" class="w-3 h-3"></i> Perbesar
+             </div>
+           </div>
+         ` : ''}
+
+         <!-- Action Bar Bawah -->
+         <div class="flex items-center justify-between pt-3 border-t border-slate-100">
+           <div class="flex items-center gap-2">
+             <button type="button" id="like-btn-${post.id}" onclick="likeCommunityPost('${post.id}', ${post.likes || 0})" class="inline-flex items-center gap-1.5 text-xs transition-all px-3 py-1.5 rounded-xl border cursor-pointer active:scale-95 ${isLiked ? 'bg-rose-50 text-rose-600 border-rose-200 font-bold' : 'bg-white text-slate-500 hover:text-rose-600 border-slate-200/80 font-semibold'}">
+               <i data-lucide="heart" class="w-3.5 h-3.5 ${isLiked ? 'text-rose-500 fill-current' : 'text-rose-400'}"></i>
+               <span>${post.likes || 0}</span>
+             </button>
+
+             <button type="button" onclick="toggleReplySection('${post.id}')" class="inline-flex items-center gap-1.5 text-xs text-slate-600 hover:text-emerald-700 font-semibold transition-all bg-white hover:bg-emerald-50/70 px-3 py-1.5 rounded-xl border border-slate-200/80 cursor-pointer active:scale-95">
+               <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+               <span>${repliesArray.length} Balasan</span>
+             </button>
+           </div>
+
+           <button type="button" onclick="copyPostContent('${post.id}')" title="Salin teks diskusi" class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-400 hover:text-slate-700 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer">
+             <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+             <span class="hidden sm:inline">Salin</span>
+           </button>
+         </div>
+
+         <!-- Kolom Komentar / Balasan -->
+         <div id="reply-section-${post.id}" class="mt-4 pt-3.5 border-t border-slate-100 space-y-3 ${repliesArray.length > 0 ? '' : 'hidden'}">
+           ${repliesArray.length > 0 ? `
+             <div class="space-y-2 pl-3 border-l-2 border-emerald-200/80">
+               ${repliesListHtml}
+             </div>
+           ` : ''}
+
+           <form onsubmit="submitReply(event, '${post.id}')" class="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center mt-2">
+             <input type="text" id="reply-author-${post.id}" placeholder="Nama Anda" value="${activeMachineCode ? 'Petani ('+activeMachineCode+')' : ''}" required class="sm:w-36 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-[11px] font-semibold text-slate-700 focus:outline-none focus:border-emerald-500 focus:bg-white">
+             <div class="flex gap-2 flex-grow">
+               <input type="text" id="reply-input-${post.id}" placeholder="Tulis tanggapan atau solusi..." required class="flex-grow bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-[11px] font-medium text-slate-700 focus:outline-none focus:border-emerald-500 focus:bg-white">
+               <button type="submit" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold shadow-xs flex items-center gap-1.5 shrink-0 active:scale-95 transition-all cursor-pointer">
+                 <i data-lucide="send" class="w-3.5 h-3.5"></i>
+               </button>
+             </div>
+           </form>
+         </div>
+       </article>
+     `;
+     feedEl.innerHTML += postHtml;
+   });
+
+   lucide.createIcons();
  }
 
  document.getElementById('form-new-post').addEventListener('submit', async (e) => {
- e.preventDefault();
- const btn = document.getElementById('btn-submit-post');
- const author = document.getElementById('post-author').value.trim();
- const category = document.getElementById('post-category').value;
- const message = document.getElementById('post-message').value.trim();
+   e.preventDefault();
+   const btn = document.getElementById('btn-submit-post');
+   const author = document.getElementById('post-author').value.trim();
+   const category = document.getElementById('post-category').value;
+   const message = document.getElementById('post-message').value.trim();
 
- if(!author || !message) return;
+   if (!author || !message) return;
 
- btn.disabled = true;
- btn.innerText = "Mengirim...";
+   btn.disabled = true;
+   btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i> Mengirim...`;
+   lucide.createIcons();
 
- try {
- const newPostRef = push(ref(db, 'community_posts'));
- await set(newPostRef, {
- author,
- machineId: activeMachineCode || 'lihatkebunku_01',
- category,
- message,
- image: selectedImageData || null,
- timestamp: Date.now(),
- likes: 0,
- replies: {}
- });
+   try {
+     const newPostRef = push(ref(db, 'community_posts'));
+     await set(newPostRef, {
+       author,
+       machineId: activeMachineCode || 'lihatkebunku_01',
+       category,
+       message,
+       image: selectedImageData || null,
+       sensorSnapshot: attachLiveSensor ? getCurrentSensorSnapshot() : null,
+       timestamp: Date.now(),
+       likes: 0,
+       replies: {}
+     });
 
- document.getElementById('post-message').value = '';
- removeSelectedImage();
- toggleCommunityPostForm();
- } catch(err) {
- console.error("Gagal mengirim postingan:", err);
- alert("Terjadi kesalahan saat mengirim postingan.");
- } finally {
- btn.disabled = false;
- btn.innerHTML = `<i data-lucide="send" class="w-3.5 h-3.5"></i> Kirim Pesan`;
- lucide.createIcons();
- }
+     document.getElementById('post-message').value = '';
+     updatePostCharCount({ value: '' });
+     removeSelectedImage();
+     toggleCommunityPostForm(false);
+     showCommunityToast("Diskusi berhasil dipublikasikan!");
+   } catch (err) {
+     console.error("Gagal mengirim postingan:", err);
+     showCommunityToast("Gagal mengirim postingan ke server.");
+   } finally {
+     btn.disabled = false;
+     btn.innerHTML = `<i data-lucide="send" class="w-3.5 h-3.5"></i> Publikasikan`;
+     lucide.createIcons();
+   }
  });
 
  window.deleteCommunityPost = async (postId) => {
- if (confirm("Apakah Anda yakin ingin menghapus utas diskusi ini?")) {
- if(postId.startsWith('demo-')) {
- communityPostsList = communityPostsList.filter(x => x.id !== postId);
- renderCommunityFeed();
- return;
- }
- try {
- await remove(ref(db, `community_posts/${postId}`));
- } catch(err) {
- console.error("Gagal menghapus postingan:", err);
- alert("Gagal menghapus postingan.");
- }
- }
+   if (confirm("Apakah Anda yakin ingin menghapus utas diskusi ini?")) {
+     if (postId.startsWith('demo-')) {
+       communityPostsList = communityPostsList.filter(x => x.id !== postId);
+       updateCommunitySidebarWidgets();
+       renderCommunityFeed();
+       showCommunityToast("Utas diskusi dihapus");
+       return;
+     }
+     try {
+       await remove(ref(db, `community_posts/${postId}`));
+       showCommunityToast("Utas diskusi dihapus");
+     } catch (err) {
+       console.error("Gagal menghapus postingan:", err);
+       showCommunityToast("Gagal menghapus postingan.");
+     }
+   }
  };
 
  window.submitReply = async (event, postId) => {
- event.preventDefault();
- const authorInput = document.getElementById(`reply-author-${postId}`);
- const messageInput = document.getElementById(`reply-input-${postId}`);
+   event.preventDefault();
+   const authorInput = document.getElementById(`reply-author-${postId}`);
+   const messageInput = document.getElementById(`reply-input-${postId}`);
 
- const author = authorInput ? authorInput.value.trim() : 'Petani';
- const message = messageInput ? messageInput.value.trim() : '';
+   const author = authorInput ? authorInput.value.trim() : 'Petani';
+   const message = messageInput ? messageInput.value.trim() : '';
 
- if(!author || !message) return;
+   if (!author || !message) return;
 
- if(postId.startsWith('demo-')) {
- const p = communityPostsList.find(x => x.id === postId);
- if(p) {
- if(!p.replies) p.replies = {};
- const rId = 'r-' + Date.now();
- p.replies[rId] = {
- author,
- machineId: activeMachineCode || 'lihatkebunku_01',
- message,
- timestamp: Date.now()
- };
- renderCommunityFeed();
- }
- return;
- }
+   if (postId.startsWith('demo-')) {
+     const p = communityPostsList.find(x => x.id === postId);
+     if (p) {
+       if (!p.replies) p.replies = {};
+       p.replies['r-' + Date.now()] = {
+         author,
+         machineId: activeMachineCode || 'lihatkebunku_01',
+         message,
+         timestamp: Date.now()
+       };
+       updateCommunitySidebarWidgets();
+       renderCommunityFeed();
+       showCommunityToast("Balasan terkirim!");
+     }
+     return;
+   }
 
- try {
- const replyRef = push(ref(db, `community_posts/${postId}/replies`));
- await set(replyRef, {
- author,
- machineId: activeMachineCode || 'lihatkebunku_01',
- message,
- timestamp: Date.now()
- });
- if(messageInput) messageInput.value = '';
- } catch(err) {
- console.error("Gagal membalas pesan:", err);
- alert("Terjadi kesalahan saat membalas pesan.");
- }
+   try {
+     const replyRef = push(ref(db, `community_posts/${postId}/replies`));
+     await set(replyRef, {
+       author,
+       machineId: activeMachineCode || 'lihatkebunku_01',
+       message,
+       timestamp: Date.now()
+     });
+     if (messageInput) messageInput.value = '';
+     showCommunityToast("Balasan terkirim!");
+   } catch (err) {
+     console.error("Gagal membalas pesan:", err);
+     showCommunityToast("Gagal mengirim balasan.");
+   }
  };
 
  window.likeCommunityPost = async (postId, currentLikes) => {
- if(postId.startsWith('demo-')) {
- const p = communityPostsList.find(x => x.id === postId);
- if(p) { p.likes = (p.likes || 0) + 1; renderCommunityFeed(); }
- return;
- }
- try {
- await update(ref(db, `community_posts/${postId}`), {
- likes: currentLikes + 1
- });
- } catch(err) {
- console.error("Gagal memperbarui like:", err);
- }
+   const alreadyLiked = likedPostsSet.has(postId);
+   const nextLikes = alreadyLiked ? Math.max(0, currentLikes - 1) : currentLikes + 1;
+
+   if (alreadyLiked) {
+     likedPostsSet.delete(postId);
+   } else {
+     likedPostsSet.add(postId);
+   }
+   localStorage.setItem('lkb_liked_posts', JSON.stringify([...likedPostsSet]));
+
+   // Efek animasi pop pada tombol hati
+   const btnEl = document.getElementById(`like-btn-${postId}`);
+   if (btnEl) {
+     btnEl.classList.add('animate-heart-pop');
+     setTimeout(() => btnEl.classList.remove('animate-heart-pop'), 450);
+   }
+
+   if (postId.startsWith('demo-')) {
+     const p = communityPostsList.find(x => x.id === postId);
+     if (p) {
+       p.likes = nextLikes;
+       renderCommunityFeed();
+     }
+     return;
+   }
+
+   try {
+     await update(ref(db, `community_posts/${postId}`), {
+       likes: nextLikes
+     });
+   } catch (err) {
+     console.error("Gagal memperbarui like:", err);
+   }
  };
 
   document.addEventListener('DOMContentLoaded', () => {
