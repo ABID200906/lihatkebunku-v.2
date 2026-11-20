@@ -34,6 +34,137 @@
     animation: weatherGlassSheen 5.5s infinite ease-in-out;
   }
 
+  /* === LIQUID GLASS CURVED NAVBAR === */
+.liquid-nav-wrapper {
+  position: fixed;
+  bottom: 24px; /* Ubah ke 'top: 20px; bottom: auto;' jika ingin posisi di atas */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: max-content;
+  max-width: 92vw;
+}
+
+.liquid-navbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: 36px; /* Lengkungan kapsul liquid */
+  
+  /* Efek kaca cair (Liquid Glass) */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    rgba(255, 255, 255, 0.12) 50%,
+    rgba(255, 255, 255, 0.22) 100%
+  );
+  backdrop-filter: blur(22px) saturate(190%);
+  -webkit-backdrop-filter: blur(22px) saturate(190%);
+  
+  /* Pantulan cahaya tepi & kedalaman kaca */
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    inset 0 2px 3px rgba(255, 255, 255, 0.75),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.12),
+    0 16px 36px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+/* Kilau lengkung permukaan cairan di bagian atas */
+.liquid-navbar::before {
+  content: "";
+  position: absolute;
+  top: -45%;
+  left: -10%;
+  width: 120%;
+  height: 85%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 255, 255, 0.45) 0%,
+    rgba(255, 255, 255, 0) 72%
+  );
+  pointer-events: none;
+}
+
+.liquid-nav-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 46px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #1f2937; /* Sesuaikan warna ikon/teks jika background gelap */
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background 0.35s ease,
+    box-shadow 0.35s ease,
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    padding 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.liquid-nav-item:active {
+  transform: scale(0.92);
+}
+
+/* Gelembung kaca aktif */
+.liquid-nav-item.active {
+  padding: 0 18px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.65) 0%,
+    rgba(255, 255, 255, 0.32) 100%
+  );
+  color: #065f46; /* Warna aksen hijau kebun saat aktif */
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.9),
+    0 4px 14px rgba(0, 0, 0, 0.1);
+}
+
+.liquid-nav-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.liquid-nav-item.active .liquid-nav-icon {
+  transform: scale(1.1);
+}
+
+/* Animasi Expanding Label */
+.liquid-nav-label {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  margin-left: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transform: translateX(-6px);
+  transition:
+    max-width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease,
+    margin-left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.liquid-nav-item.active .liquid-nav-label {
+  max-width: 130px;
+  opacity: 1;
+  margin-left: 8px;
+  transform: translateX(0);
+}
+
   /* Animasi Ikon Cuaca SVG */
   @keyframes sunSpin {
     from { transform: rotate(0deg); }
@@ -1054,45 +1185,40 @@
 
  </main>
 
- <!-- Mobile Sticky Bottom Nav -->
- <nav class="md:hidden fixed bottom-0 left-0 right-0 glass-panel border-t border-slate-200/60 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] px-2 py-2 flex items-center justify-around z-40 pb-safe">
- <button onclick="switchTab('beranda')" id="mob-nav-beranda" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-emerald-600 group">
- <span class="absolute inset-0 bg-emerald-50 rounded-xl opacity-100 transition-opacity nav-bg"></span>
- <i data-lucide="layout-dashboard" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Ringkasan</span>
- </button>
- <button onclick="switchTab('kontrol')" id="mob-nav-kontrol" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <i data-lucide="sliders-horizontal" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Kendali</span>
- </button>
- <button onclick="switchTab('komunitas')" id="mob-nav-komunitas" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <i data-lucide="users" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Komunitas</span>
- </button>
- <button onclick="switchTab('ai')" id="mob-nav-ai" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <i data-lucide="sparkles" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">AI Chat</span>
- </button>
- <button onclick="switchTab('notifikasi')" id="mob-nav-notifikasi" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <div class="relative z-10">
- <i data-lucide="bell" class="h-4 w-4"></i>
- <span id="mob-bot-notif-badge" class="hidden absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
- </div>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Notif</span>
- </button>
- <button onclick="switchTab('profile')" id="mob-nav-profile" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <i data-lucide="user-circle" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Akun</span>
- </button>
- </nav>
+<div class="liquid-nav-wrapper">
+  <nav class="liquid-navbar" id="liquidNavbar" aria-label="Navigasi Utama">
+    <button type="button" class="liquid-nav-item active" data-target="beranda">
+      <svg class="liquid-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"/>
+      </svg>
+      <span class="liquid-nav-label">Beranda</span>
+    </button>
 
- </div>
- </div>
+    <button type="button" class="liquid-nav-item" data-target="kebun">
+      <svg class="liquid-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 20h10"/><path d="M10 20c5.5-2.5.8-6.4 3-10"/>
+        <path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"/>
+        <path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z"/>
+      </svg>
+      <span class="liquid-nav-label">Kebunku</span>
+    </button>
+
+    <button type="button" class="liquid-nav-item" data-target="jadwal">
+      <svg class="liquid-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+      </svg>
+      <span class="liquid-nav-label">Perawatan</span>
+    </button>
+
+    <button type="button" class="liquid-nav-item" data-target="profil">
+      <svg class="liquid-nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M20 21a8 8 0 1 0-16 0"/>
+      </svg>
+      <span class="liquid-nav-label">Profil</span>
+    </button>
+  </nav>
+</div>
 
  <!-- ========================================== -->
  <!-- 3. LOGIC & FIREBASE INTEGRATION -->
@@ -2485,6 +2611,31 @@
  }
  });
 
+ //NEW NAV BAR
+  document.addEventListener("DOMContentLoaded", () => {
+  const navItems = document.querySelectorAll(".liquid-nav-item");
+
+  navItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      // Hapus status aktif dari semua tombol
+      navItems.forEach((btn) => btn.classList.remove("active"));
+      
+      // Aktifkan tombol yang diklik (memicu animasi expanding label)
+      item.classList.add("active");
+
+      // Opsional: Sambungkan dengan pergantian section/halaman Anda
+      const targetId = item.getAttribute("data-target");
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) {
+        document.querySelectorAll(".page-section").forEach((sec) => {
+          sec.style.display = "none";
+        });
+        targetSection.style.display = "block";
+      }
+    });
+  });
+});
+  
  document.querySelectorAll('.mob-nav-btn').forEach(btn => {
  const bg = btn.querySelector('.nav-bg');
  if(btn.id === `mob-nav-${targetTab}`) {
