@@ -19,6 +19,109 @@
  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 
  <style>
+  /* Kontainer Utama Curved Liquid Glass */
+  .liquid-glass-dock {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.78) 0%,
+      rgba(255, 255, 255, 0.52) 50%,
+      rgba(236, 253, 245, 0.68) 100%
+    );
+    backdrop-filter: blur(24px) saturate(190%);
+    -webkit-backdrop-filter: blur(24px) saturate(190%);
+    border: 1px solid rgba(255, 255, 255, 0.88);
+    box-shadow:
+      0 18px 40px -10px rgba(15, 23, 42, 0.16),
+      0 6px 20px -4px rgba(16, 185, 129, 0.14),
+      inset 0 1.5px 1px rgba(255, 255, 255, 0.95),
+      inset 0 -1.5px 3px rgba(16, 185, 129, 0.12);
+  }
+
+  /* Kilau lengkung kaca di bagian atas dock */
+  .liquid-glass-dock::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(
+      120% 65% at 50% 0%,
+      rgba(255, 255, 255, 0.75) 0%,
+      rgba(255, 255, 255, 0) 70%
+    );
+    pointer-events: none;
+  }
+
+  /* Tombol Item Navigasi */
+  .liquid-nav-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    padding: 0 11px;
+    border-radius: 9999px;
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+    transition:
+      background 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+      color 0.3s ease,
+      padding 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.4s ease,
+      transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .liquid-nav-btn:active {
+    transform: scale(0.9);
+  }
+
+  /* State Aktif: Pil Liquid Emerald Menyala */
+  .liquid-nav-btn.is-active {
+    padding: 0 14px;
+    color: #ffffff;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.92) 0%, rgba(13, 148, 136, 0.95) 100%);
+    border-color: rgba(255, 255, 255, 0.55);
+    box-shadow:
+      0 8px 20px -4px rgba(16, 185, 129, 0.48),
+      inset 0 1px 1px rgba(255, 255, 255, 0.65);
+  }
+
+  /* Animasi Ikon saat Aktif */
+  .liquid-nav-btn .nav-icon {
+    transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .liquid-nav-btn.is-active .nav-icon {
+    transform: scale(1.08);
+  }
+
+  /* Animasi Expanding Label */
+  .liquid-nav-label {
+    display: inline-block;
+    max-width: 0;
+    opacity: 0;
+    margin-left: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    transform: translateX(-6px) scale(0.92);
+    transition:
+      max-width 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+      opacity 0.28s ease,
+      margin-left 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+      transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .liquid-nav-btn.is-active .liquid-nav-label {
+    max-width: 82px;
+    opacity: 1;
+    margin-left: 6px;
+    transform: translateX(0) scale(1);
+  }
+  
   /* Perspektif 3D untuk interaksi kartu */
   .weather-card-3d {
     transform-style: preserve-3d;
@@ -1054,41 +1157,40 @@
 
  </main>
 
- <!-- Mobile Sticky Bottom Nav -->
- <nav class="md:hidden fixed bottom-0 left-0 right-0 glass-panel border-t border-slate-200/60 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] px-2 py-2 flex items-center justify-around z-40 pb-safe">
- <button onclick="switchTab('beranda')" id="mob-nav-beranda" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-emerald-600 group">
- <span class="absolute inset-0 bg-emerald-50 rounded-xl opacity-100 transition-opacity nav-bg"></span>
- <i data-lucide="layout-dashboard" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Ringkasan</span>
- </button>
- <button onclick="switchTab('kontrol')" id="mob-nav-kontrol" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <i data-lucide="sliders-horizontal" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Kendali</span>
- </button>
- <button onclick="switchTab('komunitas')" id="mob-nav-komunitas" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <i data-lucide="users" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Komunitas</span>
- </button>
- <button onclick="switchTab('ai')" id="mob-nav-ai" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <i data-lucide="sparkles" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">AI Chat</span>
- </button>
- <button onclick="switchTab('notifikasi')" id="mob-nav-notifikasi" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <div class="relative z-10">
- <i data-lucide="bell" class="h-4 w-4"></i>
- <span id="mob-bot-notif-badge" class="hidden absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
- </div>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Notif</span>
- </button>
- <button onclick="switchTab('profile')" id="mob-nav-profile" class="mob-nav-btn relative flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl transition-all text-slate-400 group hover:text-slate-600">
- <span class="absolute inset-0 bg-slate-100 rounded-xl opacity-0 transition-opacity nav-bg"></span>
- <i data-lucide="user-circle" class="h-4 w-4 relative z-10"></i>
- <span class="text-[9px] mt-1 font-semibold relative z-10">Akun</span>
- </button>
+<!-- Mobile Floating Curved Liquid Glass Nav -->
+ <nav aria-label="Navigasi Utama" class="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-[430px] liquid-glass-dock rounded-[2rem] px-2 py-2 flex items-center justify-between gap-1">
+   <button onclick="switchTab('beranda')" id="mob-nav-beranda" class="mob-nav-btn liquid-nav-btn is-active cursor-pointer">
+     <i data-lucide="layout-dashboard" class="nav-icon h-[18px] w-[18px] shrink-0"></i>
+     <span class="liquid-nav-label">Ringkasan</span>
+   </button>
+
+   <button onclick="switchTab('kontrol')" id="mob-nav-kontrol" class="mob-nav-btn liquid-nav-btn cursor-pointer">
+     <i data-lucide="sliders-horizontal" class="nav-icon h-[18px] w-[18px] shrink-0"></i>
+     <span class="liquid-nav-label">Kendali</span>
+   </button>
+
+   <button onclick="switchTab('komunitas')" id="mob-nav-komunitas" class="mob-nav-btn liquid-nav-btn cursor-pointer">
+     <i data-lucide="users" class="nav-icon h-[18px] w-[18px] shrink-0"></i>
+     <span class="liquid-nav-label">Komunitas</span>
+   </button>
+
+   <button onclick="switchTab('ai')" id="mob-nav-ai" class="mob-nav-btn liquid-nav-btn cursor-pointer">
+     <i data-lucide="sparkles" class="nav-icon h-[18px] w-[18px] shrink-0"></i>
+     <span class="liquid-nav-label">AI Chat</span>
+   </button>
+
+   <button onclick="switchTab('notifikasi')" id="mob-nav-notifikasi" class="mob-nav-btn liquid-nav-btn cursor-pointer">
+     <div class="relative shrink-0">
+       <i data-lucide="bell" class="nav-icon h-[18px] w-[18px]"></i>
+       <span id="mob-bot-notif-badge" class="hidden absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white"></span>
+     </div>
+     <span class="liquid-nav-label">Notif</span>
+   </button>
+
+   <button onclick="switchTab('profile')" id="mob-nav-profile" class="mob-nav-btn liquid-nav-btn cursor-pointer">
+     <i data-lucide="user-circle" class="nav-icon h-[18px] w-[18px] shrink-0"></i>
+     <span class="liquid-nav-label">Akun</span>
+   </button>
  </nav>
 
  </div>
@@ -2465,50 +2567,52 @@
  }, 1200);
  });
 
- // =====================================
+// =====================================
  // NAVIGATION LOGIC
  // =====================================
  window.switchTab = (targetTab) => {
- document.querySelectorAll('.view-section').forEach(el => {
- el.classList.add('hidden'); el.classList.remove('animate-fade-in-up');
- });
- const targetEl = document.getElementById(`view-${targetTab}`);
- targetEl.classList.remove('hidden');
- void targetEl.offsetWidth; 
- targetEl.classList.add('animate-fade-in-up');
- 
- document.querySelectorAll('.nav-btn').forEach(btn => {
- if(btn.id === `nav-${targetTab}`) {
- btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer bg-emerald-50 text-emerald-700 shadow-xs border border-emerald-100/80";
- } else {
- btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-xs";
- }
- });
+   document.querySelectorAll('.view-section').forEach(el => {
+     el.classList.add('hidden');
+     el.classList.remove('animate-fade-in-up');
+   });
+   const targetEl = document.getElementById(`view-${targetTab}`);
+   targetEl.classList.remove('hidden');
+   void targetEl.offsetWidth;
+   targetEl.classList.add('animate-fade-in-up');
 
- document.querySelectorAll('.mob-nav-btn').forEach(btn => {
- const bg = btn.querySelector('.nav-bg');
- if(btn.id === `mob-nav-${targetTab}`) {
- btn.classList.add('text-emerald-600'); btn.classList.remove('text-slate-400', 'hover:text-slate-600');
- if(bg) bg.classList.replace('opacity-0', 'opacity-100');
- } else {
- btn.classList.remove('text-emerald-600'); btn.classList.add('text-slate-400', 'hover:text-slate-600');
- if(bg) bg.classList.replace('opacity-100', 'opacity-0');
- }
- });
+   document.querySelectorAll('.nav-btn').forEach(btn => {
+     if (btn.id === `nav-${targetTab}`) {
+       btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer bg-emerald-50 text-emerald-700 shadow-xs border border-emerald-100/80";
+     } else {
+       btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-xs";
+     }
+   });
 
- if(targetTab === 'notifikasi') { document.getElementById('mob-top-notif-badge').classList.add('hidden'); renderNotifications(); }
- if(targetTab === 'ai') renderChat();
- if(targetTab === 'komunitas') renderCommunityFeed();
+   document.querySelectorAll('.mob-nav-btn').forEach(btn => {
+     if (btn.id === `mob-nav-${targetTab}`) {
+       btn.classList.add('is-active');
+     } else {
+       btn.classList.remove('is-active');
+     }
+   });
+
+   if (targetTab === 'notifikasi') {
+     document.getElementById('mob-top-notif-badge').classList.add('hidden');
+     renderNotifications();
+   }
+   if (targetTab === 'ai') renderChat();
+   if (targetTab === 'komunitas') renderCommunityFeed();
  };
 
  window.logout = () => {
- activeMachineCode = ""; auth.signOut();
- document.getElementById('app-view').classList.remove('opacity-100');
- document.getElementById('app-view').classList.add('opacity-0');
- setTimeout(() => {
- document.getElementById('app-view').classList.add('hidden');
- document.getElementById('login-view').classList.remove('hidden');
- }, 500);
+   activeMachineCode = "";
+   auth.signOut();
+   document.getElementById('app-view').classList.remove('opacity-100');
+   document.getElementById('app-view').classList.add('opacity-0');
+   setTimeout(() => {
+     document.getElementById('app-view').classList.add('hidden');
+     document.getElementById('login-view').classList.remove('hidden');
+   }, 500);
  };
 
  // =====================================
