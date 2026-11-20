@@ -193,6 +193,73 @@
     animation: svgBoltFlash 3.2s infinite;
   }
 
+  /* =========================================
+   SLIM FLOATING DESKTOP SIDEBAR
+   ========================================= */
+.slim-sidebar-dock {
+  background: linear-gradient(180deg, #16181d 0%, #111317 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 20px 45px -12px rgba(15, 23, 42, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.slim-nav-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  background: transparent;
+  border: 1px solid transparent;
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
+}
+
+.slim-nav-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* State Aktif (Kotak Squircle Menyala seperti referensi) */
+.slim-nav-btn.is-active {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 6px 16px -4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+/* Tooltip melayang saat ikon di-hover */
+.slim-tooltip {
+  position: absolute;
+  left: 58px;
+  padding: 6px 11px;
+  border-radius: 10px;
+  background: #181a20;
+  color: #f8fafc;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.35);
+  opacity: 0;
+  transform: translateX(-6px);
+  pointer-events: none;
+  transition: all 0.2s ease;
+  z-index: 50;
+}
+
+.slim-nav-btn:hover .slim-tooltip,
+.group:hover .slim-tooltip {
+  opacity: 1;
+  transform: translateX(0);
+}
+
   /* Efek getar singkat saat ikon diklik */
   @keyframes widgetBouncePop {
     0% { transform: scale(1); }
@@ -470,61 +537,68 @@
  <!-- ========================================== -->
  <div id="app-view" class="hidden flex min-h-screen w-full opacity-0 transition-opacity duration-700">
  
- <!-- Sidebar Desktop -->
- <aside class="hidden md:flex flex-col w-[260px] glass-panel border-r border-slate-200/60 min-h-screen p-6 shrink-0 justify-between sticky top-0 h-screen shadow-[4px_0_24px_rgba(0,0,0,0.015)] z-30">
- <div class="space-y-8">
- <!-- Logo Header -->
- <div class="flex items-center gap-3 px-2">
- <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-emerald-600/20 overflow-hidden p-1">
- <img src="logo.png" alt="Logo" class="w-full h-full object-cover object-center rounded-lg" onerror="this.onerror=null;this.src='https://placehold.co/36x36/059669/ffffff?text=LK'">
- </div>
- <span class="text-base font-bold text-slate-800 tracking-tight">LihatKebunku</span>
- </div>
+<!-- Sidebar Desktop (Slim Floating Design) -->
+ <aside class="hidden md:flex flex-col items-center justify-between w-[72px] my-4 ml-4 h-[calc(100vh-2rem)] sticky top-4 rounded-[28px] slim-sidebar-dock py-5 px-2 shrink-0 z-30">
+  
+   <!-- BAGIAN A: Grup Atas (Logo & Menu Utama) -->
+   <div class="flex flex-col items-center w-full">
+     <!-- Logo Aplikasi -->
+     <div onclick="switchTab('beranda')" title="LihatKebunku" class="w-11 h-11 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center p-1.5 mb-7 cursor-pointer hover:scale-105 transition-transform shadow-sm">
+       <img src="logo.png" alt="Logo" class="w-full h-full object-cover rounded-xl" onerror="this.onerror=null;this.src='https://placehold.co/36x36/059669/ffffff?text=LK'">
+     </div>
 
- <!-- Navigations -->
- <nav class="space-y-1.5">
- <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer bg-emerald-50 text-emerald-700 shadow-sm border border-emerald-100/60">
- <div class="flex items-center gap-3"><i data-lucide="layout-dashboard" class="h-4 w-4"></i><span>Ringkasan</span></div>
- </button>
- 
- <button onclick="switchTab('kontrol')" id="nav-kontrol" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-sm">
- <div class="flex items-center gap-3"><i data-lucide="sliders-horizontal" class="h-4 w-4"></i><span>Kendali Alat</span></div>
- </button>
+     <!-- Navigasi Utama -->
+     <nav class="flex flex-col items-center gap-2.5 w-full">
+       <button onclick="switchTab('beranda')" id="nav-beranda" class="nav-btn slim-nav-btn is-active">
+         <i data-lucide="layout-dashboard" class="h-[19px] w-[19px]"></i>
+         <span class="slim-tooltip">Ringkasan</span>
+       </button>
 
- <button onclick="switchTab('komunitas')" id="nav-komunitas" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-sm group">
- <div class="flex items-center gap-3"><i data-lucide="users" class="h-4 w-4 group-hover:text-emerald-600 transition-colors"></i><span>Komunitas</span></div>
- <span class="bg-emerald-100 text-emerald-700 text-[9px] px-2 py-0.5 rounded-full font-bold">AKTIF</span>
- </button>
+       <button onclick="switchTab('kontrol')" id="nav-kontrol" class="nav-btn slim-nav-btn">
+         <i data-lucide="sliders-horizontal" class="h-[19px] w-[19px]"></i>
+         <span class="slim-tooltip">Kendali Alat</span>
+       </button>
 
- <button onclick="switchTab('ai')" id="nav-ai" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-sm group">
- <div class="flex items-center gap-3"><i data-lucide="sparkles" class="h-4 w-4 group-hover:text-amber-500 transition-colors"></i><span>AI Assistant</span></div>
- <span class="bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[9px] px-2 py-0.5 rounded-full font-bold shadow-sm shadow-orange-500/20">PRO</span>
- </button>
+       <button onclick="switchTab('komunitas')" id="nav-komunitas" class="nav-btn slim-nav-btn">
+         <i data-lucide="users" class="h-[19px] w-[19px]"></i>
+         <span class="slim-tooltip">Komunitas <span class="text-emerald-400 ml-1">• Aktif</span></span>
+       </button>
 
- <button onclick="switchTab('notifikasi')" id="nav-notifikasi" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-sm">
- <div class="flex items-center gap-3"><i data-lucide="bell" class="h-4 w-4"></i><span>Notifikasi</span></div>
- <span id="desk-notif-badge" class="hidden bg-rose-500 text-white font-bold text-[9px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-sm shadow-rose-500/20">0</span>
- </button>
+       <button onclick="switchTab('ai')" id="nav-ai" class="nav-btn slim-nav-btn">
+         <i data-lucide="sparkles" class="h-[19px] w-[19px]"></i>
+         <span class="slim-tooltip">AI Assistant <span class="text-amber-400 ml-1">PRO</span></span>
+       </button>
+     </nav>
+   </div>
 
- <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-sm">
- <div class="flex items-center gap-3"><i data-lucide="user-circle" class="h-4 w-4"></i><span>Akun</span></div>
- </button>
- </nav>
- </div>
+   <!-- BAGIAN B: Grup Bawah (Notifikasi, Pengaturan/Akun & Status IoT) -->
+   <div class="flex flex-col items-center gap-2.5 w-full">
+     <!-- Notifikasi -->
+     <button onclick="switchTab('notifikasi')" id="nav-notifikasi" class="nav-btn slim-nav-btn">
+       <i data-lucide="bell" class="h-[19px] w-[19px]"></i>
+       <span id="desk-notif-badge" class="hidden absolute top-1.5 right-1.5 bg-orange-500 text-white font-bold text-[9px] min-w-[16px] h-[16px] px-1 items-center justify-center rounded-full ring-2 ring-[#131519]">0</span>
+       <span class="slim-tooltip">Notifikasi</span>
+     </button>
 
- <!-- Footer Badge -->
- <div class="space-y-4">
- <div class="p-3.5 bg-white/70 rounded-2xl border border-white shadow-xs flex items-center gap-3 backdrop-blur-sm">
- <div class="relative flex h-2.5 w-2.5">
- <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
- <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
- </div>
- <div class="overflow-hidden">
- <p class="text-[9px] font-semibold text-slate-400 uppercase tracking-wider">IoT Device ID</p>
- <p id="display-machine-id" class="text-xs font-bold text-slate-700 font-mono truncate">LKB-XXX</p>
- </div>
- </div>
- </div>
+     <!-- Akun / Pengaturan -->
+     <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn slim-nav-btn">
+       <i data-lucide="settings" class="h-[19px] w-[19px]"></i>
+       <span class="slim-tooltip">Akun & Pengaturan</span>
+     </button>
+
+     <!-- Status Koneksi IoT -->
+     <div class="relative group mt-1 pt-2.5 border-t border-white/10 w-8 flex justify-center">
+       <span class="relative flex h-2.5 w-2.5 cursor-pointer">
+         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+       </span>
+       <div class="slim-tooltip">
+         <span class="text-emerald-400 font-bold">Online:</span>
+         <span id="display-machine-id" class="font-mono ml-1">LKB-XXX</span>
+       </div>
+     </div>
+   </div>
+
  </aside>
 
  <!-- Main Content Area -->
@@ -2585,9 +2659,9 @@
 
    document.querySelectorAll('.nav-btn').forEach(btn => {
      if (btn.id === `nav-${targetTab}`) {
-       btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-semibold transition-all cursor-pointer bg-emerald-50 text-emerald-700 shadow-xs border border-emerald-100/80";
+       btn.classList.add('is-active');
      } else {
-       btn.className = "nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl text-xs font-medium transition-all cursor-pointer text-slate-500 hover:bg-white/80 hover:text-slate-700 hover:shadow-xs";
+       btn.classList.remove('is-active');
      }
    });
 
