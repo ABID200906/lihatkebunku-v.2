@@ -348,7 +348,39 @@
   transform-origin: top center;
   animation: bellGentleRing 1.4s ease-in-out;
 }
-  
+
+/* =========================================
+   PROFILE & AVATAR UPLOAD ANIMATIONS
+   ========================================= */
+@keyframes profileRingSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.profile-avatar-halo {
+  position: relative;
+}
+
+.profile-avatar-halo::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 2.15rem;
+  background: conic-gradient(from 0deg, #10b981, #0d9488, #34d399, #a7f3d0, #10b981);
+  animation: profileRingSpin 8s linear infinite;
+  z-index: 0;
+  opacity: 0.85;
+}
+
+@keyframes avatarPopSave {
+  0% { transform: scale(0.92); }
+  50% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+
+.animate-avatar-pop {
+  animation: avatarPopSave 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 /* =========================================
    SLIM FLOATING DESKTOP SIDEBAR (LIGHT EMERALD GLASS)
    ========================================= */
@@ -783,10 +815,7 @@
  <i data-lucide="bell" class="h-4 w-4"></i>
  <span id="mob-top-notif-badge" class="hidden absolute -top-0.5 -right-0.5 w-2 h-2 bg-rose-500 rounded-full border border-white"></span>
  </button>
- <button onclick="switchTab('profile')" class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs border border-emerald-200">A</button>
- </div>
- </header>
-
+ <button onclick="switchTab('profile')" id="mob-header-avatar" class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs border border-emerald-200 overflow-hidden shadow-2xs">A</button> </header>
  <main class="flex-grow p-4 md:p-8 max-w-[1360px] mx-auto w-full pb-28 md:pb-10 transition-all">
  
  <!-- ========================================== -->
@@ -1828,59 +1857,220 @@
 </div>
 
  <!-- ========================================== -->
- <!-- VIEW: PROFILE -->
- <!-- ========================================== -->
- <div id="view-profile" class="space-y-6 hidden view-section animate-fade-in-up">
- <div class="glass-card p-6 md:p-8 rounded-[2.25rem] border border-slate-200/80 shadow-sm relative overflow-hidden group">
- <div class="absolute right-0 top-0 w-72 h-full bg-gradient-to-l from-emerald-100/40 to-transparent pointer-events-none"></div>
- <div class="flex flex-col md:flex-row items-center gap-6 text-center md:text-left relative z-10">
- <div class="relative">
- <div class="w-24 h-24 bg-gradient-to-tr from-slate-800 to-slate-700 text-white flex items-center justify-center rounded-[2rem] text-3xl font-bold shadow-xl shadow-slate-900/15 border-4 border-white">
- A
- </div>
- <div class="absolute -bottom-1 -right-1 w-7 h-7 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-white"><i data-lucide="check" class="w-3.5 h-3.5 font-bold"></i></div>
- </div>
- <div>
- <span class="text-[10px] font-semibold uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200/60 px-3 py-1 rounded-lg">Administrator Utama</span>
- <h2 class="text-xl md:text-2xl font-bold text-slate-800 mt-2 tracking-tight" id="profile-email">lihatkebun@gmail.com</h2>
- <p class="text-xs font-normal text-slate-500 mt-1.5 flex items-center justify-center md:justify-start gap-1.5">
- <i data-lucide="shield-check" class="h-4 w-4 text-emerald-600"></i> Terlindungi dan Terverifikasi oleh Firebase Auth
- </p>
- </div>
- </div>
- </div>
+<!-- VIEW: PROFILE (MATURE ACCOUNT & AVATAR UI) -->
+<!-- ========================================== -->
+<div id="view-profile" class="space-y-6 hidden view-section animate-fade-in-up">
 
- <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
- <div class="glass-card p-6 rounded-[1.75rem] border border-slate-200/80 shadow-sm">
- <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider"><i data-lucide="cpu" class="w-4 h-4 text-slate-400"></i> Detail Perangkat IoT</h3>
- <div class="space-y-1">
- <div class="flex justify-between items-center py-3 border-b border-slate-100/80">
- <span class="text-xs font-normal text-slate-500">ID Mesin Controller</span>
- <span class="text-xs font-bold font-mono text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md" id="profile-machine-id">LKB-XXX</span>
- </div>
- <div class="flex justify-between items-center py-3 border-b border-slate-100/80">
- <span class="text-xs font-normal text-slate-500">Status Koneksi</span>
- <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Online (Real-time)</span>
- </div>
- <div class="flex justify-between items-center py-3">
- <span class="text-xs font-normal text-slate-500">Protokol Jaringan</span>
- <span class="text-xs font-semibold text-slate-600">Firebase RTDB (SSL)</span>
- </div>
- </div>
- </div>
+  <!-- 1. Kartu Hero Profil dengan Cover Banner & Upload Foto -->
+  <div class="glass-card rounded-[2.25rem] border border-slate-200/80 shadow-sm overflow-hidden relative">
+    <!-- Cover Banner Gradien Emerald-Teal -->
+    <div class="h-32 md:h-36 bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-500 relative overflow-hidden">
+      <div class="absolute inset-0 bg-grid-pattern opacity-20"></div>
+      <div class="absolute -right-10 -top-10 w-48 h-48 bg-white/15 rounded-full blur-2xl animate-float-slow"></div>
+      <div class="absolute left-1/3 -bottom-12 w-40 h-40 bg-teal-200/20 rounded-full blur-xl animate-float-medium"></div>
 
- <div class="glass-card p-6 rounded-[1.75rem] border border-slate-200/80 shadow-sm flex flex-col justify-center items-center text-center">
- <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-3.5 border border-rose-100/80">
- <i data-lucide="log-out" class="h-6 w-6"></i>
- </div>
- <h3 class="text-sm font-semibold text-slate-800">Akhiri Sesi Aplikasi</h3>
- <p class="text-xs font-normal text-slate-400 mt-1 mb-5 max-w-[210px] leading-relaxed">Putuskan sesi koneksi mesin IoT dari browser ini secara aman.</p>
- <button onclick="logout()" class="w-full bg-white hover:bg-rose-50 text-rose-600 font-semibold text-xs py-3.5 rounded-2xl border border-rose-200/80 transition-all cursor-pointer shadow-xs active:scale-98">
- Keluar Aplikasi
- </button>
- </div>
- </div>
- </div>
+      <!-- Badge Status Akun di Pojok Kanan Banner -->
+      <div class="absolute top-4 right-4 flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/20 backdrop-blur-md border border-white/25 text-white text-[10px] font-bold uppercase tracking-wider">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse"></span>
+          Akun Terverifikasi
+        </span>
+      </div>
+    </div>
+
+    <!-- Bagian Info Utama & Avatar Interaktif -->
+    <div class="px-6 md:px-8 pb-7 pt-0 relative">
+      <div class="flex flex-col md:flex-row items-center md:items-end justify-between gap-5 -mt-12 md:-mt-14">
+
+        <!-- Kiri: Foto Profil + Tombol Upload -->
+        <div class="flex flex-col md:flex-row items-center md:items-end gap-4 md:gap-5 text-center md:text-left">
+          <div class="relative group profile-avatar-halo">
+            <div id="profile-avatar-box" onclick="document.getElementById('profile-photo-input').click()" title="Klik untuk mengganti foto profil" class="relative z-10 w-24 h-24 md:w-28 md:h-28 rounded-[2rem] bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex items-center justify-center text-3xl md:text-4xl font-extrabold shadow-xl border-4 border-white overflow-hidden cursor-pointer transition-transform duration-300 group-hover:scale-[1.03]">
+              <!-- Huruf Inisial (Default) -->
+              <span id="profile-avatar-initial">A</span>
+              <!-- Gambar Foto Profil (Tampil jika diunggah) -->
+              <img id="profile-avatar-img" src="" alt="Foto Profil" class="hidden w-full h-full object-cover">
+
+              <!-- Overlay Hover Kamera -->
+              <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center text-white gap-1">
+                <i data-lucide="camera" class="w-5 h-5"></i>
+                <span class="text-[9px] font-bold uppercase tracking-wider">Ubah Foto</span>
+              </div>
+            </div>
+
+            <!-- Tombol Kamera Mengambang -->
+            <button type="button" onclick="document.getElementById('profile-photo-input').click()" title="Unggah Foto Profil" class="absolute -bottom-1 -right-1 z-20 w-8 h-8 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white border-2 border-white shadow-md flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer">
+              <i data-lucide="camera" class="w-3.5 h-3.5"></i>
+            </button>
+
+            <input type="file" id="profile-photo-input" accept="image/*" onchange="handleProfilePhotoUpload(event)" class="hidden">
+          </div>
+
+          <!-- Nama, Email & Lencana -->
+          <div class="pb-1">
+            <div class="flex flex-wrap items-center justify-center md:justify-start gap-2">
+              <h2 id="profile-display-name" class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">Pengelola LihatKebunku</h2>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 rounded-full">Admin Utama</span>
+            </div>
+            <p id="profile-email" class="text-xs md:text-sm font-medium text-slate-500 mt-1">lihatkebun@gmail.com</p>
+            <div class="flex flex-wrap items-center justify-center md:justify-start gap-3 mt-2 text-[11px] text-slate-400">
+              <span class="inline-flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3.5 h-3.5 text-emerald-500"></i>
+                <span id="profile-location-label">Lokasi belum diatur</span>
+              </span>
+              <span>•</span>
+              <span class="inline-flex items-center gap-1">
+                <i data-lucide="sprout" class="w-3.5 h-3.5 text-teal-500"></i>
+                <span id="profile-farm-focus">Aquaponics Terpadu</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kanan: Tombol Kelola Foto -->
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" onclick="document.getElementById('profile-photo-input').click()" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 text-xs font-semibold transition-all cursor-pointer active:scale-95">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+            <span>Ganti Foto</span>
+          </button>
+          <button type="button" id="btn-remove-profile-photo" onclick="removeProfilePhoto()" class="hidden inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white hover:bg-rose-50 text-rose-600 border border-rose-200/80 text-xs font-semibold transition-all cursor-pointer active:scale-95">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Hapus</span>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Grid Konten Utama 2 Kolom -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- KOLOM KIRI (7 Kolom): Edit Profil & Detail Perangkat IoT -->
+    <div class="lg:col-span-7 space-y-6">
+
+      <!-- Kartu Edit Informasi Profil -->
+      <div class="glass-card p-6 rounded-[1.75rem] border border-slate-200/80 shadow-sm">
+        <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="user-pen" class="w-4 h-4 text-emerald-600"></i> Informasi Pemilik & Kebun
+          </h3>
+          <span class="text-[10px] font-medium text-slate-400">Sinkron otomatis</span>
+        </div>
+
+        <form id="form-update-profile" onsubmit="saveUserProfile(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Nama Tampilan</label>
+              <input type="text" id="input-profile-name" placeholder="Contoh: Abid Alaika" required class="w-full bg-slate-50/90 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all">
+            </div>
+
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Fokus Budidaya</label>
+              <input type="text" id="input-profile-focus" placeholder="Contoh: Kangkung, Pakcoy & Nila" class="w-full bg-slate-50/90 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1.5">Lokasi Kebun / Kota</label>
+            <div class="flex gap-2">
+              <input type="text" id="input-profile-location" placeholder="Contoh: Tangerang, Banten" class="flex-grow bg-slate-50/90 border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-700 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all">
+              <button type="button" onclick="fillLocationFromGps()" title="Isi otomatis dari GPS cuaca" class="px-3 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/80 text-[11px] font-semibold flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer">
+                <i data-lucide="locate-fixed" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">Dari GPS</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button type="submit" id="btn-save-profile" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-semibold shadow-md shadow-emerald-600/20 flex items-center gap-2 cursor-pointer active:scale-95 transition-all">
+              <i data-lucide="save" class="w-3.5 h-3.5"></i>
+              <span>Simpan Perubahan Profil</span>
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Kartu Detail Perangkat IoT -->
+      <div class="glass-card p-6 rounded-[1.75rem] border border-slate-200/80 shadow-sm">
+        <h3 class="text-xs font-bold text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-wider">
+          <i data-lucide="cpu" class="w-4 h-4 text-emerald-600"></i> Detail Perangkat Controller IoT
+        </h3>
+        <div class="space-y-1">
+          <div class="flex justify-between items-center py-3 border-b border-slate-100/80">
+            <span class="text-xs font-normal text-slate-500">ID Mesin Controller</span>
+            <div class="flex items-center gap-1.5">
+              <span class="text-xs font-bold font-mono text-slate-700 bg-slate-100 px-2.5 py-1 rounded-md" id="profile-machine-id">LKB-XXX</span>
+              <button type="button" onclick="copyMachineId()" title="Salin ID Mesin" class="p-1.5 rounded-lg text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+          <div class="flex justify-between items-center py-3 border-b border-slate-100/80">
+            <span class="text-xs font-normal text-slate-500">Status Koneksi</span>
+            <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span> Online (Real-time)
+            </span>
+          </div>
+          <div class="flex justify-between items-center py-3 border-b border-slate-100/80">
+            <span class="text-xs font-normal text-slate-500">Protokol & Enkripsi</span>
+            <span class="text-xs font-semibold text-slate-600">Firebase RTDB (SSL/TLS)</span>
+          </div>
+          <div class="flex justify-between items-center pt-3">
+            <span class="text-xs font-normal text-slate-500">Autentikasi Akun</span>
+            <span class="text-xs font-semibold text-emerald-600 flex items-center gap-1">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Terlindungi Firebase Auth
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- KOLOM KANAN (5 Kolom): Ringkasan Status & Akhiri Sesi -->
+    <div class="lg:col-span-5 space-y-6">
+
+      <!-- Kartu Ringkasan Aktuator & Aktivitas -->
+      <div class="glass-card p-6 rounded-[1.75rem] border border-emerald-200/70 bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/40 shadow-sm space-y-4">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i> Ringkasan Sistem Anda
+        </h3>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-white/90 p-3.5 rounded-2xl border border-slate-200/70">
+            <span class="text-[10px] font-semibold text-slate-400 block">Status Perangkat</span>
+            <span class="text-sm font-extrabold text-emerald-600 mt-0.5 block">Aktif • ESP32</span>
+          </div>
+          <div class="bg-white/90 p-3.5 rounded-2xl border border-slate-200/70">
+            <span class="text-[10px] font-semibold text-slate-400 block">Hak Akses</span>
+            <span class="text-sm font-extrabold text-slate-700 mt-0.5 block">Kontrol Penuh</span>
+          </div>
+        </div>
+
+        <div class="p-3.5 rounded-2xl bg-white/80 border border-slate-200/60 text-[11px] text-slate-500 leading-relaxed flex items-start gap-2.5">
+          <i data-lucide="info" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5"></i>
+          <span>Foto profil dan nama tampilan yang Anda simpan akan otomatis digunakan saat berdiskusi di forum <strong>Komunitas</strong>.</span>
+        </div>
+      </div>
+
+      <!-- Kartu Akhiri Sesi Aplikasi -->
+      <div class="glass-card p-6 rounded-[1.75rem] border border-slate-200/80 shadow-sm flex flex-col justify-center items-center text-center">
+        <div class="w-14 h-14 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center mb-3.5 border border-rose-100/80">
+          <i data-lucide="log-out" class="h-6 w-6"></i>
+        </div>
+        <h3 class="text-sm font-bold text-slate-800">Akhiri Sesi Aplikasi</h3>
+        <p class="text-xs font-normal text-slate-400 mt-1 mb-5 max-w-[230px] leading-relaxed">
+          Putuskan sesi koneksi mesin IoT dari browser ini secara aman.
+        </p>
+        <button type="button" onclick="logout()" class="w-full bg-white hover:bg-rose-50 text-rose-600 font-semibold text-xs py-3.5 rounded-2xl border border-rose-200/80 transition-all cursor-pointer shadow-2xs active:scale-98 flex items-center justify-center gap-2">
+          <i data-lucide="power" class="w-3.5 h-3.5"></i>
+          <span>Keluar Aplikasi</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
 
  </main>
 
@@ -4207,6 +4397,7 @@
  renderNotifications(); renderChat(); switchTab('beranda');
  startFirebaseListeners();
  startCommunityPostsListener();
+ loadUserProfile();
 
  } catch (error) {
  errorText.innerText = "Koneksi server gagal: " + error.message;
@@ -4307,6 +4498,256 @@
    });
  }
 
+  // =====================================
+ // STATE & LOGIC: PROFIL & FOTO PROFIL
+ // =====================================
+ let userProfileData = {
+   name: "Pengelola LihatKebunku",
+   focus: "Aquaponics Terpadu",
+   location: "",
+   photo: ""
+ };
+
+ // Kompres gambar otomatis menggunakan Canvas agar ringan & cepat disimpan
+ function compressProfileImage(file, maxSize = 280) {
+   return new Promise((resolve, reject) => {
+     const reader = new FileReader();
+     reader.onload = (e) => {
+       const img = new Image();
+       img.onload = () => {
+         const canvas = document.createElement('canvas');
+         let w = img.width;
+         let h = img.height;
+         if (w > h) {
+           if (w > maxSize) { h = Math.round((h * maxSize) / w); w = maxSize; }
+         } else {
+           if (h > maxSize) { w = Math.round((w * maxSize) / h); h = maxSize; }
+         }
+         canvas.width = w;
+         canvas.height = h;
+         const ctx = canvas.getContext('2d');
+         ctx.drawImage(img, 0, 0, w, h);
+         resolve(canvas.toDataURL('image/jpeg', 0.82));
+       };
+       img.onerror = reject;
+       img.src = e.target.result;
+     };
+     reader.onerror = reject;
+     reader.readAsDataURL(file);
+   });
+ }
+
+ function applyUserProfileToUI() {
+   const displayName = userProfileData.name || "Pengelola LihatKebunku";
+   const initialChar = displayName.trim().charAt(0).toUpperCase() || "A";
+
+   const nameEl = document.getElementById('profile-display-name');
+   const focusEl = document.getElementById('profile-farm-focus');
+   const locEl = document.getElementById('profile-location-label');
+   const inputName = document.getElementById('input-profile-name');
+   const inputFocus = document.getElementById('input-profile-focus');
+   const inputLoc = document.getElementById('input-profile-location');
+
+   if (nameEl) nameEl.textContent = displayName;
+   if (focusEl) focusEl.textContent = userProfileData.focus || "Aquaponics Terpadu";
+   if (locEl) locEl.textContent = userProfileData.location || "Lokasi belum diatur";
+
+   if (inputName) inputName.value = displayName;
+   if (inputFocus) inputFocus.value = userProfileData.focus || "";
+   if (inputLoc) inputLoc.value = userProfileData.location || "";
+
+   // Update Foto Profil Utama + Inisial
+   const imgEl = document.getElementById('profile-avatar-img');
+   const initEl = document.getElementById('profile-avatar-initial');
+   const removeBtn = document.getElementById('btn-remove-profile-photo');
+   const mobHeaderAvatar = document.getElementById('mob-header-avatar');
+
+   if (initEl) initEl.textContent = initialChar;
+
+   if (userProfileData.photo) {
+     if (imgEl) {
+       imgEl.src = userProfileData.photo;
+       imgEl.classList.remove('hidden');
+     }
+     initEl?.classList.add('hidden');
+     removeBtn?.classList.remove('hidden');
+
+     // Sinkronkan juga ke tombol avatar header mobile
+     if (mobHeaderAvatar) {
+       mobHeaderAvatar.innerHTML = `<img src="${userProfileData.photo}" alt="Avatar" class="w-full h-full object-cover">`;
+     }
+   } else {
+     if (imgEl) {
+       imgEl.src = "";
+       imgEl.classList.add('hidden');
+     }
+     initEl?.classList.remove('hidden');
+     removeBtn?.classList.add('hidden');
+
+     if (mobHeaderAvatar) {
+       mobHeaderAvatar.textContent = initialChar;
+     }
+   }
+
+   // Sinkronkan nama default di form komunitas jika tersedia
+   const postAuthorInput = document.getElementById('post-author');
+   if (postAuthorInput && !postAuthorInput.value) {
+     postAuthorInput.value = displayName;
+   }
+ }
+
+ async function loadUserProfile() {
+   const storageKey = `lkb_profile_${activeMachineCode || 'default'}`;
+   const cached = localStorage.getItem(storageKey);
+   if (cached) {
+     try {
+       userProfileData = { ...userProfileData, ...JSON.parse(cached) };
+       applyUserProfileToUI();
+     } catch {}
+   }
+
+   if (!activeMachineCode) return;
+   try {
+     const snap = await get(ref(db, `machines/${activeMachineCode}/profile`));
+     if (snap.exists()) {
+       userProfileData = { ...userProfileData, ...snap.val() };
+       localStorage.setItem(storageKey, JSON.stringify(userProfileData));
+       applyUserProfileToUI();
+     }
+   } catch (err) {
+     console.error("Gagal memuat profil dari Firebase:", err);
+   }
+ }
+
+ window.handleProfilePhotoUpload = async (event) => {
+   const file = event.target.files[0];
+   if (!file) return;
+
+   if (!file.type.startsWith('image/')) {
+     if (typeof showCommunityToast === 'function') showCommunityToast("Pilih file gambar (JPG/PNG/WebP)!");
+     return;
+   }
+
+   try {
+     const compressedBase64 = await compressProfileImage(file, 300);
+     userProfileData.photo = compressedBase64;
+     applyUserProfileToUI();
+
+     // Efek animasi pop pada avatar
+     const box = document.getElementById('profile-avatar-box');
+     if (box) {
+       box.classList.remove('animate-avatar-pop');
+       void box.offsetWidth;
+       box.classList.add('animate-avatar-pop');
+     }
+
+     const storageKey = `lkb_profile_${activeMachineCode || 'default'}`;
+     localStorage.setItem(storageKey, JSON.stringify(userProfileData));
+
+     if (activeMachineCode) {
+       await update(ref(db, `machines/${activeMachineCode}/profile`), {
+         photo: compressedBase64
+       });
+     }
+
+     if (typeof showCommunityToast === 'function') {
+       showCommunityToast("Foto profil berhasil diperbarui!");
+     }
+   } catch (err) {
+     console.error("Gagal mengunggah foto profil:", err);
+     if (typeof showCommunityToast === 'function') {
+       showCommunityToast("Gagal memproses foto profil.");
+     }
+   }
+ };
+
+ window.removeProfilePhoto = async () => {
+   userProfileData.photo = "";
+   const input = document.getElementById('profile-photo-input');
+   if (input) input.value = "";
+   applyUserProfileToUI();
+
+   const storageKey = `lkb_profile_${activeMachineCode || 'default'}`;
+   localStorage.setItem(storageKey, JSON.stringify(userProfileData));
+
+   if (activeMachineCode) {
+     try {
+       await update(ref(db, `machines/${activeMachineCode}/profile`), { photo: "" });
+     } catch {}
+   }
+
+   if (typeof showCommunityToast === 'function') {
+     showCommunityToast("Foto profil dihapus");
+   }
+ };
+
+ window.saveUserProfile = async (event) => {
+   event.preventDefault();
+   const btn = document.getElementById('btn-save-profile');
+   const nameVal = document.getElementById('input-profile-name')?.value.trim() || "Pengelola LihatKebunku";
+   const focusVal = document.getElementById('input-profile-focus')?.value.trim() || "Aquaponics Terpadu";
+   const locVal = document.getElementById('input-profile-location')?.value.trim() || "";
+
+   userProfileData.name = nameVal;
+   userProfileData.focus = focusVal;
+   userProfileData.location = locVal;
+   applyUserProfileToUI();
+
+   const storageKey = `lkb_profile_${activeMachineCode || 'default'}`;
+   localStorage.setItem(storageKey, JSON.stringify(userProfileData));
+
+   if (btn) {
+     btn.disabled = true;
+     btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>Menyimpan...</span>`;
+     lucide.createIcons();
+   }
+
+   try {
+     if (activeMachineCode) {
+       await update(ref(db, `machines/${activeMachineCode}/profile`), {
+         name: nameVal,
+         focus: focusVal,
+         location: locVal
+       });
+     }
+     if (typeof showCommunityToast === 'function') {
+       showCommunityToast("Perubahan profil berhasil disimpan!");
+     }
+   } catch (err) {
+     console.error("Gagal menyimpan profil:", err);
+     if (typeof showCommunityToast === 'function') {
+       showCommunityToast("Tersimpan di perangkat lokal.");
+     }
+   } finally {
+     if (btn) {
+       btn.disabled = false;
+       btn.innerHTML = `<i data-lucide="save" class="w-3.5 h-3.5"></i><span>Simpan Perubahan Profil</span>`;
+       lucide.createIcons();
+     }
+   }
+ };
+
+ window.fillLocationFromGps = () => {
+   const locInput = document.getElementById('input-profile-location');
+   if (window.LihatKebunkuWeather?.location && locInput) {
+     locInput.value = window.LihatKebunkuWeather.location;
+     if (typeof showCommunityToast === 'function') {
+       showCommunityToast("Lokasi diisi otomatis dari GPS!");
+     }
+   } else if (typeof showCommunityToast === 'function') {
+     showCommunityToast("Sinyal GPS cuaca belum aktif.");
+   }
+ };
+
+ window.copyMachineId = () => {
+   const idText = activeMachineCode || document.getElementById('profile-machine-id')?.innerText || '';
+   if (!idText) return;
+   navigator.clipboard?.writeText(idText);
+   if (typeof showCommunityToast === 'function') {
+     showCommunityToast(`ID Mesin "${idText}" disalin!`);
+   }
+ };
+  
  function updateControlUI() {
    // Helper untuk memperbarui UI masing-masing switch/kartu kontrol
    const updateToggle = (id, isOn, pwr, descOn, descOff, iconOnClass, iconOffClass) => {
