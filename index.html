@@ -302,6 +302,54 @@
 .ai-typing-dot:nth-child(3) { animation-delay: 0.36s; }
 
 /* =========================================
+   NOTIFICATION CENTER ANIMATIONS & CARDS
+   ========================================= */
+@keyframes notifSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.notif-card-item {
+  opacity: 0;
+  animation: notifSlideIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes notifSlideOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(28px) scale(0.96);
+  }
+}
+
+.notif-card-exit {
+  animation: notifSlideOut 0.26s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+@keyframes bellGentleRing {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(14deg); }
+  30% { transform: rotate(-12deg); }
+  45% { transform: rotate(9deg); }
+  60% { transform: rotate(-6deg); }
+  75% { transform: rotate(3deg); }
+}
+
+.animate-bell-ring {
+  transform-origin: top center;
+  animation: bellGentleRing 1.4s ease-in-out;
+}
+  
+/* =========================================
    SLIM FLOATING DESKTOP SIDEBAR (LIGHT EMERALD GLASS)
    ========================================= */
 .slim-sidebar-dock {
@@ -1604,35 +1652,180 @@
   </div>
 </div>
 
- <!-- ========================================== -->
- <!-- VIEW: NOTIFIKASI -->
- <!-- ========================================== -->
- <div id="view-notifikasi" class="space-y-6 hidden view-section animate-fade-in-up">
- <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-slate-200/80 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
- <div>
- <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-3">
- <span class="p-2.5 rounded-2xl bg-slate-100 border border-slate-200/60"><i data-lucide="bell" class="text-slate-600 h-5 w-5"></i></span> 
- Pusat Notifikasi Sistem
- </h1>
- <p class="text-xs md:text-sm text-slate-500 font-normal mt-1">Log aktivitas perangkat dan peringatan anomali lingkungan.</p>
- </div>
- <div class="flex gap-2.5 w-full md:w-auto">
- <button onclick="markAllNotifRead()" class="flex-1 md:flex-none text-xs font-semibold text-slate-600 bg-white hover:bg-slate-50 px-4 py-3 rounded-xl border border-slate-200/80 shadow-xs transition-all cursor-pointer active:scale-98">Tandai Dibaca</button>
- <button onclick="clearNotif()" class="flex-1 md:flex-none text-xs font-semibold text-rose-600 bg-rose-50/80 hover:bg-rose-100 px-4 py-3 rounded-xl border border-rose-100 shadow-xs transition-all cursor-pointer active:scale-98">Bersihkan</button>
- </div>
- </div>
+<!-- ========================================== -->
+<!-- VIEW: NOTIFIKASI (MATURE SYSTEM LOG UI)    -->
+<!-- ========================================== -->
+<div id="view-notifikasi" class="space-y-6 hidden view-section animate-fade-in-up">
 
- <div class="bg-indigo-50/40 p-4 rounded-[1.5rem] border border-indigo-100/60 backdrop-blur-sm">
- <span class="text-[10px] font-semibold text-indigo-500 uppercase tracking-widest mb-3 block flex items-center gap-1.5"><i data-lucide="code" class="w-3.5 h-3.5"></i> Panel Simulasi Uji Coba Cepat</span>
- <div class="flex flex-wrap gap-2.5">
- <button onclick="addSimulatedNotif('warning')" class="text-xs font-semibold bg-white text-amber-600 border border-amber-200/80 hover:bg-amber-50/80 px-4 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"><i data-lucide="alert-triangle" class="h-3.5 w-3.5 inline mr-1.5 align-text-bottom"></i>Simulasi Peringatan pH</button>
- <button onclick="addSimulatedNotif('success')" class="text-xs font-semibold bg-white text-emerald-600 border border-emerald-200/80 hover:bg-emerald-50/80 px-4 py-2.5 rounded-xl transition-all shadow-xs cursor-pointer active:scale-98"><i data-lucide="check-circle" class="h-3.5 w-3.5 inline mr-1.5 align-text-bottom"></i>Simulasi Pemulihan</button>
- </div>
- </div>
+  <!-- 1. Hero Header Pusat Notifikasi -->
+  <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-slate-200/80 shadow-sm relative overflow-hidden">
+    <div class="absolute -right-10 -top-10 w-52 h-52 bg-emerald-400/15 rounded-full blur-3xl pointer-events-none"></div>
 
- <div id="notif-list" class="space-y-3.5 mt-2">
- </div>
- </div>
+    <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-5">
+      <div class="space-y-1.5">
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/70 text-[10px] font-bold uppercase tracking-wider">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            Pemantauan Aktif
+          </span>
+          <span id="notif-unread-pill" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-200/70 text-[10px] font-bold">
+            1 Belum Dibaca
+          </span>
+        </div>
+
+        <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-3 pt-1">
+          <span class="p-2.5 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md shadow-emerald-600/20">
+            <i data-lucide="bell" class="h-5 w-5 animate-bell-ring"></i>
+          </span>
+          Pusat Notifikasi & Log Sistem
+        </h1>
+        <p class="text-xs md:text-sm text-slate-500 max-w-2xl leading-relaxed">
+          Pantau riwayat peringatan anomali air, status pemulihan ekosistem, dan aktivitas kendali aktuator IoT secara real-time.
+        </p>
+      </div>
+
+      <!-- Tombol Aksi Cepat Header -->
+      <div class="flex flex-wrap items-center gap-2.5 shrink-0">
+        <button type="button" onclick="markAllNotifRead()" class="inline-flex items-center justify-center gap-2 text-xs font-semibold text-emerald-700 bg-emerald-50/90 hover:bg-emerald-100 px-4 py-3 rounded-2xl border border-emerald-200/80 shadow-2xs transition-all cursor-pointer active:scale-95">
+          <i data-lucide="check-check" class="w-4 h-4"></i>
+          <span>Tandai Semua Dibaca</span>
+        </button>
+        <button type="button" onclick="clearNotif()" class="inline-flex items-center justify-center gap-2 text-xs font-semibold text-rose-600 bg-white hover:bg-rose-50 px-4 py-3 rounded-2xl border border-rose-200/80 shadow-2xs transition-all cursor-pointer active:scale-95">
+          <i data-lucide="trash-2" class="w-4 h-4"></i>
+          <span>Bersihkan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Layout 2 Kolom (Feed Log Kiri + Simulasi & Preferensi Kanan) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+    <!-- KOLOM KIRI (8 Kolom): Filter Kategori, Pencarian & Daftar Notifikasi -->
+    <div class="lg:col-span-8 space-y-4">
+
+      <!-- Bar Filter & Pencarian -->
+      <div class="glass-card p-3.5 rounded-[1.75rem] border border-slate-200/80 space-y-3">
+        <!-- Tab Kategori dengan Counter -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+          <button type="button" onclick="setNotifFilter('all')" data-nfilter="all" class="notif-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0 bg-emerald-600 text-white shadow-xs cursor-pointer">
+            Semua <span id="ncount-all" class="ml-1 px-1.5 py-0.2 rounded-md bg-white/20 text-[10px]">0</span>
+          </button>
+          <button type="button" onclick="setNotifFilter('unread')" data-nfilter="unread" class="notif-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-slate-50 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/70 cursor-pointer">
+            Belum Dibaca <span id="ncount-unread" class="ml-1 px-1.5 py-0.2 rounded-md bg-rose-100 text-rose-600 text-[10px] font-bold">0</span>
+          </button>
+          <button type="button" onclick="setNotifFilter('warning')" data-nfilter="warning" class="notif-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-slate-50 text-slate-600 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 cursor-pointer">
+            ⚠️ Peringatan <span id="ncount-warning" class="ml-1 text-[10px] opacity-75">0</span>
+          </button>
+          <button type="button" onclick="setNotifFilter('success')" data-nfilter="success" class="notif-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-slate-50 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/70 cursor-pointer">
+            ✅ Pemulihan <span id="ncount-success" class="ml-1 text-[10px] opacity-75">0</span>
+          </button>
+          <button type="button" onclick="setNotifFilter('info')" data-nfilter="info" class="notif-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-slate-50 text-slate-600 hover:bg-sky-50 hover:text-sky-700 border border-slate-200/70 cursor-pointer">
+            ℹ️ Sistem & IoT <span id="ncount-info" class="ml-1 text-[10px] opacity-75">0</span>
+          </button>
+        </div>
+
+        <!-- Input Cari Log -->
+        <div class="relative">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="notif-search-input" oninput="handleNotifSearch(this.value)" placeholder="Cari riwayat peringatan pH, suhu, pompa, atau status koneksi..." class="w-full bg-slate-50/90 border border-slate-200/70 rounded-xl pl-10 pr-4 py-2 text-xs font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 focus:bg-white transition-all">
+        </div>
+      </div>
+
+      <!-- Daftar Kartu Notifikasi -->
+      <div id="notif-list" class="space-y-3">
+        <!-- Dirender otomatis oleh renderNotifications() -->
+      </div>
+    </div>
+
+    <!-- KOLOM KANAN (4 Kolom): Ringkasan, Simulasi Uji Coba & Pengaturan Peringatan -->
+    <aside class="lg:col-span-4 space-y-5 lg:sticky lg:top-6">
+
+      <!-- Widget 1: Ringkasan Aktivitas Log -->
+      <div class="glass-card p-5 rounded-[1.75rem] border border-slate-200/80 shadow-xs space-y-3.5">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i> Ringkasan Log Hari Ini
+        </h3>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-rose-50/70 border border-rose-100 rounded-2xl p-2.5">
+            <span id="nstat-unread" class="block text-lg font-extrabold font-mono text-rose-600">0</span>
+            <span class="text-[10px] font-semibold text-slate-500">Baru</span>
+          </div>
+          <div class="bg-amber-50/70 border border-amber-100 rounded-2xl p-2.5">
+            <span id="nstat-warning" class="block text-lg font-extrabold font-mono text-amber-600">0</span>
+            <span class="text-[10px] font-semibold text-slate-500">Anomali</span>
+          </div>
+          <div class="bg-emerald-50/70 border border-emerald-100 rounded-2xl p-2.5">
+            <span id="nstat-total" class="block text-lg font-extrabold font-mono text-emerald-600">0</span>
+            <span class="text-[10px] font-semibold text-slate-500">Total</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Widget 2: Panel Simulasi Uji Coba Cepat -->
+      <div class="glass-card p-5 rounded-[1.75rem] border border-indigo-200/70 bg-gradient-to-br from-white via-indigo-50/25 to-emerald-50/30 shadow-xs space-y-3">
+        <div>
+          <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest flex items-center gap-1.5">
+            <i data-lucide="flask-conical" class="w-3.5 h-3.5"></i> Simulasi Uji Coba Cepat
+          </span>
+          <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+            Uji respons peringatan real-time dan sinkronisasi data sensor ke Firebase:
+          </p>
+        </div>
+
+        <div class="space-y-2">
+          <button type="button" onclick="addSimulatedNotif('warning')" class="w-full text-left text-xs font-semibold bg-white text-amber-700 border border-amber-200/90 hover:bg-amber-50 px-3.5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-98 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+              <i data-lucide="alert-triangle" class="h-4 w-4 text-amber-500"></i>
+              <span>Simulasi Peringatan pH (5.8)</span>
+            </span>
+            <i data-lucide="plus" class="w-3.5 h-3.5 text-amber-400 group-hover:rotate-90 transition-transform"></i>
+          </button>
+
+          <button type="button" onclick="addSimulatedNotif('success')" class="w-full text-left text-xs font-semibold bg-white text-emerald-700 border border-emerald-200/90 hover:bg-emerald-50 px-3.5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-98 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+              <i data-lucide="check-circle-2" class="h-4 w-4 text-emerald-500"></i>
+              <span>Simulasi Pemulihan pH (7.2)</span>
+            </span>
+            <i data-lucide="plus" class="w-3.5 h-3.5 text-emerald-400 group-hover:rotate-90 transition-transform"></i>
+          </button>
+
+          <button type="button" onclick="addSimulatedNotif('info')" class="w-full text-left text-xs font-semibold bg-white text-sky-700 border border-sky-200/90 hover:bg-sky-50 px-3.5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer active:scale-98 flex items-center justify-between group">
+            <span class="flex items-center gap-2">
+              <i data-lucide="cpu" class="h-4 w-4 text-sky-500"></i>
+              <span>Simulasi Siklus Pakan Otomatis</span>
+            </span>
+            <i data-lucide="plus" class="w-3.5 h-3.5 text-sky-400 group-hover:rotate-90 transition-transform"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Widget 3: Preferensi Peringatan Otomatis -->
+      <div class="glass-card p-5 rounded-[1.75rem] border border-slate-200/80 shadow-xs space-y-3.5">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-teal-600"></i> Aturan Peringatan
+        </h3>
+
+        <label class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 cursor-pointer">
+          <div>
+            <span class="text-xs font-semibold text-slate-700 block">Deteksi Anomali Sensor</span>
+            <span class="text-[10px] text-slate-400">Otomatis catat jika pH/suhu di luar batas</span>
+          </div>
+          <input type="checkbox" id="pref-auto-anomaly" checked onchange="saveNotifPrefs()" class="accent-emerald-600 w-4 h-4 rounded cursor-pointer">
+        </label>
+
+        <label class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/60 cursor-pointer">
+          <div>
+            <span class="text-xs font-semibold text-slate-700 block">Nada Peringatan Halus</span>
+            <span class="text-[10px] text-slate-400">Bunyi lembut saat ada peringatan baru</span>
+          </div>
+          <input type="checkbox" id="pref-sound-alert" checked onchange="saveNotifPrefs()" class="accent-emerald-600 w-4 h-4 rounded cursor-pointer">
+        </label>
+      </div>
+
+    </aside>
+  </div>
+</div>
 
  <!-- ========================================== -->
  <!-- VIEW: PROFILE -->
@@ -1894,89 +2087,331 @@
     setInterval(initGpsWeather, 15 * 60 * 1000);
   });
   
+// =====================================
+ // STATE: NOTIFIKASI (MATURE SYSTEM LOG)
  // =====================================
- // STATE: NOTIFIKASI
- // =====================================
+ let activeNotifFilter = 'all'; // 'all' | 'unread' | 'warning' | 'success' | 'info'
+ let notifSearchQuery = '';
+ let lastAutoAlertAt = 0;
+
  let notifications = [
- { id: Date.now(), title: "Kondisi Kebun Optimal", message: "Sistem mendeteksi semua metrik berjalan normal sesuai standar ekosistem.", type: "success", read: false },
- { id: Date.now()-1000, title: "Sensor Terhubung", message: "Perekaman data lingkungan real-time aktif via Firebase RTDB.", type: "info", read: true }
+   {
+     id: Date.now(),
+     title: "Kondisi Kebun Optimal",
+     message: "Sistem mendeteksi seluruh parameter kualitas air dan suhu kolam berada pada rentang ideal ekosistem.",
+     type: "success",
+     categoryLabel: "Ekosistem Optimal",
+     metricTag: "pH 7.0 • 27°C",
+     timestamp: Date.now() - 120000,
+     read: false
+   },
+   {
+     id: Date.now() - 1000,
+     title: "Sensor IoT Terhubung",
+     message: "Sinkronisasi data lingkungan real-time aktif melalui jalur aman Firebase Realtime Database.",
+     type: "info",
+     categoryLabel: "Koneksi Perangkat",
+     metricTag: "Firebase RTDB",
+     timestamp: Date.now() - 900000,
+     read: true
+   }
  ];
 
+ function formatNotifTime(ts) {
+   const diffSec = Math.floor((Date.now() - ts) / 1000);
+   if (diffSec < 60) return 'Baru saja';
+   const diffMin = Math.floor(diffSec / 60);
+   if (diffMin < 60) return `${diffMin} mnt lalu`;
+   const diffHour = Math.floor(diffMin / 60);
+   if (diffHour < 24) return `${diffHour} jam lalu`;
+   return new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+ }
+
+ function playGentleAlertTone(type = 'info') {
+   const soundEnabled = document.getElementById('pref-sound-alert')?.checked ?? true;
+   if (!soundEnabled) return;
+   try {
+     const AudioCtx = window.AudioContext || window.webkitAudioContext;
+     if (!AudioCtx) return;
+     const ctx = new AudioCtx();
+     const osc = ctx.createOscillator();
+     const gain = ctx.createGain();
+     osc.type = 'sine';
+     osc.frequency.setValueAtTime(type === 'warning' ? 520 : 680, ctx.currentTime);
+     osc.frequency.exponentialRampToValueAtTime(type === 'warning' ? 420 : 880, ctx.currentTime + 0.16);
+     gain.gain.setValueAtTime(0.05, ctx.currentTime);
+     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+     osc.connect(gain);
+     gain.connect(ctx.destination);
+     osc.start();
+     osc.stop(ctx.currentTime + 0.19);
+   } catch {
+     // Abaikan jika browser memblokir autoplay audio
+   }
+ }
+
+ window.saveNotifPrefs = () => {
+   const prefs = {
+     autoAnomaly: document.getElementById('pref-auto-anomaly')?.checked ?? true,
+     soundAlert: document.getElementById('pref-sound-alert')?.checked ?? true
+   };
+   localStorage.setItem('lkb_notif_prefs', JSON.stringify(prefs));
+ };
+
+ window.setNotifFilter = (filterType) => {
+   activeNotifFilter = filterType;
+   document.querySelectorAll('.notif-filter-btn').forEach(btn => {
+     const isMatch = btn.dataset.nfilter === filterType;
+     if (isMatch) {
+       btn.className = "notif-filter-btn px-3.5 py-2 rounded-xl text-xs font-bold transition-all shrink-0 bg-emerald-600 text-white shadow-xs cursor-pointer";
+     } else {
+       btn.className = "notif-filter-btn px-3.5 py-2 rounded-xl text-xs font-semibold transition-all shrink-0 bg-slate-50 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/70 cursor-pointer";
+     }
+   });
+   renderNotifications();
+ };
+
+ window.handleNotifSearch = (val) => {
+   notifSearchQuery = val.trim().toLowerCase();
+   renderNotifications();
+ };
+
+ window.consultNotifWithAi = (notifId) => {
+   const item = notifications.find(n => n.id === notifId);
+   if (!item) return;
+   markSingleNotifRead(notifId);
+   switchTab('ai');
+   if (typeof sendQuickAiPrompt === 'function') {
+     setTimeout(() => {
+       sendQuickAiPrompt(`Sistem mencatat notifikasi "${item.title}": ${item.message}. Apa langkah penanganan terbaik saat ini?`);
+     }, 180);
+   }
+ };
+
+ window.deleteSingleNotif = (id, event) => {
+   if (event) event.stopPropagation();
+   const cardEl = document.getElementById(`notif-card-${id}`);
+   if (cardEl) {
+     cardEl.classList.add('notif-card-exit');
+     setTimeout(() => {
+       notifications = notifications.filter(n => n.id !== id);
+       renderNotifications();
+     }, 240);
+   } else {
+     notifications = notifications.filter(n => n.id !== id);
+     renderNotifications();
+   }
+ };
+
  function renderNotifications() {
- const listEl = document.getElementById('notif-list');
- listEl.innerHTML = '';
- let unreadCount = 0;
+   const listEl = document.getElementById('notif-list');
+   if (!listEl) return;
 
- if(notifications.length === 0) {
- listEl.innerHTML = `<div class="text-center p-8 bg-white/60 border border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center">
- <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-xs mb-3 border border-slate-100"><i data-lucide="check-check"></i></div>
- <p class="text-xs font-semibold text-slate-400">Semua tenang! Tidak ada peringatan baru.</p>
- </div>`;
+   const unreadCount = notifications.filter(n => !n.read).length;
+   const warningCount = notifications.filter(n => n.type === 'warning').length;
+   const successCount = notifications.filter(n => n.type === 'success').length;
+   const infoCount = notifications.filter(n => n.type === 'info').length;
+
+   // Update counter pada tab & panel ringkasan kanan
+   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+   setTxt('ncount-all', notifications.length);
+   setTxt('ncount-unread', unreadCount);
+   setTxt('ncount-warning', warningCount);
+   setTxt('ncount-success', successCount);
+   setTxt('ncount-info', infoCount);
+   setTxt('nstat-unread', unreadCount);
+   setTxt('nstat-warning', warningCount);
+   setTxt('nstat-total', notifications.length);
+
+   const unreadPill = document.getElementById('notif-unread-pill');
+   if (unreadPill) {
+     if (unreadCount > 0) {
+       unreadPill.textContent = `${unreadCount} Belum Dibaca`;
+       unreadPill.className = "inline-flex items-center gap-1 px-3 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-200/70 text-[10px] font-bold";
+     } else {
+       unreadPill.textContent = "Semua Terbaca";
+       unreadPill.className = "inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200/70 text-[10px] font-semibold";
+     }
+   }
+
+   // Filter daftar yang tampil
+   let filtered = [...notifications];
+   if (activeNotifFilter === 'unread') filtered = filtered.filter(n => !n.read);
+   else if (activeNotifFilter !== 'all') filtered = filtered.filter(n => n.type === activeNotifFilter);
+
+   if (notifSearchQuery) {
+     filtered = filtered.filter(n =>
+       (n.title || '').toLowerCase().includes(notifSearchQuery) ||
+       (n.message || '').toLowerCase().includes(notifSearchQuery) ||
+       (n.categoryLabel || '').toLowerCase().includes(notifSearchQuery)
+     );
+   }
+
+   listEl.innerHTML = '';
+
+   if (filtered.length === 0) {
+     listEl.innerHTML = `
+       <div class="text-center p-10 glass-card border border-dashed border-slate-200 rounded-[2rem] flex flex-col items-center justify-center animate-fade-in-up">
+         <div class="w-14 h-14 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-500 shadow-2xs mb-3 border border-emerald-100">
+           <i data-lucide="check-check" class="w-6 h-6"></i>
+         </div>
+         <p class="text-xs font-bold text-slate-600">Semua Tenang & Terkendali</p>
+         <p class="text-[11px] text-slate-400 mt-1 max-w-xs">Tidak ada log notifikasi untuk filter atau pencarian yang dipilih saat ini.</p>
+       </div>`;
+   } else {
+     filtered.forEach((n, index) => {
+       let iconClass, cardBg, stripeColor, badgeStyle, iconName, catText;
+
+       if (n.type === 'warning') {
+         iconClass = "text-amber-600 bg-amber-100/80 border border-amber-200/80";
+         cardBg = n.read ? "bg-white/85 border-slate-200/80" : "bg-gradient-to-r from-amber-50/80 via-white to-white border-amber-200 shadow-sm";
+         stripeColor = "bg-amber-400";
+         badgeStyle = "bg-amber-50 text-amber-700 border-amber-200";
+         iconName = "alert-triangle";
+         catText = n.categoryLabel || "Peringatan Anomali";
+       } else if (n.type === 'success') {
+         iconClass = "text-emerald-600 bg-emerald-100/80 border border-emerald-200/80";
+         cardBg = n.read ? "bg-white/85 border-slate-200/80" : "bg-gradient-to-r from-emerald-50/80 via-white to-white border-emerald-200 shadow-sm";
+         stripeColor = "bg-emerald-500";
+         badgeStyle = "bg-emerald-50 text-emerald-700 border-emerald-200";
+         iconName = "check-circle-2";
+         catText = n.categoryLabel || "Pemulihan Optimal";
+       } else {
+         iconClass = "text-sky-600 bg-sky-100/80 border border-sky-200/80";
+         cardBg = n.read ? "bg-white/85 border-slate-200/80" : "bg-gradient-to-r from-sky-50/80 via-white to-white border-sky-200 shadow-sm";
+         stripeColor = "bg-sky-500";
+         badgeStyle = "bg-sky-50 text-sky-700 border-sky-200";
+         iconName = "info";
+         catText = n.categoryLabel || "Sistem IoT";
+       }
+
+       const timeStr = formatNotifTime(n.timestamp || Date.now());
+       const askAiBtn = n.type === 'warning'
+         ? `<button type="button" onclick="event.stopPropagation(); consultNotifWithAi(${n.id})" class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 px-2.5 py-1 rounded-lg border border-emerald-200/80 transition-colors cursor-pointer">
+              <i data-lucide="sparkles" class="w-3 h-3 text-amber-500"></i> Tanya Solusi AI
+            </button>`
+         : '';
+
+       const notifHtml = `
+         <div id="notif-card-${n.id}" onclick="markSingleNotifRead(${n.id})" style="animation-delay: ${Math.min(index * 55, 300)}ms" class="notif-card-item cursor-pointer ${cardBg} p-4 md:p-5 rounded-[1.5rem] border flex gap-3.5 items-start transition-all duration-300 hover:shadow-md hover:border-emerald-300/70 relative overflow-hidden group">
+           ${!n.read ? `<div class="absolute left-0 top-0 bottom-0 w-1.5 ${stripeColor}"></div>` : ''}
+
+           <div class="p-2.5 rounded-2xl shrink-0 ${iconClass} mt-0.5">
+             <i data-lucide="${iconName}" class="h-4 w-4"></i>
+           </div>
+
+           <div class="flex-grow min-w-0">
+             <div class="flex flex-wrap items-center justify-between gap-2">
+               <div class="flex items-center gap-2 min-w-0">
+                 <h3 class="text-xs md:text-[13px] font-bold text-slate-800 truncate">${n.title}</h3>
+                 ${!n.read ? `<span class="w-2 h-2 rounded-full ${stripeColor} shrink-0 animate-pulse"></span>` : ''}
+               </div>
+
+               <div class="flex items-center gap-1.5 shrink-0">
+                 <span class="text-[10px] font-medium text-slate-400">${timeStr}</span>
+                 <button type="button" onclick="deleteSingleNotif(${n.id}, event)" title="Hapus log ini" class="opacity-70 group-hover:opacity-100 p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-rose-50 transition-all cursor-pointer">
+                   <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                 </button>
+               </div>
+             </div>
+
+             <p class="text-xs font-normal text-slate-600 mt-1 leading-relaxed">${n.message}</p>
+
+             <div class="flex flex-wrap items-center justify-between gap-2 mt-3 pt-2.5 border-t border-slate-100/90">
+               <div class="flex items-center gap-1.5">
+                 <span class="text-[10px] font-semibold px-2.5 py-0.5 rounded-full border ${badgeStyle}">${catText}</span>
+                 ${n.metricTag ? `<span class="text-[10px] font-mono font-semibold text-slate-500 bg-slate-100/90 px-2 py-0.5 rounded-md">${n.metricTag}</span>` : ''}
+               </div>
+               <div class="flex items-center gap-2">
+                 ${askAiBtn}
+                 ${!n.read ? `<span class="text-[10px] font-semibold text-slate-400 group-hover:text-emerald-600 transition-colors">Klik untuk tandai dibaca</span>` : ''}
+               </div>
+             </div>
+           </div>
+         </div>
+       `;
+       listEl.innerHTML += notifHtml;
+     });
+   }
+
+   // Update seluruh badge navigasi (Desktop Slim Dock & Mobile)
+   const deskBadge = document.getElementById('desk-notif-badge');
+   const mobTopBadge = document.getElementById('mob-top-notif-badge');
+   const mobBotBadge = document.getElementById('mob-bot-notif-badge');
+
+   if (unreadCount > 0) {
+     if (deskBadge) {
+       deskBadge.innerText = unreadCount;
+       deskBadge.classList.remove('hidden');
+       deskBadge.classList.add('flex');
+     }
+     mobTopBadge?.classList.remove('hidden');
+     mobBotBadge?.classList.remove('hidden');
+   } else {
+     if (deskBadge) {
+       deskBadge.classList.add('hidden');
+       deskBadge.classList.remove('flex');
+     }
+     mobTopBadge?.classList.add('hidden');
+     mobBotBadge?.classList.add('hidden');
+   }
+
+   lucide.createIcons();
  }
 
- notifications.forEach(n => {
- if(!n.read) unreadCount++;
- let iconClass, bgClass, textClass, iconName;
- 
- if(n.type === 'warning') {
- iconClass = "text-amber-500 bg-amber-50 border border-amber-100"; bgClass = n.read ? "bg-white/80 border-slate-200/80" : "bg-gradient-to-r from-amber-50/70 to-white border-amber-200 shadow-xs"; textClass="text-amber-900"; iconName = "alert-triangle";
- } else if(n.type === 'success') {
- iconClass = "text-emerald-500 bg-emerald-50 border border-emerald-100"; bgClass = n.read ? "bg-white/80 border-slate-200/80" : "bg-gradient-to-r from-emerald-50/70 to-white border-emerald-200 shadow-xs"; textClass="text-slate-800"; iconName = "check-circle";
- } else {
- iconClass = "text-blue-500 bg-blue-50 border border-blue-100"; bgClass = n.read ? "bg-white/80 border-slate-200/80" : "bg-gradient-to-r from-blue-50/70 to-white border-blue-200 shadow-xs"; textClass="text-slate-800"; iconName = "info";
- }
+ window.markAllNotifRead = () => {
+   notifications = notifications.map(n => ({ ...n, read: true }));
+   renderNotifications();
+   if (typeof showCommunityToast === 'function') showCommunityToast("Semua notifikasi ditandai dibaca");
+ };
 
- const notifHtml = `
- <div onclick="markSingleNotifRead(${n.id})" class="cursor-pointer ${bgClass} p-4.5 rounded-[1.5rem] border flex gap-3.5 items-start transition-all duration-300 hover:shadow-sm relative overflow-hidden group">
- ${!n.read ? `<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-${n.type === 'warning' ? 'amber' : 'emerald'}-400"></div>` : ''}
- <div class="p-2.5 rounded-2xl shrink-0 ${iconClass}">
- <i data-lucide="${iconName}" class="h-4 w-4"></i>
- </div>
- <div class="flex-grow pt-0.5">
- <div class="flex justify-between items-start">
- <h3 class="text-xs font-semibold ${textClass}">${n.title}</h3>
- ${!n.read ? `<span class="w-2 h-2 rounded-full bg-${n.type === 'warning' ? 'amber' : 'emerald'}-400 mt-0.5 shrink-0"></span>` : ''}
- </div>
- <p class="text-xs font-normal text-slate-500 mt-1 leading-relaxed">${n.message}</p>
- </div>
- </div>
- `;
- listEl.innerHTML += notifHtml;
- });
+ window.markSingleNotifRead = (id) => {
+   notifications = notifications.map(n => n.id === id ? { ...n, read: true } : n);
+   renderNotifications();
+ };
 
- const deskBadge = document.getElementById('desk-notif-badge');
- const mobTopBadge = document.getElementById('mob-top-notif-badge');
- const mobBotBadge = document.getElementById('mob-bot-notif-badge');
+ window.clearNotif = () => {
+   notifications = [];
+   renderNotifications();
+   if (typeof showCommunityToast === 'function') showCommunityToast("Riwayat notifikasi dibersihkan");
+ };
 
- if(unreadCount > 0) {
- deskBadge.innerText = unreadCount;
- deskBadge.classList.remove('hidden'); deskBadge.classList.add('flex');
- mobTopBadge.classList.remove('hidden');
- mobBotBadge.classList.remove('hidden');
- } else {
- deskBadge.classList.add('hidden'); deskBadge.classList.remove('flex');
- mobTopBadge.classList.add('hidden');
- mobBotBadge.classList.add('hidden');
- }
- lucide.createIcons();
- }
-
- window.markAllNotifRead = () => { notifications = notifications.map(n => ({...n, read: true})); renderNotifications(); };
- window.markSingleNotifRead = (id) => { notifications = notifications.map(n => n.id === id ? {...n, read: true} : n); renderNotifications(); };
- window.clearNotif = () => { notifications = []; renderNotifications(); };
  window.addSimulatedNotif = (type) => {
- let title, message;
- if (type === 'warning') {
- title = "Anomali: pH Air Terlalu Asam";
- message = "Sensor mendeteksi pH turun ke level 5.8. Tambahkan larutan buffer basa secukupnya.";
- if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 5.8 });
- } else {
- title = "Kondisi pH Kembali Stabil";
- message = "Nilai pH kembali pada rentang ideal 7.2. Filter biologis berjalan normal.";
- if(activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 7.2 });
- }
- notifications.unshift({ id: Date.now(), title, message, type, read: false });
- renderNotifications();
+   let title, message, categoryLabel, metricTag;
+
+   if (type === 'warning') {
+     title = "Anomali: pH Air Terlalu Asam";
+     message = "Sensor mendeteksi kadar pH turun ke level 5.8. Segera tambahkan larutan buffer basa atau periksa biofilter kolam.";
+     categoryLabel = "Peringatan Anomali";
+     metricTag = "pH 5.8 (Drop)";
+     if (activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 5.8 });
+   } else if (type === 'success') {
+     title = "Kondisi pH Kembali Stabil";
+     message = "Nilai pH air telah kembali pada rentang ideal 7.2. Sirkulasi dan filter biologis beroperasi optimal.";
+     categoryLabel = "Pemulihan Optimal";
+     metricTag = "pH 7.2 (Ideal)";
+     if (activeMachineCode) update(ref(db, `machines/${activeMachineCode}/data`), { ph: 7.2 });
+   } else {
+     title = "Siklus Pakan Otomatis Selesai";
+     message = "Aktuator servo feeder telah mendistribusikan pakan terjadwal dan kembali ke posisi standby.";
+     categoryLabel = "Aktuator IoT";
+     metricTag = "Servo Feeder";
+   }
+
+   notifications.unshift({
+     id: Date.now(),
+     title,
+     message,
+     type,
+     categoryLabel,
+     metricTag,
+     timestamp: Date.now(),
+     read: false
+   });
+
+   playGentleAlertTone(type);
+   renderNotifications();
+   if (typeof showCommunityToast === 'function') showCommunityToast(`Log baru: ${title}`);
  };
   
   document.addEventListener('DOMContentLoaded', () => {
