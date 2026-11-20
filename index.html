@@ -248,6 +248,59 @@
   padding: 2px;
 }
 
+ /* =========================================
+   AGRONOMIST AI ASSISTANT UI & ANIMATIONS
+   ========================================= */
+@keyframes aiMsgPopIn {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ai-msg-bubble {
+  animation: aiMsgPopIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes aiOrbPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+  }
+}
+
+.ai-avatar-glow {
+  animation: aiOrbPulse 2.8s infinite ease-in-out;
+}
+
+@keyframes typingDotBounce {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translateY(-5px);
+    opacity: 1;
+  }
+}
+
+.ai-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background-color: #10b981;
+  display: inline-block;
+  animation: typingDotBounce 1.2s infinite ease-in-out;
+}
+.ai-typing-dot:nth-child(2) { animation-delay: 0.18s; }
+.ai-typing-dot:nth-child(3) { animation-delay: 0.36s; }
+
 /* =========================================
    SLIM FLOATING DESKTOP SIDEBAR (LIGHT EMERALD GLASS)
    ========================================= */
@@ -1374,34 +1427,182 @@
     <span id="community-toast-text">Notifikasi</span>
   </div>
 </div>
- <!-- ========================================== -->
- <!-- VIEW: AI ASSISTANT -->
- <!-- ========================================== -->
- <div id="view-ai" class="hidden view-section flex flex-col h-[calc(100vh-7.5rem)] md:h-[calc(100vh-5.5rem)] animate-fade-in-up">
- <div class="glass-card bg-slate-900 text-white p-6 rounded-[2rem] shadow-lg shadow-slate-900/10 mb-4 shrink-0 flex items-center justify-between relative overflow-hidden border-slate-800">
- <div class="absolute -right-8 -top-8 w-32 h-32 bg-indigo-500/20 rounded-full filter blur-2xl"></div>
- <div class="relative z-10">
- <h1 class="text-lg md:text-xl font-bold flex items-center gap-2.5">
- <span class="p-2 rounded-xl bg-white/10 backdrop-blur-md"><i data-lucide="sparkles" class="text-amber-400 h-4 w-4"></i></span>
- Agronomist AI Assistant
- </h1>
- <p class="text-xs text-slate-400 font-normal mt-1">Konsultasikan kesehatan tanaman dan nutrisi kolam secara instan.</p>
- </div>
- <div class="hidden md:flex bg-white/10 backdrop-blur border border-white/10 px-3.5 py-1.5 rounded-xl text-xs font-medium text-emerald-300 items-center gap-2 relative z-10">
- <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> Sensor Terhubung
- </div>
- </div>
- 
- <div id="chat-container" class="flex-grow glass-card border border-slate-200/80 rounded-[2rem] p-4 md:p-6 overflow-y-auto space-y-4 mb-4 shadow-inner flex flex-col scroll-smooth">
- </div>
+<!-- ========================================== -->
+<!-- VIEW: AI ASSISTANT (AGRONOMIST PRO UI)     -->
+<!-- ========================================== -->
+<div id="view-ai" class="hidden view-section animate-fade-in-up space-y-5">
 
- <form id="ai-form" class="glass-card p-2 rounded-[2rem] border border-slate-200/80 shadow-xs flex items-center shrink-0 focus-within:border-indigo-300 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
- <input type="text" id="ai-input" class="flex-grow px-4 py-3 outline-none text-xs md:text-sm font-normal text-slate-700 placeholder:text-slate-400 bg-transparent" placeholder="Tanyakan kondisi tanaman, pH ideal, atau saran nutrisi...">
- <button type="submit" class="p-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl transition-all cursor-pointer shadow-md shadow-indigo-600/20 active:scale-95 group">
- <i data-lucide="send" class="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
- </button>
- </form>
- </div>
+  <!-- Grid Utama 2 Kolom (Arena Chat Kiri + Panel Konteks Sensor Kanan) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+
+    <!-- KOLOM KIRI (8 Kolom): Ruang Konsultasi AI -->
+    <div class="lg:col-span-8 flex flex-col h-[calc(100vh-8.5rem)] md:h-[calc(100vh-4.5rem)] glass-card rounded-[2rem] border border-slate-200/80 shadow-sm overflow-hidden">
+
+      <!-- Header Bar AI -->
+      <div class="px-5 py-4 bg-gradient-to-r from-white via-emerald-50/40 to-teal-50/50 border-b border-slate-200/70 flex items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-emerald-600/20 ai-avatar-glow">
+            <i data-lucide="bot" class="w-5 h-5"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm md:text-base font-bold text-slate-800 tracking-tight truncate">Agronomist AI Assistant</h1>
+              <span class="bg-gradient-to-r from-amber-400 to-orange-400 text-white text-[9px] px-2 py-0.5 rounded-full font-extrabold tracking-wider shadow-2xs shrink-0">PRO</span>
+            </div>
+            <p class="text-[11px] text-slate-500 flex items-center gap-1.5 mt-0.5 truncate">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Terhubung ke Telemetri Kolam & Cuaca GPS</span>
+            </p>
+          </div>
+        </div>
+
+        <!-- Tombol Aksi Header -->
+        <div class="flex items-center gap-2 shrink-0">
+          <button type="button" onclick="runFullSystemAudit()" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-xs transition-all cursor-pointer active:scale-95">
+            <i data-lucide="stethoscope" class="w-3.5 h-3.5"></i>
+            <span>Diagnosa Otomatis</span>
+          </button>
+          <button type="button" onclick="resetAiChat()" title="Mulai Percakapan Baru" class="p-2 rounded-xl bg-white hover:bg-rose-50 text-slate-500 hover:text-rose-600 border border-slate-200/80 transition-colors cursor-pointer">
+            <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Area Pesan Chat -->
+      <div id="chat-container" class="flex-grow p-4 md:p-6 overflow-y-auto space-y-4 bg-slate-50/40 flex flex-col scroll-smooth">
+        <!-- Pesan dirender otomatis oleh renderChat() -->
+      </div>
+
+      <!-- Bagian Bawah: Quick Prompts + Preview Foto + Input Composer -->
+      <div class="p-3 md:p-4 bg-white/90 border-t border-slate-200/70 space-y-2.5 shrink-0">
+
+        <!-- Chip Pertanyaan Cepat (Horizontal Scroll) -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 no-scrollbar">
+          <button type="button" onclick="sendQuickAiPrompt('Lakukan diagnosa menyeluruh berdasarkan data sensor kolam saya saat ini.')" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-50/90 hover:bg-emerald-100 text-emerald-700 border border-emerald-200/70 text-[11px] font-semibold transition-all cursor-pointer active:scale-95">
+            🩺 Diagnosa Sensor Live
+          </button>
+          <button type="button" onclick="sendQuickAiPrompt('Bagaimana cara menstabilkan kadar pH air kolam aquaponics agar tetap ideal?')" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/90 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200/70 text-[11px] font-semibold transition-all cursor-pointer active:scale-95">
+            🧪 Stabilkan pH Air
+          </button>
+          <button type="button" onclick="sendQuickAiPrompt('Apakah nilai TDS dan nutrisi air saat ini aman untuk tanaman dan ikan?')" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/90 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200/70 text-[11px] font-semibold transition-all cursor-pointer active:scale-95">
+            🌿 Evaluasi Nutrisi & TDS
+          </button>
+          <button type="button" onclick="sendQuickAiPrompt('Berikan jadwal penyinaran lampu UV dan pemberian pakan ikan yang optimal hari ini.')" class="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100/90 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200/70 text-[11px] font-semibold transition-all cursor-pointer active:scale-95">
+            💡 Jadwal UV & Pakan
+          </button>
+        </div>
+
+        <!-- Preview Foto Daun/Tanaman yang Dilampirkan -->
+        <div id="ai-img-preview-box" class="hidden items-center justify-between bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-2.5">
+          <div class="flex items-center gap-2.5">
+            <img id="ai-img-preview" src="" alt="Preview Tanaman" class="w-11 h-11 rounded-xl object-cover border border-white shadow-xs">
+            <div>
+              <p class="text-[11px] font-bold text-slate-700">Foto Tanaman Siap Dianalisis</p>
+              <p class="text-[10px] text-emerald-600">AI akan memeriksa gejala defisiensi nutrisi atau hama</p>
+            </div>
+          </div>
+          <button type="button" onclick="removeAiImage()" class="p-1.5 rounded-xl bg-white hover:bg-rose-50 text-slate-400 hover:text-rose-500 border border-slate-200/70 cursor-pointer">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
+
+        <!-- Form Input Pesan -->
+        <form id="ai-form" class="flex items-center gap-2 bg-slate-50 border border-slate-200/90 rounded-2xl p-1.5 focus-within:bg-white focus-within:border-emerald-400 focus-within:ring-2 focus-within:ring-emerald-100 transition-all">
+          <label for="ai-img-input" title="Lampirkan Foto Daun / Kolam" class="p-2.5 rounded-xl text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors cursor-pointer shrink-0">
+            <i data-lucide="image-plus" class="w-4 h-4"></i>
+          </label>
+          <input type="file" id="ai-img-input" accept="image/*" onchange="handleAiImageSelect(event)" class="hidden">
+
+          <input type="text" id="ai-input" autocomplete="off" class="flex-grow px-2 py-2 outline-none text-xs md:text-sm font-medium text-slate-700 placeholder:text-slate-400 bg-transparent" placeholder="Tanyakan kondisi tanaman, pH air, nutrisi, atau hama...">
+
+          <button type="submit" class="px-4 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl transition-all cursor-pointer shadow-md shadow-emerald-600/20 active:scale-95 flex items-center gap-1.5 text-xs font-semibold shrink-0 group">
+            <span class="hidden sm:inline">Kirim</span>
+            <i data-lucide="send" class="h-3.5 w-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- KOLOM KANAN (4 Kolom): Panel Konteks Sensor & Audit Cepat -->
+    <aside class="lg:col-span-4 space-y-4 flex flex-col justify-between">
+
+      <!-- Kartu 1: Konteks Sensor Real-Time yang Dibaca AI -->
+      <div class="glass-card p-5 rounded-[1.75rem] border border-slate-200/80 shadow-xs space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="cpu" class="w-4 h-4 text-emerald-600"></i> Konteks Sensor AI
+          </h3>
+          <label class="inline-flex items-center gap-1.5 cursor-pointer select-none">
+            <input type="checkbox" id="ai-sensor-context-toggle" checked class="accent-emerald-600 w-3.5 h-3.5 rounded cursor-pointer">
+            <span class="text-[11px] font-semibold text-emerald-700">Sertakan</span>
+          </label>
+        </div>
+
+        <p class="text-[11px] text-slate-500 leading-relaxed">
+          AI otomatis membaca metrik terbaru dari perangkat IoT Anda untuk memberikan saran yang presisi:
+        </p>
+
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="bg-slate-50/90 border border-slate-200/70 rounded-2xl p-3">
+            <span class="text-[10px] font-semibold text-slate-400 block">Kadar pH</span>
+            <span id="ai-ctx-ph" class="text-base font-extrabold font-mono text-purple-600 mt-0.5 block">--</span>
+          </div>
+          <div class="bg-slate-50/90 border border-slate-200/70 rounded-2xl p-3">
+            <span class="text-[10px] font-semibold text-slate-400 block">Suhu Air</span>
+            <span id="ai-ctx-suhuAir" class="text-base font-extrabold font-mono text-orange-600 mt-0.5 block">-- °C</span>
+          </div>
+          <div class="bg-slate-50/90 border border-slate-200/70 rounded-2xl p-3">
+            <span class="text-[10px] font-semibold text-slate-400 block">Nutrisi (TDS)</span>
+            <span id="ai-ctx-tds" class="text-base font-extrabold font-mono text-indigo-600 mt-0.5 block">-- ppm</span>
+          </div>
+          <div class="bg-slate-50/90 border border-slate-200/70 rounded-2xl p-3">
+            <span class="text-[10px] font-semibold text-slate-400 block">Kelembapan</span>
+            <span id="ai-ctx-kelembapan" class="text-base font-extrabold font-mono text-blue-600 mt-0.5 block">-- %</span>
+          </div>
+        </div>
+
+        <div class="bg-emerald-50/70 border border-emerald-200/70 rounded-2xl p-3 flex items-center justify-between text-xs">
+          <span class="text-slate-600 font-medium flex items-center gap-1.5">
+            <i data-lucide="cloud-sun" class="w-4 h-4 text-emerald-600"></i> Cuaca Lokal
+          </span>
+          <span id="ai-ctx-weather" class="font-bold text-emerald-700 truncate max-w-[140px]">Terdeteksi GPS</span>
+        </div>
+      </div>
+
+      <!-- Kartu 2: Menu Audit & Rekomendasi 1-Klik -->
+      <div class="glass-card p-5 rounded-[1.75rem] border border-slate-200/80 shadow-xs space-y-3 flex-grow">
+        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Alat Bantu Agronomi
+        </h3>
+
+        <button type="button" onclick="runFullSystemAudit()" class="w-full text-left p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50/70 hover:from-emerald-100/80 hover:to-teal-100/70 border border-emerald-200/80 transition-all group cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-emerald-800">Audit Kesehatan Kolam</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-emerald-600 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+          <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Analisis skor kesehatan pH, suhu, oksigen, dan nutrisi secara instan.</p>
+        </button>
+
+        <button type="button" onclick="sendQuickAiPrompt('Buatkan rencana perawatan mingguan untuk ikan dan tanaman sayuran daun di sistem aquaponics saya.')" class="w-full text-left p-3.5 rounded-2xl bg-slate-50/90 hover:bg-white border border-slate-200/80 hover:border-emerald-300 transition-all group cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 group-hover:text-emerald-700">Checklist Perawatan Mingguan</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+          <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Susun jadwal pembersihan biofilter, cek pompa, dan panen.</p>
+        </button>
+
+        <button type="button" onclick="sendQuickAiPrompt('Apa gejala tanaman kekurangan zat besi (Fe) atau kalium pada aquaponics dan bagaimana solusinya?')" class="w-full text-left p-3.5 rounded-2xl bg-slate-50/90 hover:bg-white border border-slate-200/80 hover:border-emerald-300 transition-all group cursor-pointer">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-slate-700 group-hover:text-emerald-700">Deteksi Defisiensi Nutrisi</span>
+            <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-transform"></i>
+          </div>
+          <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Panduan mengenali daun menguning (klorosis) dan cara mengatasinya.</p>
+        </button>
+      </div>
+
+    </aside>
+  </div>
+</div>
 
  <!-- ========================================== -->
  <!-- VIEW: NOTIFIKASI -->
@@ -3177,59 +3378,315 @@
     setInterval(initGpsWeather, 15 * 60 * 1000);
   });
 
+// =====================================
+ // STATE: AI CHAT (CONTEXT-AWARE AGRONOMIST)
  // =====================================
- // STATE: AI CHAT
- // =====================================
+ let aiAttachedImage = "";
+
  let chatHistory = [
- { role: 'model', text: 'Halo! Saya **Agronomist AI** 🌿\n\nSaya sedang memonitor data sensor aquaponics Anda. Ada hal yang ingin didiskusikan mengenai nutrisi atau pencegahan hama hari ini?' }
+   {
+     role: 'model',
+     time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+     text: 'Halo! Saya **Agronomist AI LihatKebunku** 🌿\n\nSaya terhubung langsung dengan panel sensor kolam dan cuaca lokal Anda. Silakan pilih pertanyaan cepat di bawah, unggah foto daun tanaman, atau klik **Diagnosa Otomatis** untuk memeriksa kesehatan sistem.'
+   }
  ];
 
- function renderChat() {
- const container = document.getElementById('chat-container');
- container.innerHTML = '';
- chatHistory.forEach(msg => {
- const isUser = msg.role === 'user';
- const alignWrap = isUser ? 'justify-end' : 'justify-start';
- const bgClass = isUser ? 'bg-indigo-600 text-white rounded-br-sm shadow-sm' : 'bg-white border border-slate-200/70 text-slate-700 rounded-bl-sm shadow-xs';
- const iconHtml = !isUser ? `<div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100 mt-0.5"><i data-lucide="sparkles" class="h-3.5 w-3.5"></i></div>` : '';
- const formattedText = msg.text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br/>');
+ function syncAiSensorPanel() {
+   const ph = document.getElementById('val-ph')?.innerText || '--';
+   const suhuAir = document.getElementById('val-suhuAir')?.innerText || '--';
+   const tds = document.getElementById('val-tds')?.innerText || '--';
+   const kelembapan = document.getElementById('val-kelembapan')?.innerText || '--';
 
- const msgHtml = `
- <div class="flex gap-2.5 w-full ${alignWrap}">
- ${iconHtml}
- <div class="max-w-[85%] md:max-w-[75%] p-3.5 rounded-[1.25rem] text-xs md:text-sm font-normal leading-relaxed ${bgClass}">
- ${formattedText}
- </div>
- </div>`;
- container.innerHTML += msgHtml;
- });
- container.scrollTop = container.scrollHeight;
- lucide.createIcons();
+   const elPh = document.getElementById('ai-ctx-ph');
+   const elSuhu = document.getElementById('ai-ctx-suhuAir');
+   const elTds = document.getElementById('ai-ctx-tds');
+   const elHum = document.getElementById('ai-ctx-kelembapan');
+   const elWeather = document.getElementById('ai-ctx-weather');
+
+   if (elPh) elPh.textContent = ph === '--' ? '--' : `${ph} pH`;
+   if (elSuhu) elSuhu.textContent = suhuAir === '--' ? '-- °C' : `${suhuAir} °C`;
+   if (elTds) elTds.textContent = tds === '--' ? '-- ppm' : `${tds} ppm`;
+   if (elHum) elHum.textContent = kelembapan === '--' ? '-- %' : `${kelembapan} %`;
+
+   if (elWeather && window.LihatKebunkuWeather) {
+     elWeather.textContent = `${window.LihatKebunkuWeather.condition}, ${Math.round(window.LihatKebunkuWeather.temp)}°C`;
+   }
  }
+
+ window.handleAiImageSelect = (event) => {
+   const file = event.target.files[0];
+   if (!file) return;
+   if (file.size > 2 * 1024 * 1024) {
+     alert("Ukuran foto maksimal 2MB!");
+     event.target.value = "";
+     return;
+   }
+   const reader = new FileReader();
+   reader.onload = (e) => {
+     aiAttachedImage = e.target.result;
+     document.getElementById('ai-img-preview').src = aiAttachedImage;
+     const box = document.getElementById('ai-img-preview-box');
+     box.classList.remove('hidden');
+     box.classList.add('flex');
+   };
+   reader.readAsDataURL(file);
+ };
+
+ window.removeAiImage = () => {
+   aiAttachedImage = "";
+   const input = document.getElementById('ai-img-input');
+   if (input) input.value = "";
+   const box = document.getElementById('ai-img-preview-box');
+   if (box) {
+     box.classList.add('hidden');
+     box.classList.remove('flex');
+   }
+ };
+
+ window.copyAiReply = (index) => {
+   const msg = chatHistory[index];
+   if (!msg) return;
+   const plainText = msg.text.replace(/\*\*/g, '');
+   navigator.clipboard?.writeText(plainText);
+   if (typeof showCommunityToast === 'function') {
+     showCommunityToast("Jawaban AI berhasil disalin!");
+   }
+ };
+
+ window.resetAiChat = () => {
+   chatHistory = [
+     {
+       role: 'model',
+       time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+       text: 'Percakapan telah diatur ulang 🌱\n\nSilakan tanyakan kondisi kolam, nutrisi tanaman, atau klik **Diagnosa Otomatis** untuk analisis terbaru.'
+     }
+   ];
+   removeAiImage();
+   renderChat();
+ };
+
+ function renderChat() {
+   syncAiSensorPanel();
+   const container = document.getElementById('chat-container');
+   if (!container) return;
+   container.innerHTML = '';
+
+   chatHistory.forEach((msg, idx) => {
+     const isUser = msg.role === 'user';
+     const alignWrap = isUser ? 'justify-end' : 'justify-start';
+     const bubbleStyle = isUser
+       ? 'bg-gradient-to-br from-emerald-600 to-teal-600 text-white rounded-br-sm shadow-md shadow-emerald-600/15'
+       : 'bg-white border border-slate-200/80 text-slate-700 rounded-bl-sm shadow-xs';
+
+     const avatarHtml = !isUser
+       ? `<div class="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs mt-0.5"><i data-lucide="bot" class="h-4 w-4"></i></div>`
+       : '';
+
+     const formattedText = msg.text
+       .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+       .replace(/\n/g, '<br/>');
+
+     const imageHtml = msg.image
+       ? `<img src="${msg.image}" alt="Lampiran" class="mb-2.5 rounded-xl max-h-44 w-auto object-cover border border-white/30">`
+       : '';
+
+     const badgeHtml = msg.badge
+       ? `<div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold mb-2 ${msg.badgeClass || 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">${msg.badge}</div><br/>`
+       : '';
+
+     const footerActions = !isUser
+       ? `<div class="flex items-center justify-between gap-3 mt-2.5 pt-2 border-t border-slate-100 text-[10px] text-slate-400">
+            <span>${msg.time || ''}</span>
+            <button type="button" onclick="copyAiReply(${idx})" class="inline-flex items-center gap-1 hover:text-emerald-600 font-semibold transition-colors cursor-pointer">
+              <i data-lucide="copy" class="w-3 h-3"></i> Salin
+            </button>
+          </div>`
+       : `<div class="text-right mt-1 text-[9px] text-emerald-100/90">${msg.time || ''}</div>`;
+
+     const msgHtml = `
+       <div class="ai-msg-bubble flex gap-2.5 w-full ${alignWrap}">
+         ${avatarHtml}
+         <div class="max-w-[86%] md:max-w-[76%] p-3.5 md:p-4 rounded-[1.35rem] text-xs md:text-[13px] font-normal leading-relaxed ${bubbleStyle}">
+           ${badgeHtml}
+           ${imageHtml}
+           <div>${formattedText}</div>
+           ${footerActions}
+         </div>
+       </div>`;
+     container.innerHTML += msgHtml;
+   });
+
+   container.scrollTop = container.scrollHeight;
+   lucide.createIcons();
+ }
+
+ function generateSmartAgronomistReply(userText, hasImage) {
+   const useSensor = document.getElementById('ai-sensor-context-toggle')?.checked ?? true;
+   const q = userText.toLowerCase();
+
+   const rawPh = parseFloat(document.getElementById('val-ph')?.innerText);
+   const rawSuhuAir = parseFloat(document.getElementById('val-suhuAir')?.innerText);
+   const rawTds = parseFloat(document.getElementById('val-tds')?.innerText);
+   const rawKelembapan = parseFloat(document.getElementById('val-kelembapan')?.innerText);
+
+   const hasLive = useSensor && !isNaN(rawPh);
+
+   // 1. Jika pengguna melampirkan foto tanaman
+   if (hasImage) {
+     return {
+       badge: '📸 Analisis Visual Tanaman',
+       badgeClass: 'bg-teal-50 text-teal-700 border border-teal-200',
+       text: `**Hasil Pemeriksaan Foto:**\n\n• **Indikasi Visual:** Periksa bagian tepi dan tulang daun. Jika daun muda menguning sementara tulang daun tetap hijau (*klorosis*), tanaman biasanya membutuhkan tambahan **Chelated Iron (Fe-DTPA)**.\n• **Korelasi Sensor:** ${hasLive ? `pH kolam Anda saat ini **${rawPh}**. Penyerapan zat besi paling optimal pada pH **6.5 – 7.0**.` : 'Pastikan pH air berada di kisaran 6.5 – 7.0 agar akar dapat menyerap mikronutrien.'}\n• **Tindakan Disarankan:** Pangkas daun tua yang layu agar energi tanaman fokus ke tunas baru dan pastikan aliran pompa aerasi lancar.`
+     };
+   }
+
+   // 2. Diagnosa Menyeluruh / Audit Kolam
+   if (q.includes('diagnosa') || q.includes('audit') || q.includes('kondisi') || q.includes('kesehatan')) {
+     if (!hasLive) {
+       return {
+         badge: '🩺 Mode Simulasi / Menunggu Sensor',
+         badgeClass: 'bg-amber-50 text-amber-700 border border-amber-200',
+         text: `Data sensor real-time belum terbaca penuh. Pastikan perangkat IoT **${activeMachineCode || 'LihatKebunku'}** terhubung.\n\n**Target Parameter Sehat:**\n• **pH Air:** 6.5 – 7.5\n• **Suhu Air:** 24 – 30 °C\n• **TDS:** < 500 ppm\n• **Kelembapan Udara:** 50 – 85%`
+       };
+     }
+
+     let score = 100;
+     let notes = [];
+
+     if (rawPh < 6.5) {
+       score -= 20;
+       notes.push(`⚠️ **pH Terlalu Asam (${rawPh}):** Tambahkan kalium bikarbonat atau kalsium karbonat secara bertahap (naikkan maks 0.2 pH/hari).`);
+     } else if (rawPh > 7.5) {
+       score -= 20;
+       notes.push(`⚠️ **pH Terlalu Basa (${rawPh}):** Dapat menghambat penyerapan zat besi pada tanaman. Periksa aliran biofilter.`);
+     } else {
+       notes.push(`✅ **pH Optimal (${rawPh}):** Sangat ideal untuk bakteri nitrifikasi dan akar tanaman.`);
+     }
+
+     if (!isNaN(rawSuhuAir) && (rawSuhuAir < 24 || rawSuhuAir > 30)) {
+       score -= 15;
+       notes.push(`⚠️ **Suhu Air (${rawSuhuAir}°C):** Di luar rentang nyaman ikan (24–30°C). Pastikan aerasi oksigen menyala penuh.`);
+     } else if (!isNaN(rawSuhuAir)) {
+       notes.push(`✅ **Suhu Air Stabil (${rawSuhuAir}°C):** Metabolisme ikan dan penyerapan nutrisi akar berjalan baik.`);
+     }
+
+     if (!isNaN(rawTds) && rawTds >= 500) {
+       score -= 15;
+       notes.push(`⚠️ **TDS Tinggi (${rawTds} ppm):** Terjadi akumulasi zat terlarut. Lakukan penggantian air parsial (15–20%) dan kurangi pakan sementara.`);
+     } else if (!isNaN(rawTds)) {
+       notes.push(`✅ **Kepadatan Nutrisi Terkendali (${rawTds} ppm):** Air kolam jernih dan aman.`);
+     }
+
+     const weatherNote = window.LihatKebunkuWeather
+       ? `\n\n🌤️ **Cuaca Lokal (${window.LihatKebunkuWeather.location}):** ${window.LihatKebunkuWeather.condition} (${Math.round(window.LihatKebunkuWeather.temp)}°C, peluang hujan ${window.LihatKebunkuWeather.rainProbability}%).`
+       : '';
+
+     return {
+       badge: `🩺 Skor Kesehatan Ekosistem: ${score}/100`,
+       badgeClass: score >= 85
+         ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+         : 'bg-amber-50 text-amber-700 border border-amber-200',
+       text: `**Laporan Diagnosa Sistem (${activeMachineCode || 'IoT'}):**\n\n${notes.join('\n')}${weatherNote}`
+     };
+   }
+
+   // 3. Topik pH Air
+   if (q.includes('ph') || q.includes('asam') || q.includes('basa')) {
+     const currentPhInfo = hasLive ? `Nilai pH sensor Anda saat ini adalah **${rawPh} pH** (${rawPh >= 6.5 && rawPh <= 7.5 ? 'Ideal' : 'Perlu Penyesuaian'}).` : '';
+     return {
+       badge: '🧪 Panduan Keseimbangan pH',
+       badgeClass: 'bg-purple-50 text-purple-700 border border-purple-200',
+       text: `${currentPhInfo}\n\n**Langkah Menjaga Kestabilan pH:**\n1. **Jika pH < 6.5 (Asam):** Proses nitrifikasi secara alami menurunkan pH. Tambahkan sedikit *calcium hydroxide* atau *potassium bicarbonate* di bak filter.\n2. **Jika pH > 7.5 (Basa):** Hindari penambahan buffer basa dan pastikan proses nitrifikasi berjalan matang.\n3. **Penting:** Jangan mengubah pH lebih dari **0.3 poin dalam 24 jam** agar ikan tidak stres.`
+     };
+   }
+
+   // 4. Topik TDS / Nutrisi / Pakan
+   if (q.includes('tds') || q.includes('nutrisi') || q.includes('pakan') || q.includes('keruh')) {
+     const tdsInfo = !isNaN(rawTds) ? `Pembacaan TDS saat ini: **${rawTds} ppm**.` : '';
+     return {
+       badge: '🌱 Manajemen Nutrisi & Pakan',
+       badgeClass: 'bg-indigo-50 text-indigo-700 border border-indigo-200',
+       text: `${tdsInfo}\n\n**Rekomendasi Nutrisi & Pakan:**\n• Berikan pakan ikan secukupnya yang habis dalam **3–5 menit** agar tidak membusuk menjadi amonia.\n• Jika TDS mendekati atau melebihi **500 ppm**, lakukan pengurasan endapan dasar filter mekanis.\n• Untuk sayuran daun (kangkung, pakcoy, selada), rasio ikan dan tanaman yang seimbang sudah mencukupi kebutuhan nitrat harian.`
+     };
+   }
+
+   // 5. Topik Lampu UV / Cuaca / Jadwal
+   if (q.includes('uv') || q.includes('lampu') || q.includes('cuaca') || q.includes('jadwal') || q.includes('mingguan')) {
+     return {
+       badge: '💡 Optimasi Energi & Jadwal',
+       badgeClass: 'bg-amber-50 text-amber-700 border border-amber-200',
+       text: `**Rekomendasi Operasional Harian:**\n• **Pompa Sirkulasi:** Jalankan **24 jam non-stop** untuk menjaga suplai oksigen terlarut bagi ikan dan bakteri biofilter.\n• **Lampu Grow UV:** Nyalakan **4–6 jam tambahan** saat cuaca mendung/hujan atau pada sore hari untuk memaksimalkan fotosintesis.\n• **Checklist Mingguan:** Bersihkan busa filter mekanis setiap 5–7 hari dan cek konektor sensor pH/TDS.`
+     };
+   }
+
+   // 6. Jawaban Umum Cerdas dengan Konteks Sensor
+   return {
+     badge: '🌿 Analisis Agronomist AI',
+     badgeClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+     text: `Terima kasih atas pertanyaannya! ${hasLive ? `Berdasarkan pantauan sensor terbaru (**pH ${rawPh}**, **Suhu Air ${rawSuhuAir}°C**, **TDS ${rawTds} ppm**), kondisi dasar kolam Anda terpantau **${rawPh >= 6.5 && rawPh <= 7.5 && rawTds < 500 ? 'stabil' : 'memerlukan perhatian ringan'}**.` : ''}\n\n• Pastikan sirkulasi air dari kolam ke media tanam mengalir lancar tanpa penyumbatan akar.\n• Jika Anda ingin laporan detail seluruh parameter, klik tombol **Diagnosa Otomatis** di pojok kanan atas.`
+   };
+ }
+
+ window.sendQuickAiPrompt = (promptText) => {
+   const input = document.getElementById('ai-input');
+   if (!input) return;
+   input.value = promptText;
+   document.getElementById('ai-form').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+ };
+
+ window.runFullSystemAudit = () => {
+   sendQuickAiPrompt('Lakukan diagnosa menyeluruh berdasarkan data sensor kolam saya saat ini.');
+ };
 
  document.getElementById('ai-form').addEventListener('submit', (e) => {
- e.preventDefault();
- const input = document.getElementById('ai-input');
- const text = input.value.trim();
- if(!text) return;
+   e.preventDefault();
+   const input = document.getElementById('ai-input');
+   const text = input.value.trim();
+   if (!text && !aiAttachedImage) return;
 
- chatHistory.push({ role: 'user', text });
- input.value = '';
- renderChat();
+   const nowTime = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+   const currentImg = aiAttachedImage;
 
- const container = document.getElementById('chat-container');
- container.innerHTML += `<div id="ai-typing" class="flex gap-2.5 w-full justify-start"><div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-100"><i data-lucide="loader-2" class="h-3.5 w-3.5 animate-spin"></i></div><div class="p-3.5 rounded-[1.25rem] rounded-bl-sm text-xs text-slate-400 bg-white border border-slate-200">Menganalisis data...</div></div>`;
- container.scrollTop = container.scrollHeight;
+   chatHistory.push({
+     role: 'user',
+     time: nowTime,
+     text: text || 'Mohon analisis foto tanaman ini.',
+     image: currentImg || null
+   });
 
- setTimeout(() => {
- document.getElementById('ai-typing')?.remove();
- let reply = "Semua parameter ekosistem terpantau sangat baik. Pertahankan jadwal sirkulasi air dan pemberian pakar secara teratur.";
- if(text.toLowerCase().includes('ph') || text.toLowerCase().includes('asam')) {
- reply = "**Analisis AI:** Penurunan pH biasanya disebabkan penumpukan limbah organik atau sisa pakan. Kurangi takaran pakan sementara dan pastikan biofilter bekerja optimal.";
- }
- chatHistory.push({ role: 'model', text: reply });
- renderChat();
- }, 1200);
+   input.value = '';
+   removeAiImage();
+   renderChat();
+
+   // Indikator mengetik 3 titik beranimasi
+   const container = document.getElementById('chat-container');
+   container.innerHTML += `
+     <div id="ai-typing" class="ai-msg-bubble flex gap-2.5 w-full justify-start">
+       <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 border border-emerald-200">
+         <i data-lucide="bot" class="h-4 w-4"></i>
+       </div>
+       <div class="px-4 py-3.5 rounded-[1.35rem] rounded-bl-sm bg-white border border-slate-200/80 shadow-xs flex items-center gap-2">
+         <span class="ai-typing-dot"></span>
+         <span class="ai-typing-dot"></span>
+         <span class="ai-typing-dot"></span>
+         <span class="text-[11px] font-medium text-slate-400 ml-1">Menganalisis parameter...</span>
+       </div>
+     </div>`;
+   container.scrollTop = container.scrollHeight;
+   lucide.createIcons();
+
+   setTimeout(() => {
+     document.getElementById('ai-typing')?.remove();
+     const smartResult = generateSmartAgronomistReply(text, Boolean(currentImg));
+     chatHistory.push({
+       role: 'model',
+       time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
+       badge: smartResult.badge,
+       badgeClass: smartResult.badgeClass,
+       text: smartResult.text
+     });
+     renderChat();
+   }, 850);
  });
 
 // =====================================
