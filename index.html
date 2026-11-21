@@ -2188,8 +2188,6 @@
 </div>
 
  </main>
-
-  <nav aria-label="Navigasi Utama" class="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-[430px] liquid-glass-dock !backdrop-blur-[0px] rounded-[2rem] px-2 py-2 flex items-center justify-between gap-1">
    
 <!-- Mobile Floating Curved Liquid Glass Nav -->
  <nav aria-label="Navigasi Utama" class="md:hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-[430px] liquid-glass-dock rounded-[2rem] px-2 py-2 flex items-center justify-between gap-1">
@@ -4430,44 +4428,39 @@
  });
 
 // =====================================
- // NAVIGATION LOGIC
- // =====================================
+// NAVIGATION LOGIC
+// =====================================
 window.switchTab = (targetTab) => {
   document.querySelectorAll('.view-section').forEach(el => {
     el.classList.add('hidden');
     el.classList.remove('animate-fade-in-up');
   });
   const targetEl = document.getElementById(`view-${targetTab}`);
+  if (!targetEl) return;
   targetEl.classList.remove('hidden');
   void targetEl.offsetWidth;
   targetEl.classList.add('animate-fade-in-up');
 
+  // Simpan tab terakhir agar tetap di halaman yang sama saat di-refresh
+  localStorage.setItem('lkb_active_tab', targetTab);
+
   // Update state aktif Sidebar Desktop Slim
   document.querySelectorAll('.nav-btn').forEach(btn => {
-    if (btn.id === `nav-${targetTab}`) {
-      btn.classList.add('is-active');
-    } else {
-      btn.classList.remove('is-active');
-    }
+    btn.classList.toggle('is-active', btn.id === `nav-${targetTab}`);
   });
 
   // Update state aktif Mobile Bottom Nav
   document.querySelectorAll('.mob-nav-btn').forEach(btn => {
-    if (btn.id === `mob-nav-${targetTab}`) {
-      btn.classList.add('is-active');
-    } else {
-      btn.classList.remove('is-active');
-    }
+    btn.classList.toggle('is-active', btn.id === `mob-nav-${targetTab}`);
   });
 
-  // [BARU] Sinkronkan Judul & Ikon pada Floating Header
+  // Sinkronkan Judul & Ikon pada Floating Header
   const meta = headerTabMeta[targetTab];
   const headerTitleEl = document.getElementById('header-page-title');
   const headerIconBox = document.getElementById('header-page-icon-box');
 
   if (meta && headerTitleEl) {
     headerTitleEl.textContent = meta.title;
-    // Reset & jalankan ulang animasi pergantian teks
     headerTitleEl.classList.remove('animate-header-swap');
     void headerTitleEl.offsetWidth;
     headerTitleEl.classList.add('animate-header-swap');
@@ -4477,82 +4470,100 @@ window.switchTab = (targetTab) => {
     headerIconBox.innerHTML = `<i data-lucide="${meta.icon}" class="w-4 h-4"></i>`;
     lucide.createIcons();
   }
-  // [AKHIR BARU]
 
   if (targetTab === 'notifikasi') {
-    document.getElementById('mob-top-notif-badge').classList.add('hidden');
+    document.getElementById('mob-top-notif-badge')?.classList.add('hidden');
     renderNotifications();
   }
   if (targetTab === 'ai') renderChat();
   if (targetTab === 'komunitas') renderCommunityFeed();
 };
 
- window.logout = () => {
-   activeMachineCode = "";
-   auth.signOut();
-   document.getElementById('app-view').classList.remove('opacity-100');
-   document.getElementById('app-view').classList.add('opacity-0');
-   setTimeout(() => {
-     document.getElementById('app-view').classList.add('hidden');
-     document.getElementById('login-view').classList.remove('hidden');
-   }, 500);
- };
+window.logout = () => {
+  activeMachineCode = "";
+  localStorage.removeItem('lkb_active_machine');
+  localStorage.removeItem('lkb_active_tab');
+  auth.signOut();
+  document.getElementById('app-view').classList.remove('opacity-100');
+  document.getElementById('app-view').classList.add('opacity-0');
+  setTimeout(() => {
+    document.getElementById('app-view').classList.add('hidden');
+    document.getElementById('login-view').classList.remove('hidden', 'opacity-0');
+  }, 500);
+};
 
- // =====================================
- // LOGIN & FIREBASE LOGIC
- // =====================================
- const handleLogin = async (codeInput) => {
- const errorEl = document.getElementById('login-error');
- const errorText = document.getElementById('login-error-text');
- const btnText = document.getElementById('login-btn-text');
- const passwordInput = document.getElementById('input-machine-password').value;
- 
- if(!codeInput) { errorText.innerText = "Masukkan ID Mesin IoT."; errorEl.classList.remove('hidden'); return; }
- if(codeInput !== "lihatkebunku_01") { errorText.innerText = "ID Mesin tidak terdaftar di sistem."; errorEl.classList.remove('hidden'); return; }
- if(passwordInput !== "admin123") { errorText.innerText = "Kata sandi salah."; errorEl.classList.remove('hidden'); return; }
+// =====================================
+// LOGIN, SESSION PERSISTENCE & FIREBASE
+// =====================================
+function enterDashboardSession(codeInput, targetTab = 'beranda') {
+  activeMachineCode = codeInput;
+  localStorage.setItem('lkb_active_machine', codeInput);
 
- btnText.innerText = "Memverifikasi...";
- 
- try {
- await signInWithEmailAndPassword(auth, "lihatkebun@gmail.com", "aquaponik");
- btnText.innerText = "Menghubungkan...";
- activeMachineCode = codeInput;
- 
- document.getElementById('display-machine-id').innerText = activeMachineCode;
- document.getElementById('profile-machine-id').innerText = activeMachineCode;
+  document.getElementById('display-machine-id').innerText = activeMachineCode;
+  document.getElementById('profile-machine-id').innerText = activeMachineCode;
 
-  // [BARU] Tampilkan ID Mesin aktif pada kapsul status di Header
- const headerPill = document.getElementById('header-machine-pill');
- if (headerPill) headerPill.innerText = activeMachineCode;
+  const headerPill = document.getElementById('header-machine-pill');
+  if (headerPill) headerPill.innerText = activeMachineCode;
 
- document.getElementById('login-view').classList.add('opacity-0');
- setTimeout(() => {
- document.getElementById('login-view').classList.add('hidden');
- const appView = document.getElementById('app-view');
- appView.classList.remove('hidden');
- setTimeout(() => appView.classList.replace('opacity-0', 'opacity-100'), 50);
- }, 500);
- 
- errorEl.classList.add('hidden');
- renderNotifications(); renderChat(); switchTab('beranda');
- startFirebaseListeners();
- startCommunityPostsListener();
- loadUserProfile();
+  const loginView = document.getElementById('login-view');
+  const appView = document.getElementById('app-view');
 
- } catch (error) {
- errorText.innerText = "Koneksi server gagal: " + error.message;
- errorEl.classList.remove('hidden');
- } finally {
- btnText.innerText = "Hubungkan Sistem";
- }
- };
+  loginView.classList.add('hidden', 'opacity-0');
+  appView.classList.remove('hidden', 'opacity-0');
+  appView.classList.add('opacity-100');
 
- document.getElementById('btn-login').addEventListener('click', () => handleLogin(document.getElementById('input-machine-code').value.trim()));
- document.getElementById('btn-demo').addEventListener('click', () => {
- document.getElementById('input-machine-code').value = "lihatkebunku_01"; document.getElementById('input-machine-password').value = "admin123";
- handleLogin("lihatkebunku_01");
- });
+  loadUserProfile();
+  renderNotifications();
+  renderChat();
+  switchTab(targetTab);
+  startFirebaseListeners();
+  startCommunityPostsListener();
+}
 
+const handleLogin = async (codeInput) => {
+  const errorEl = document.getElementById('login-error');
+  const errorText = document.getElementById('login-error-text');
+  const btnText = document.getElementById('login-btn-text');
+  const passwordInput = document.getElementById('input-machine-password').value;
+
+  if (!codeInput) { errorText.innerText = "Masukkan ID Mesin IoT."; errorEl.classList.remove('hidden'); return; }
+  if (codeInput !== "lihatkebunku_01") { errorText.innerText = "ID Mesin tidak terdaftar di sistem."; errorEl.classList.remove('hidden'); return; }
+  if (passwordInput !== "admin123") { errorText.innerText = "Kata sandi salah."; errorEl.classList.remove('hidden'); return; }
+
+  btnText.innerText = "Memverifikasi...";
+
+  try {
+    await signInWithEmailAndPassword(auth, "lihatkebun@gmail.com", "aquaponik");
+    errorEl.classList.add('hidden');
+    enterDashboardSession(codeInput, 'beranda');
+  } catch (error) {
+    errorText.innerText = "Koneksi server gagal: " + error.message;
+    errorEl.classList.remove('hidden');
+  } finally {
+    btnText.innerText = "Hubungkan Sistem";
+  }
+};
+
+document.getElementById('btn-login').addEventListener('click', () => handleLogin(document.getElementById('input-machine-code').value.trim()));
+document.getElementById('btn-demo').addEventListener('click', () => {
+  document.getElementById('input-machine-code').value = "lihatkebunku_01";
+  document.getElementById('input-machine-password').value = "admin123";
+  handleLogin("lihatkebunku_01");
+});
+
+// Pulihkan sesi & foto profil otomatis saat halaman di-refresh
+(async function restoreSessionOnRefresh() {
+  const savedMachine = localStorage.getItem('lkb_active_machine');
+  const savedTab = localStorage.getItem('lkb_active_tab') || 'beranda';
+  if (savedMachine) {
+    try {
+      await signInWithEmailAndPassword(auth, "lihatkebun@gmail.com", "aquaponik");
+    } catch (e) {
+      console.warn("Re-auth background:", e);
+    }
+    enterDashboardSession(savedMachine, savedTab);
+  }
+})();
  // =====================================
  // UI METRICS UPDATER
  // =====================================
@@ -4713,260 +4724,290 @@ window.switchTab = (targetTab) => {
  updateHeaderClockAndGreeting();
  setInterval(updateHeaderClockAndGreeting, 30000);
 
-  // =====================================
- // STATE & LOGIC: PROFIL & FOTO PROFIL
- // =====================================
- let userProfileData = {
-   name: "Pengelola LihatKebunku",
-   focus: "Aquaponics Terpadu",
-   location: "",
-   photo: ""
- };
+// =====================================
+// STATE & LOGIC: PROFIL & FOTO PROFIL
+// =====================================
+let userProfileData = {
+  name: "Pengelola LihatKebunku",
+  focus: "Aquaponics Terpadu",
+  location: "",
+  photo: ""
+};
 
- // Kompres gambar otomatis menggunakan Canvas agar ringan & cepat disimpan
- function compressProfileImage(file, maxSize = 280) {
-   return new Promise((resolve, reject) => {
-     const reader = new FileReader();
-     reader.onload = (e) => {
-       const img = new Image();
-       img.onload = () => {
-         const canvas = document.createElement('canvas');
-         let w = img.width;
-         let h = img.height;
-         if (w > h) {
-           if (w > maxSize) { h = Math.round((h * maxSize) / w); w = maxSize; }
-         } else {
-           if (h > maxSize) { w = Math.round((w * maxSize) / h); h = maxSize; }
-         }
-         canvas.width = w;
-         canvas.height = h;
-         const ctx = canvas.getContext('2d');
-         ctx.drawImage(img, 0, 0, w, h);
-         resolve(canvas.toDataURL('image/jpeg', 0.82));
-       };
-       img.onerror = reject;
-       img.src = e.target.result;
-     };
-     reader.onerror = reject;
-     reader.readAsDataURL(file);
-   });
- }
+// 1. Menentukan kunci penyimpanan lokal utama & cadangan
+function getProfileStorageKeys() {
+  const machineId = activeMachineCode || localStorage.getItem('lkb_active_machine') || 'lihatkebunku_01';
+  return {
+    primary: `lkb_profile_${machineId}`,
+    fallback: 'lkb_profile_default'
+  };
+}
 
- function applyUserProfileToUI() {
-   const displayName = userProfileData.name || "Pengelola LihatKebunku";
-   const initialChar = displayName.trim().charAt(0).toUpperCase() || "A";
+// 2. Menyimpan data profil & foto ke localStorage
+function persistUserProfileLocal() {
+  const keys = getProfileStorageKeys();
+  const serialized = JSON.stringify(userProfileData);
+  try {
+    localStorage.setItem(keys.primary, serialized);
+    localStorage.setItem(keys.fallback, serialized);
+  } catch (err) {
+    console.error("Penyimpanan lokal penuh:", err);
+  }
+}
 
-   const nameEl = document.getElementById('profile-display-name');
-   const focusEl = document.getElementById('profile-farm-focus');
-   const locEl = document.getElementById('profile-location-label');
-   const inputName = document.getElementById('input-profile-name');
-   const inputFocus = document.getElementById('input-profile-focus');
-   const inputLoc = document.getElementById('input-profile-location');
+// 3. Mengompres foto agar ringan & muat di localStorage / Firebase
+function compressProfileImage(file, maxSize = 240) {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
 
-   if (nameEl) nameEl.textContent = displayName;
-   if (focusEl) focusEl.textContent = userProfileData.focus || "Aquaponics Terpadu";
-   if (locEl) locEl.textContent = userProfileData.location || "Lokasi belum diatur";
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        let w = img.width;
+        let h = img.height;
 
-   if (inputName) inputName.value = displayName;
-   if (inputFocus) inputFocus.value = userProfileData.focus || "";
-   if (inputLoc) inputLoc.value = userProfileData.location || "";
+        if (w > h) {
+          if (w > maxSize) { h = Math.round((h * maxSize) / w); w = maxSize; }
+        } else {
+          if (h > maxSize) { w = Math.round((w * maxSize) / h); h = maxSize; }
+        }
 
-      // [BARU] Perbarui nama panggilan di Header & segarkan teks sapaan waktu
-   const headerNameEl = document.getElementById('header-user-name');
-   if (headerNameEl) headerNameEl.textContent = displayName.split(' ')[0];
-   updateHeaderClockAndGreeting();
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
 
-   // Update Foto Profil Utama + Inisial
-   const imgEl = document.getElementById('profile-avatar-img');
-   const initEl = document.getElementById('profile-avatar-initial');
-   const removeBtn = document.getElementById('btn-remove-profile-photo');
-   const mobHeaderAvatar = document.getElementById('mob-header-avatar');
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        URL.revokeObjectURL(objectUrl);
+        resolve(dataUrl);
+      } catch (err) {
+        URL.revokeObjectURL(objectUrl);
+        reject(err);
+      }
+    };
 
-   if (initEl) initEl.textContent = initialChar;
+    img.onerror = (err) => {
+      URL.revokeObjectURL(objectUrl);
+      reject(err);
+    };
 
-   if (userProfileData.photo) {
-     if (imgEl) {
-       imgEl.src = userProfileData.photo;
-       imgEl.classList.remove('hidden');
-     }
-     initEl?.classList.add('hidden');
-     removeBtn?.classList.remove('hidden');
+    img.src = objectUrl;
+  });
+}
 
-     // Sinkronkan juga ke tombol avatar header mobile
-     if (mobHeaderAvatar) {
-       mobHeaderAvatar.innerHTML = `<img src="${userProfileData.photo}" alt="Avatar" class="w-full h-full object-cover">`;
-     }
-   } else {
-     if (imgEl) {
-       imgEl.src = "";
-       imgEl.classList.add('hidden');
-     }
-     initEl?.classList.remove('hidden');
-     removeBtn?.classList.add('hidden');
+// 4. Menampilkan nama & foto ke halaman Akun maupun Header atas
+function applyUserProfileToUI() {
+  const displayName = userProfileData.name || "Pengelola LihatKebunku";
+  const initialChar = displayName.trim().charAt(0).toUpperCase() || "A";
 
-     if (mobHeaderAvatar) {
-       mobHeaderAvatar.textContent = initialChar;
-     }
-   }
+  const nameEl = document.getElementById('profile-display-name');
+  const focusEl = document.getElementById('profile-farm-focus');
+  const locEl = document.getElementById('profile-location-label');
+  const inputName = document.getElementById('input-profile-name');
+  const inputFocus = document.getElementById('input-profile-focus');
+  const inputLoc = document.getElementById('input-profile-location');
 
-   // Sinkronkan nama default di form komunitas jika tersedia
-   const postAuthorInput = document.getElementById('post-author');
-   if (postAuthorInput && !postAuthorInput.value) {
-     postAuthorInput.value = displayName;
-   }
- }
+  if (nameEl) nameEl.textContent = displayName;
+  if (focusEl) focusEl.textContent = userProfileData.focus || "Aquaponics Terpadu";
+  if (locEl) locEl.textContent = userProfileData.location || "Lokasi belum diatur";
 
- async function loadUserProfile() {
-   const storageKey = `lkb_profile_${activeMachineCode || 'default'}`;
-   const cached = localStorage.getItem(storageKey);
-   if (cached) {
-     try {
-       userProfileData = { ...userProfileData, ...JSON.parse(cached) };
-       applyUserProfileToUI();
-     } catch {}
-   }
+  if (inputName) inputName.value = displayName;
+  if (inputFocus) inputFocus.value = userProfileData.focus || "";
+  if (inputLoc) inputLoc.value = userProfileData.location || "";
 
-   if (!activeMachineCode) return;
-   try {
-     const snap = await get(ref(db, `machines/${activeMachineCode}/profile`));
-     if (snap.exists()) {
-       userProfileData = { ...userProfileData, ...snap.val() };
-       localStorage.setItem(storageKey, JSON.stringify(userProfileData));
-       applyUserProfileToUI();
-     }
-   } catch (err) {
-     console.error("Gagal memuat profil dari Firebase:", err);
-   }
- }
+  const headerNameEl = document.getElementById('header-user-name');
+  if (headerNameEl) headerNameEl.textContent = displayName.split(' ')[0];
+  updateHeaderClockAndGreeting();
 
- window.handleProfilePhotoUpload = async (event) => {
-   const file = event.target.files[0];
-   if (!file) return;
+  const imgEl = document.getElementById('profile-avatar-img');
+  const initEl = document.getElementById('profile-avatar-initial');
+  const removeBtn = document.getElementById('btn-remove-profile-photo');
+  const mobHeaderAvatar = document.getElementById('mob-header-avatar');
 
-   if (!file.type.startsWith('image/')) {
-     if (typeof showCommunityToast === 'function') showCommunityToast("Pilih file gambar (JPG/PNG/WebP)!");
-     return;
-   }
+  if (initEl) initEl.textContent = initialChar;
 
-   try {
-     const compressedBase64 = await compressProfileImage(file, 300);
-     userProfileData.photo = compressedBase64;
-     applyUserProfileToUI();
+  if (userProfileData.photo && userProfileData.photo.startsWith('data:image')) {
+    if (imgEl) {
+      imgEl.src = userProfileData.photo;
+      imgEl.classList.remove('hidden');
+    }
+    initEl?.classList.add('hidden');
+    removeBtn?.classList.remove('hidden');
 
-     // Efek animasi pop pada avatar
-     const box = document.getElementById('profile-avatar-box');
-     if (box) {
-       box.classList.remove('animate-avatar-pop');
-       void box.offsetWidth;
-       box.classList.add('animate-avatar-pop');
-     }
+    if (mobHeaderAvatar) {
+      mobHeaderAvatar.innerHTML = `<img src="${userProfileData.photo}" alt="Avatar" class="w-full h-full object-cover">`;
+    }
+  } else {
+    if (imgEl) {
+      imgEl.removeAttribute('src');
+      imgEl.classList.add('hidden');
+    }
+    initEl?.classList.remove('hidden');
+    removeBtn?.classList.add('hidden');
 
-     const storageKey = `lkb_profile_${activeMachineCode || 'default'}`;
-     localStorage.setItem(storageKey, JSON.stringify(userProfileData));
+    if (mobHeaderAvatar) {
+      mobHeaderAvatar.textContent = initialChar;
+    }
+  }
 
-     if (activeMachineCode) {
-       await update(ref(db, `machines/${activeMachineCode}/profile`), {
-         photo: compressedBase64
-       });
-     }
+  const postAuthorInput = document.getElementById('post-author');
+  if (postAuthorInput && !postAuthorInput.value) {
+    postAuthorInput.value = displayName;
+  }
+}
 
-     if (typeof showCommunityToast === 'function') {
-       showCommunityToast("Foto profil berhasil diperbarui!");
-     }
-   } catch (err) {
-     console.error("Gagal mengunggah foto profil:", err);
-     if (typeof showCommunityToast === 'function') {
-       showCommunityToast("Gagal memproses foto profil.");
-     }
-   }
- };
+// 5. Memuat ulang foto saat halaman dibuka atau di-refresh
+async function loadUserProfile() {
+  const keys = getProfileStorageKeys();
+  const cached = localStorage.getItem(keys.primary) || localStorage.getItem(keys.fallback);
 
- window.removeProfilePhoto = async () => {
-   userProfileData.photo = "";
-   const input = document.getElementById('profile-photo-input');
-   if (input) input.value = "";
-   applyUserProfileToUI();
+  if (cached) {
+    try {
+      userProfileData = { ...userProfileData, ...JSON.parse(cached) };
+      applyUserProfileToUI();
+    } catch {}
+  }
 
-   const storageKey = `lkb_profile_${activeMachineCode || 'default'}`;
-   localStorage.setItem(storageKey, JSON.stringify(userProfileData));
+  if (!activeMachineCode) return;
+  try {
+    const snap = await get(ref(db, `machines/${activeMachineCode}/profile`));
+    if (snap.exists()) {
+      const remote = snap.val();
+      userProfileData = {
+        ...userProfileData,
+        ...remote,
+        photo: remote.photo || userProfileData.photo || ""
+      };
+      persistUserProfileLocal();
+      applyUserProfileToUI();
+    }
+  } catch (err) {
+    console.warn("Sinkronisasi profil Firebase dilewati:", err);
+  }
+}
 
-   if (activeMachineCode) {
-     try {
-       await update(ref(db, `machines/${activeMachineCode}/profile`), { photo: "" });
-     } catch {}
-   }
+// 6. Menangani pemilihan foto dari galeri / komputer
+window.handleProfilePhotoUpload = async (event) => {
+  const input = event.target;
+  const file = input.files && input.files[0];
+  if (!file) return;
 
-   if (typeof showCommunityToast === 'function') {
-     showCommunityToast("Foto profil dihapus");
-   }
- };
+  const isImageFile = file.type.startsWith('image/') || /\.(jpe?g|png|webp|gif|bmp|heic)$/i.test(file.name);
+  if (!isImageFile) {
+    showCommunityToast("Pilih file gambar (JPG, PNG, atau WebP)!");
+    input.value = "";
+    return;
+  }
 
- window.saveUserProfile = async (event) => {
-   event.preventDefault();
-   const btn = document.getElementById('btn-save-profile');
-   const nameVal = document.getElementById('input-profile-name')?.value.trim() || "Pengelola LihatKebunku";
-   const focusVal = document.getElementById('input-profile-focus')?.value.trim() || "Aquaponics Terpadu";
-   const locVal = document.getElementById('input-profile-location')?.value.trim() || "";
+  try {
+    const compressedBase64 = await compressProfileImage(file, 240);
+    userProfileData.photo = compressedBase64;
+    persistUserProfileLocal();
+    applyUserProfileToUI();
 
-   userProfileData.name = nameVal;
-   userProfileData.focus = focusVal;
-   userProfileData.location = locVal;
-   applyUserProfileToUI();
+    const box = document.getElementById('profile-avatar-box');
+    if (box) {
+      box.classList.remove('animate-avatar-pop');
+      void box.offsetWidth;
+      box.classList.add('animate-avatar-pop');
+    }
 
-   const storageKey = `lkb_profile_${activeMachineCode || 'default'}`;
-   localStorage.setItem(storageKey, JSON.stringify(userProfileData));
+    if (activeMachineCode) {
+      try {
+        await update(ref(db, `machines/${activeMachineCode}/profile`), {
+          photo: compressedBase64
+        });
+      } catch (fbErr) {
+        console.warn("Foto tersimpan lokal (Firebase menolak write):", fbErr);
+      }
+    }
 
-   if (btn) {
-     btn.disabled = true;
-     btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>Menyimpan...</span>`;
-     lucide.createIcons();
-   }
+    showCommunityToast("Foto profil berhasil diperbarui!");
+  } catch (err) {
+    console.error("Gagal memproses foto profil:", err);
+    showCommunityToast("Gagal membaca file gambar. Coba gambar lain.");
+  } finally {
+    input.value = "";
+  }
+};
 
-   try {
-     if (activeMachineCode) {
-       await update(ref(db, `machines/${activeMachineCode}/profile`), {
-         name: nameVal,
-         focus: focusVal,
-         location: locVal
-       });
-     }
-     if (typeof showCommunityToast === 'function') {
-       showCommunityToast("Perubahan profil berhasil disimpan!");
-     }
-   } catch (err) {
-     console.error("Gagal menyimpan profil:", err);
-     if (typeof showCommunityToast === 'function') {
-       showCommunityToast("Tersimpan di perangkat lokal.");
-     }
-   } finally {
-     if (btn) {
-       btn.disabled = false;
-       btn.innerHTML = `<i data-lucide="save" class="w-3.5 h-3.5"></i><span>Simpan Perubahan Profil</span>`;
-       lucide.createIcons();
-     }
-   }
- };
+// 7. Menghapus foto profil
+window.removeProfilePhoto = async () => {
+  userProfileData.photo = "";
+  const input = document.getElementById('profile-photo-input');
+  if (input) input.value = "";
 
- window.fillLocationFromGps = () => {
-   const locInput = document.getElementById('input-profile-location');
-   if (window.LihatKebunkuWeather?.location && locInput) {
-     locInput.value = window.LihatKebunkuWeather.location;
-     if (typeof showCommunityToast === 'function') {
-       showCommunityToast("Lokasi diisi otomatis dari GPS!");
-     }
-   } else if (typeof showCommunityToast === 'function') {
-     showCommunityToast("Sinyal GPS cuaca belum aktif.");
-   }
- };
+  persistUserProfileLocal();
+  applyUserProfileToUI();
 
- window.copyMachineId = () => {
-   const idText = activeMachineCode || document.getElementById('profile-machine-id')?.innerText || '';
-   if (!idText) return;
-   navigator.clipboard?.writeText(idText);
-   if (typeof showCommunityToast === 'function') {
-     showCommunityToast(`ID Mesin "${idText}" disalin!`);
-   }
- };
+  if (activeMachineCode) {
+    try {
+      await update(ref(db, `machines/${activeMachineCode}/profile`), { photo: "" });
+    } catch {}
+  }
+
+  showCommunityToast("Foto profil dihapus");
+};
+
+// 8. Menyimpan nama, fokus budidaya, lokasi, dan foto sekaligus
+window.saveUserProfile = async (event) => {
+  event.preventDefault();
+  const btn = document.getElementById('btn-save-profile');
+  const nameVal = document.getElementById('input-profile-name')?.value.trim() || "Pengelola LihatKebunku";
+  const focusVal = document.getElementById('input-profile-focus')?.value.trim() || "Aquaponics Terpadu";
+  const locVal = document.getElementById('input-profile-location')?.value.trim() || "";
+
+  userProfileData.name = nameVal;
+  userProfileData.focus = focusVal;
+  userProfileData.location = locVal;
+  persistUserProfileLocal();
+  applyUserProfileToUI();
+
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<i data-lucide="loader-2" class="w-3.5 h-3.5 animate-spin"></i><span>Menyimpan...</span>`;
+    lucide.createIcons();
+  }
+
+  try {
+    if (activeMachineCode) {
+      await update(ref(db, `machines/${activeMachineCode}/profile`), {
+        name: nameVal,
+        focus: focusVal,
+        location: locVal,
+        photo: userProfileData.photo || ""
+      });
+    }
+    showCommunityToast("Perubahan profil berhasil disimpan!");
+  } catch (err) {
+    console.error("Gagal menyimpan profil ke server:", err);
+    showCommunityToast("Profil tersimpan di perangkat ini.");
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<i data-lucide="save" class="w-3.5 h-3.5"></i><span>Simpan Perubahan Profil</span>`;
+      lucide.createIcons();
+    }
+  }
+};
+
+window.fillLocationFromGps = () => {
+  const locInput = document.getElementById('input-profile-location');
+  if (window.LihatKebunkuWeather?.location && locInput) {
+    locInput.value = window.LihatKebunkuWeather.location;
+    showCommunityToast("Lokasi diisi otomatis dari GPS!");
+  } else {
+    showCommunityToast("Sinyal GPS cuaca belum aktif.");
+  }
+};
+
+window.copyMachineId = () => {
+  const idText = activeMachineCode || document.getElementById('profile-machine-id')?.innerText || '';
+  if (!idText) return;
+  navigator.clipboard?.writeText(idText);
+  showCommunityToast(`ID Mesin "${idText}" disalin!`);
+};
   
  function updateControlUI() {
    // Helper untuk memperbarui UI masing-masing switch/kartu kontrol
